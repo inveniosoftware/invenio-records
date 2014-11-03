@@ -28,3 +28,10 @@ js = Bundle(
     weight=20,
     filters="uglifyjs"
 )
+
+css = Bundle(
+    "css/records/record.css",
+    output="record.css",
+    weight=20,
+    filters="cleancss"
+)
