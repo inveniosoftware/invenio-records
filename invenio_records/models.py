@@ -58,10 +58,11 @@ class Record(db.Model):
     @property
     def deleted(self):
         """Return True if record is marked as deleted."""
-        from invenio.legacy.bibrecord import get_fieldvalues
-        # record exists; now check whether it isn't marked as deleted:
-        dbcollids = get_fieldvalues(self.id, "980__%")
+        from .api import get_record
+        dbcollids = [c.get('primary') for c in
+                     get_record(self.id).get('collections')]
 
+        # record exists; now check whether it isn't marked as deleted:
         return ("DELETED" in dbcollids) or \
                (current_app.config.get('CFG_CERN_SITE') and
                 "DUMMY" in dbcollids)
@@ -69,9 +70,10 @@ class Record(db.Model):
     @staticmethod
     def _next_merged_recid(recid):
         """Return the ID of record merged with record with ID = recid."""
-        from invenio.legacy.bibrecord import get_fieldvalues
+        from .api import get_record
         merged_recid = None
-        for val in get_fieldvalues(recid, "970__d"):
+        # FIXME
+        for val in get_record(recid).get("970__d", []):
             try:
                 merged_recid = int(val)
                 break
@@ -103,20 +105,6 @@ class Record(db.Model):
             next_id = Record._next_merged_recid(cur_id)
 
         return cur_id
-
-    @cached_property
-    def is_restricted(self):
-        """Return True is record is restricted."""
-        from invenio.modules.collections.cache import get_all_restricted_recids
-        return self.id in get_all_restricted_recids() or self.is_processed
-
-    @cached_property
-    def is_processed(self):
-        """Return True is recods is processed (not in any collection)."""
-        from invenio.modules.collections.cache import \
-            is_record_in_any_collection
-        return not is_record_in_any_collection(self.id,
-                                               recreate_cache_if_needed=False)
 
     @classmethod
     def filter_time_interval(cls, datetext, column='c'):
@@ -159,67 +147,7 @@ class RecordMetadata(db.Model):
     record = db.relationship(Record, backref='record_json')
 
 
-class BibxxxMixin(utils.TableNameMixin):
-
-    """Mixin for Bibxxx tables."""
-
-    id = db.Column(db.MediumInteger(8, unsigned=True),
-                   primary_key=True,
-                   autoincrement=True)
-    tag = db.Column(db.String(6), nullable=False, index=True,
-                    server_default='')
-    value = db.Column(
-        db.Text().with_variant(db.Text(35), 'mysql'),
-        nullable=False)
-
-
-class BibrecBibxxxMixin(utils.TableFromCamelNameMixin):
-
-    """Mixin for BibrecBibxxx tables."""
-
-    @declared_attr
-    def _bibxxx(cls):
-        return globals()[cls.__name__[6:]]
-
-    @declared_attr
-    def id_bibrec(cls):
-        return db.Column(db.MediumInteger(8, unsigned=True),
-                         db.ForeignKey(Record.id), nullable=False,
-                         primary_key=True, index=True, server_default='0')
-
-    @declared_attr
-    def id_bibxxx(cls):
-        return db.Column(db.MediumInteger(8, unsigned=True),
-                         db.ForeignKey(cls._bibxxx.id), nullable=False,
-                         primary_key=True, index=True, server_default='0')
-
-    field_number = db.Column(db.SmallInteger(5, unsigned=True),
-                             primary_key=True)
-
-    @declared_attr
-    def bibrec(cls):
-        return db.relationship(Record)
-
-    @declared_attr
-    def bibxxx(cls):
-        return db.relationship(cls._bibxxx, backref='bibrecs')
-
-models = []
-
-for idx in range(100):
-    Bibxxx = "Bib{0:02d}x".format(idx)
-    globals_Bibxxx = type(Bibxxx, (db.Model, BibxxxMixin), {})
-    globals()[Bibxxx] = globals_Bibxxx
-    BibrecBibxxx = "BibrecBib{0:02d}x".format(idx)
-    globals()[BibrecBibxxx] = type(BibrecBibxxx,
-                                   (db.Model, BibrecBibxxxMixin), {})
-
-    models += [Bibxxx, BibrecBibxxx]
-
-    Index('ix_{0:02d}x_value'.format(idx),
-          globals_Bibxxx.value, mysql_length=35)
-
-__all__ = tuple([
+__all__ = (
     'Record',
     'RecordMetadata',
-] + models)
+)

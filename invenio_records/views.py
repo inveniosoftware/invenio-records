@@ -37,19 +37,15 @@ from invenio.base.decorators import wash_arguments
 from invenio.base.globals import cfg
 from invenio.base.i18n import _
 from invenio.base.signals import pre_template_render
-from invenio.config import CFG_SITE_RECORD
 from invenio.ext.template.context_processor import \
     register_template_context_processor
-from invenio.modules.collections.models import Collection
 from invenio.modules.search.signals import record_viewed
 from invenio.utils import apache
 
-from .api import get_record
-from .models import Record as Bibrec
 from .utils import citations_nb_counts, references_nb_counts, \
     visible_collection_tabs
 
-blueprint = Blueprint('record', __name__, url_prefix="/" + CFG_SITE_RECORD,
+blueprint = Blueprint('record', __name__, url_prefix="/record",  # FIXME
                       static_url_path='/record', template_folder='templates',
                       static_folder='static')
 
@@ -60,15 +56,18 @@ def request_record(f):
     """Perform standard operation to check record availability for user."""
     @wraps(f)
     def decorated(recid, *args, **kwargs):
+        from invenio.modules.collections.models import Collection
         from invenio.legacy.search_engine import \
-            guess_primary_collection_of_a_record, \
-            check_user_can_view_record
+            guess_primary_collection_of_a_record
 
+        from .api import get_record
+        from .access import check_user_can_view_record
+        from .models import Record as Bibrec
         # ensure recid to be integer
         recid = int(recid)
         g.bibrec = Bibrec.query.get(recid)
 
-        record = get_record(recid)
+        g.record = record = get_record(recid)
         if record is None:
             return render_template('404.html')
 
@@ -194,8 +193,7 @@ def files(recid):
 def file(recid, filename):
     """Serve attached documents."""
     from invenio.modules.documents import api
-    record = get_record(recid)
-    duuids = [uuid for (k, uuid) in record.get('_documents', [])
+    duuids = [uuid for (k, uuid) in g.record.get('_documents', [])
               if k == filename]
     error = 404
     for duuid in duuids:

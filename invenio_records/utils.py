@@ -29,15 +29,12 @@ from flask import g, request
 from werkzeug.utils import cached_property, import_string
 
 from invenio.base.globals import cfg
-from invenio.config import (CFG_CERN_SITE, CFG_INSPIRE_SITE,
-                            CFG_BIBRANK_SHOW_CITATION_LINKS)
 from invenio.ext.cache import cache
-
-from .api import get_record
 
 
 def get_unique_record_json(param):
     """API to query records from the database."""
+    from .api import get_record
     from invenio.modules.search.api import Query
     data, query = {}, {}
     data['status'] = 'notfound'
@@ -109,9 +106,10 @@ def references_nb_counts():
 
     from invenio.legacy.bibrecord import record_get_field_instances
     from invenio.modules.search.models import Field
-    from invenio.modules.records.api import get_record
 
-    if not CFG_CERN_SITE:
+    from .api import get_record
+
+    if not cfg['CFG_CERN_SITE']:
         reftag = ""
         reftags = list(Field.get_field_tags("reference"))
         if reftags:
@@ -133,8 +131,8 @@ def citations_nb_counts():
     from invenio.legacy.bibrank.citation_searcher import (get_cited_by,
                                                           get_cited_by_count)
 
-    if CFG_BIBRANK_SHOW_CITATION_LINKS:
-        if CFG_INSPIRE_SITE:
+    if cfg['CFG_BIBRANK_SHOW_CITATION_LINKS']:
+        if cfg['CFG_INSPIRE_SITE']:
             from invenio.legacy.search_engine import search_unit
             citers_recids = intbitset(get_cited_by(recid))
             citeable_recids = search_unit(p='citeable', f='collection')

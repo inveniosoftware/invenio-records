@@ -21,8 +21,7 @@
 
 from invenio.base.globals import cfg
 from invenio.legacy.bibrecord import get_fieldvalues
-from invenio.modules.collections.cache import collection_reclist_cache, \
-    get_collection_reclist, restricted_collection_cache
+from invenio.modules.collections.cache import restricted_collection_cache
 
 
 def check_email_or_group(user_info, email_or_group):
@@ -118,12 +117,16 @@ def is_user_viewer_of_record(user_info, recid):
 
 def get_restricted_collections_for_recid(recid, recreate_cache_if_needed=True):
     """Return the list of restricted collections to which recid belongs."""
+    from invenio_records.api import get_record
+
     if recreate_cache_if_needed:
         restricted_collection_cache.recreate_cache_if_needed()
-        collection_reclist_cache.recreate_cache_if_needed()
-    return [collection for collection in restricted_collection_cache.cache
-            if recid in get_collection_reclist(
-                collection, recreate_cache_if_needed=False)]
+
+    record = get_record(recid)
+
+    return set(record.get('_collections', [])) & set([
+        collection for collection in restricted_collection_cache.cache
+    ])
 
 
 def check_user_can_view_record(user_info, recid):
