@@ -36,7 +36,7 @@ history = open('CHANGES.rst').read()
 requirements = [
     'Flask>=0.10.1',
     'six>=1.7.2',
-    'Invenio>2.1',
+    # FIXME 'Invenio>2.1',
     'DoJSON>=0',
 ]
 
