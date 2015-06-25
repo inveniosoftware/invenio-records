@@ -46,3 +46,9 @@ after_record_insert = _signals.signal('before-record-insert')
 .. note::
     No modification are allowed on record object.
 """
+
+before_record_update = _signals.signal('before-record-update')
+"""Signal sent before a record is update."""
+
+after_record_update = _signals.signal('before-record-update')
+"""Signal sent after a record is updated."""

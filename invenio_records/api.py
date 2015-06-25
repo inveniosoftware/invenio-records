@@ -21,23 +21,27 @@
 
 from flask import current_app
 
+from invenio.base.globals import cfg
 from invenio.base.helpers import unicodifier
 from invenio.base.utils import toposort_send
 from invenio.ext.sqlalchemy import db
 from invenio.modules.jsonalchemy.wrappers import SmartDict
 
+
+from jsonpatch import apply_patch
+
 from jsonschema import validate
 
 from .models import RecordMetadata
-from .signals import before_record_insert
+from .signals import (
+    after_record_insert, after_record_update,
+    before_record_insert, before_record_update
+)
 
 
 class Record(SmartDict):
 
-    __key_aliasses__ = {
-        'recid': 'control_number',
-        '980': 'collections.primary',
-    }
+    __key_aliasses__ = cfg['RECORD_KEY_ALIASSES']
 
     def __getitem__(self, key):
         try:
@@ -55,6 +59,10 @@ class Record(SmartDict):
                 self.__key_aliasses__[key], value
             )
         return super(Record, self).__setitem__(key, value)
+
+    def __init__(self, data, model=None):
+        self.model = model
+        super(Record, self).__init__(data)
 
     @classmethod
     def create(cls, data, schema=None):
@@ -77,7 +85,7 @@ class Record(SmartDict):
             db.session.add(RecordMetadata(**metadata))
             db.session.commit()
 
-            # toposort_send(after_record_insert, record)
+            toposort_send(after_record_insert, record)
 
             return record
         except Exception:
@@ -85,18 +93,36 @@ class Record(SmartDict):
             db.session.rollback()
             raise
 
-    def patch(self, patch_object):
-        pass
+    def patch(self, patch):
+        model = self.model
+        data = apply_patch(dict(self), patch)
+        return self.__class__(data, model=model)
 
-    def update():
-        # before update
-        pass
-        # after update
+    def commit(self):
+        db.session.begin(subtransactions=True)
+        try:
+            toposort_send(before_record_update, self)
+
+            if self.model is None:
+                self.model = RecordMetadata.query.get(self['recid'])
+
+            self.model.json = dict(self)
+
+            db.session.add(self.model)
+            db.session.commit()
+
+            toposort_send(after_record_update, self)
+
+            return self
+        except Exception:
+            db.session.rollback()
+            raise
 
     @classmethod
     def get_record(cls, recid, *args, **kwargs):
         obj = RecordMetadata.query.get(recid)
-        return cls(obj.json)
+        record = cls(obj.json, model=obj)
+        return record
 
 
 # Functional interface

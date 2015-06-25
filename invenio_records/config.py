@@ -27,13 +27,6 @@ from .models import RecordMetadata as RecordMetadataModel
 RECORDS_BREADCRUMB_TITLE_KEY = 'title.title'
 """Key used to extract the breadcrumb title from the record."""
 
-RECORDS_ENGINE = ('invenio.modules.jsonalchemy.jsonext.engines.sqlalchemy'
-                  ':SQLAlchemyStorage')
-
-RECORDS_SQLALCHEMYSTORAGE = {
-    'model': RecordMetadataModel,
-}
-
 RECORD_DOCUMENT_NAME_GENERATOR = ('invenio.modules.records.utils:'
                                   'default_name_generator')
 
@@ -43,3 +36,10 @@ RECORD_DOCUMENT_VIEWRESTR_POLICY = 'ANY'
 the access rights of the document. If the policy is set to `ANY` (default),
 then the user needs to be authorized to view at least one record in order to
 continue checking the document specific access rights."""
+
+RECORD_KEY_ALIASSES = {
+    'recid': 'control_number',
+    '980': 'collections.primary',
+    '980__a': 'collections.primary',
+    '980__b': 'collections.secondary',
+}

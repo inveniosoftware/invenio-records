@@ -60,6 +60,22 @@ def create(source, schema=None, input_type='json'):
         [Record.create(item) for item in data]
 
 
+@manager.option('-p', '--patch', dest='patch',
+                type=argparse.FileType('r'), default=sys.stdin,
+                help="Input file with patch.", nargs='?')
+@manager.option('recid', nargs='+', type=int)
+@manager.option('-s', '--schema', dest='schema', default=None,
+                help="URL or path to a JSON Schema.")
+def patch(patch, recid=None, schema=None, input_type='jsonpatch'):
+    """Patch existing bibliographic record."""
+    from .api import Record
+
+    patch_content = patch.read()
+
+    for r in recid or []:
+        Record.get_record(r).patch(patch_content).commit()
+
+
 def main():
     """Run manager."""
     from invenio.base.factory import create_app
