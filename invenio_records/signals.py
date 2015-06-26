@@ -33,7 +33,7 @@ Example subscriber
     def listener(sender, *args, **kwargs):
         sender['key'] = sum(args)
 
-    from invenio.modules.accounts.signals import before_record_insert
+    from invenio_records.signals import before_record_insert
 
     before_record_insert.connect(
         listener

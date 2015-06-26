@@ -128,6 +128,13 @@ def get_restricted_collections_for_recid(recid, recreate_cache_if_needed=True):
         collection for collection in restricted_collection_cache.cache
     ])
 
+def is_record_public(record):
+    """Return True if the record is public.
+
+    It means that it can be found in the Home collection.
+    """
+    return cfg['CFG_SITE_NAME'] in record.get('_collections', [])
+
 
 def check_user_can_view_record(user_info, recid):
     """Check if the user is authorized to view the given recid.
@@ -143,10 +150,11 @@ def check_user_can_view_record(user_info, recid):
     :return: (0, ''), when authorization is granted, (>0, 'message') when
     authorization is not granted
     """
+    from invenio_records.api import get_record
     from invenio.modules.access.engine import acc_authorize_action
     from invenio.modules.access.local_config import VIEWRESTRCOLL
     from invenio.modules.collections.cache import is_record_in_any_collection
-    from invenio.legacy.search_engine import record_public_p, record_exists
+    from invenio.legacy.search_engine import record_exists
 
     policy = cfg['CFG_WEBSEARCH_VIEWRESTRCOLL_POLICY'].strip().upper()
 
@@ -165,7 +173,7 @@ def check_user_can_view_record(user_info, recid):
     restricted_collections = get_restricted_collections_for_recid(
         recid, recreate_cache_if_needed=False
     )
-    if not restricted_collections and record_public_p(recid):
+    if not restricted_collections and is_record_public(get_record(recid)):
         # The record is public and not part of any restricted collection
         return (0, '')
     if restricted_collections:

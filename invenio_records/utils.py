@@ -126,19 +126,6 @@ def citations_nb_counts():
     recid = request.view_args.get('recid')
     if recid is None:
         return
-
-    from intbitset import intbitset
-    from invenio.legacy.bibrank.citation_searcher import (get_cited_by,
-                                                          get_cited_by_count)
-
-    if cfg['CFG_BIBRANK_SHOW_CITATION_LINKS']:
-        if cfg['CFG_INSPIRE_SITE']:
-            from invenio.legacy.search_engine import search_unit
-            citers_recids = intbitset(get_cited_by(recid))
-            citeable_recids = search_unit(p='citeable', f='collection')
-            return len(citers_recids & citeable_recids)
-        else:
-            return get_cited_by_count(recid)
     return 0
 
 

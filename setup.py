@@ -38,7 +38,7 @@ requirements = [
     'six>=1.7.2',
     'jsonpatch>=1.11',
     # FIXME 'Invenio>2.1',
-    'DoJSON>=0',
+    'dojson>=0.1.0.dev20150610',
 ]
 
 test_requirements = [

@@ -41,7 +41,9 @@ from .signals import (
 
 class Record(SmartDict):
 
-    __key_aliasses__ = cfg['RECORD_KEY_ALIASSES']
+    @property
+    def __key_aliasses__(self):
+        return cfg['RECORD_KEY_ALIASSES']
 
     def __getitem__(self, key):
         try:
