@@ -141,10 +141,15 @@ class RecordMetadata(db.Model):
         nullable=False,
         autoincrement=True
     )
+    version_id = db.Column(db.Integer, nullable=False)
 
     json = db.Column(db.JSON, nullable=False)
 
     record = db.relationship(Record, backref='record_json')
+
+    __mapper_args__ = {
+        "version_id_col": version_id
+    }
 
 
 __all__ = (
