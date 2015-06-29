@@ -17,11 +17,11 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-def get_pubinfo_standard_form(pubinfo):
-    """
 
-    """
+def get_pubinfo_standard_form(pubinfo):
+    """Get publication information."""
     if all(key in pubinfo for key in ('c', 'p', 'v', 'y', )):
-        return '%s %s (%s) %s' % (pubinfo['p'], pubinfo['v'], pubinfo['y'], pubinfo['c'].split("-", 1)[0], )
+        return '%s %s (%s) %s' % (pubinfo['p'], pubinfo['v'], pubinfo['y'],
+                                  pubinfo['c'].split("-", 1)[0], )
     else:
         return None

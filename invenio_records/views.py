@@ -114,7 +114,8 @@ def request_record(f):
                         record=record,
                         tabs=tabs,
                         title=title,
-                        get_mini_reviews=lambda *args, **kwargs: '',  # get_mini_reviews,
+                        get_mini_reviews=lambda *args, **kwargs: '',
+                        # FIXME get_mini_reviews,
                         collection=collection,
                         format_record=_format_record
                         )
@@ -241,8 +242,9 @@ def file(recid, filename):
                count=citations_nb_counts)
 def citations(recid):
     """Display citations."""
-    from invenio.legacy.bibrank.citation_searcher import calculate_cited_by_list,\
-        calculate_co_cited_with_list
+    from invenio.legacy.bibrank.citation_searcher import (
+        calculate_cited_by_list, calculate_co_cited_with_list
+    )
     from invenio.legacy.bibrank.selfcites_searcher import get_self_cited_by
     citations = dict(
         citinglist=calculate_cited_by_list(recid),

@@ -128,6 +128,7 @@ def get_restricted_collections_for_recid(recid, recreate_cache_if_needed=True):
         collection for collection in restricted_collection_cache.cache
     ])
 
+
 def is_record_public(record):
     """Return True if the record is public.
 

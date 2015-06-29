@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2014 CERN.
+# Copyright (C) 2014, 2015 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -19,8 +19,11 @@
 
 
 import warnings
-import sqlalchemy as sa
+
 from invenio.ext.sqlalchemy import db
+
+import sqlalchemy as sa
+
 from invenio.modules.upgrader.api import op
 
 
@@ -36,7 +39,8 @@ def do_upgrade():
     if not op.has_table("record_json"):
         op.create_table(
             'record_json',
-            sa.Column('id', db.MediumInteger(8, unsigned=True), nullable=False),
+            sa.Column('id', db.MediumInteger(8, unsigned=True),
+                      nullable=False),
             sa.Column('json', db.JSON, nullable=False),
             sa.ForeignKeyConstraint(['id'], ['bibrec.id'], ),
             sa.PrimaryKeyConstraint('id'),

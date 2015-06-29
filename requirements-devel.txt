@@ -27,3 +27,5 @@
 #
 #     -e git+git://github.com/mitsuhiko/werkzeug.git#egg=Werkzeug
 #     -e git+git://github.com/mitsuhiko/jinja2.git#egg=Jinja2
+
+-e git+git://github.com/inveniosoftware/dojson.git#egg=DoJSON

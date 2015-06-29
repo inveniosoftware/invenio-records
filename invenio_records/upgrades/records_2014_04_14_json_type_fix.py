@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2014 CERN.
+# Copyright (C) 2014, 2015 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -17,19 +17,25 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
+"""Change JSON data type from TEXT to LONGTEXT."""
+
 from invenio.modules.upgrader.api import op
+
+import sqlalchemy as sa
+
 from sqlalchemy.dialects import mysql
 from sqlalchemy.exc import OperationalError
-import sqlalchemy as sa
 
 depends_on = []
 
 
 def info():
-    return "Change JSON data type from TEXT to LONGTEXT"
+    """Return information about the upgrade recipe."""
+    return __doc__
 
 
 def do_upgrade():
+    """Perform the update recipe."""
     try:
         op.alter_column(
             u'bibrec', 'additional_info',
@@ -40,10 +46,11 @@ def do_upgrade():
     except OperationalError:
         op.add_column('bibrec',
                       sa.Column('additional_info',
-                      mysql.LONGTEXT(),
-                      nullable=True))
+                                mysql.LONGTEXT(),
+                                nullable=True)
+                      )
 
 
 def estimate():
-    """  Estimate running time of upgrade in seconds (optional). """
+    """Estimate running time of upgrade in seconds (optional)."""
     return 1
