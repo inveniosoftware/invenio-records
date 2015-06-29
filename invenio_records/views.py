@@ -39,9 +39,9 @@ from invenio.base.i18n import _
 from invenio.base.signals import pre_template_render
 from invenio.ext.template.context_processor import \
     register_template_context_processor
-from invenio.modules.search.signals import record_viewed
 from invenio.utils import apache
 
+from .signals import record_viewed
 from .utils import visible_collection_tabs
 
 blueprint = Blueprint('record', __name__, url_prefix="/record",  # FIXME

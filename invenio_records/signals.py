@@ -22,6 +22,22 @@
 from blinker import Namespace
 _signals = Namespace()
 
+record_viewed = _signals.signal('record-viewed')
+"""
+This signal is sent when a detailed view of record is displayed.
+Parameters:
+    recid       - id of record
+    id_user     - id of user or 0 for guest
+    request     - flask request object
+
+Example subscriber:
+
+.. code-block:: python
+
+     def subscriber(sender, recid=0, id_user=0, request=None):
+         ...
+
+"""
 
 before_record_insert = _signals.signal('before-record-insert')
 """Signal sent before a record is inserted.
