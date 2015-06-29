@@ -42,8 +42,7 @@ from invenio.ext.template.context_processor import \
 from invenio.modules.search.signals import record_viewed
 from invenio.utils import apache
 
-from .utils import citations_nb_counts, references_nb_counts, \
-    visible_collection_tabs
+from .utils import visible_collection_tabs
 
 blueprint = Blueprint('record', __name__, url_prefix="/record",  # FIXME
                       static_url_path='/record', template_folder='templates',
@@ -160,18 +159,6 @@ def metadata(recid, of='hd', ot=None):
     return render_template('records/metadata.html', of=of, ot=ot)
 
 
-@blueprint.route('/<int:recid>/references', methods=['GET', 'POST'])
-@request_record
-@register_menu(blueprint, 'record.references', _('References'), order=2,
-               visible_when=visible_collection_tabs('references'),
-               endpoint_arguments_constructor=lambda:
-               dict(recid=request.view_args.get('recid')),
-               count=references_nb_counts)
-def references(recid):
-    """Display references."""
-    return render_template('records/references.html')
-
-
 @blueprint.route('/<int:recid>/files', methods=['GET', 'POST'])
 @request_record
 @register_menu(blueprint, 'record.files', _('Files'), order=8,
@@ -231,65 +218,6 @@ def file(recid, filename):
         return send_file(fullpath)
 
     abort(error)
-
-
-@blueprint.route('/<int:recid>/citations', methods=['GET', 'POST'])
-@request_record
-@register_menu(blueprint, 'record.citations', _('Citations'), order=3,
-               visible_when=visible_collection_tabs('citations'),
-               endpoint_arguments_constructor=lambda:
-               dict(recid=request.view_args.get('recid')),
-               count=citations_nb_counts)
-def citations(recid):
-    """Display citations."""
-    from invenio.legacy.bibrank.citation_searcher import (
-        calculate_cited_by_list, calculate_co_cited_with_list
-    )
-    from invenio.legacy.bibrank.selfcites_searcher import get_self_cited_by
-    citations = dict(
-        citinglist=calculate_cited_by_list(recid),
-        selfcited=get_self_cited_by(recid),
-        co_cited=calculate_co_cited_with_list(recid)
-        )
-    return render_template('records/citations.html',
-                           citations=citations)
-
-
-@blueprint.route('/<int:recid>/keywords', methods=['GET', 'POST'])
-@request_record
-@register_menu(blueprint, 'record.keywords', _('Keywords'), order=4,
-               endpoint_arguments_constructor=lambda:
-               dict(recid=request.view_args.get('recid')),
-               visible_when=visible_collection_tabs('keywords'))
-def keywords(recid):
-    """Return keywords overview."""
-    from invenio.legacy.bibclassify.webinterface import record_get_keywords
-    found, keywords, record = record_get_keywords(recid)
-    return render_template('records/keywords.html',
-                           found=found,
-                           keywords=keywords)
-
-
-@blueprint.route('/<int:recid>/usage', methods=['GET', 'POST'])
-@request_record
-@register_menu(blueprint, 'record.usage', _('Usage statistics'), order=7,
-               endpoint_arguments_constructor=lambda:
-               dict(recid=request.view_args.get('recid')),
-               visible_when=visible_collection_tabs('usage'))
-def usage(recid):
-    """Return usage statistics."""
-    from invenio.legacy.bibrank.downloads_similarity import \
-        calculate_reading_similarity_list
-    from invenio.legacy.bibrank.downloads_grapher import \
-        create_download_history_graph_and_box
-    viewsimilarity = calculate_reading_similarity_list(recid, "pageviews")
-    downloadsimilarity = calculate_reading_similarity_list(recid, "downloads")
-    downloadgraph = create_download_history_graph_and_box(recid)
-
-    return render_template('records/usage.html',
-                           viewsimilarity=viewsimilarity,
-                           downloadsimilarity=downloadsimilarity,
-                           downloadgraph=downloadgraph)
 
 
 @blueprint.route('/', methods=['GET', 'POST'])
