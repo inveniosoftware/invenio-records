@@ -126,6 +126,10 @@ class Record(SmartDict):
         record = cls(obj.json, model=obj)
         return record
 
+    def dumps(self, **kwargs):
+        # FIXME add keywords filtering
+        return dict(self)
+
 
 # Functional interface
 create_record = Record.create

@@ -100,10 +100,10 @@ def request_record(f):
         title = record.get(cfg.get('RECORDS_BREADCRUMB_TITLE_KEY'), '')
         tabs = []
 
-        def _format_record(recid, of='hd', user_info=current_user, *args,
+        def _format_record(record, of='hd', user_info=current_user, *args,
                            **kwargs):
             from invenio.modules.formatter import format_record
-            return format_record(recid, of, user_info=user_info, *args,
+            return format_record(record, of, user_info=user_info, *args,
                                  **kwargs)
 
         @register_template_context_processor
