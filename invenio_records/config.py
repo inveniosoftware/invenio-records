@@ -39,7 +39,7 @@ continue checking the document specific access rights."""
 
 RECORD_KEY_ALIASSES = {
     'recid': 'control_number',
-    '980': 'collections.primary',
+    '980': 'collections',
     '980__a': 'collections.primary',
     '980__b': 'collections.secondary',
 }
