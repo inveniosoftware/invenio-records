@@ -21,9 +21,9 @@
     waive the privileges and immunities granted to it by virtue of its status
     as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-======================================
-Invenio Records
-======================================
+=================
+ Invenio-Records
+=================
 
 .. image:: https://img.shields.io/travis/inveniosoftware/invenio-records.svg
         :target: https://travis-ci.org/inveniosoftware/invenio-records
@@ -41,13 +41,12 @@ Invenio Records
         :target: https://github.com/inveniosoftware/invenio-records/blob/master/LICENSE
 
 
-Invenio Record API.
+Invenio-Records is a metadata storage module.
 
-* Free software: GPLv2 license
-* Documentation: https://invenio-records.readthedocs.org.
+*This is an experimental development preview release.*
 
 Features
 ========
 
-- TODO
-- TODO
+- Metadata storage.
+- JSON Patch updates.
