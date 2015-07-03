@@ -22,7 +22,7 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""Invenio Record API."""
+"""Invenio-Records is a metadata storage module."""
 
 import os
 import sys
@@ -38,7 +38,7 @@ requirements = [
     'six>=1.7.2',
     'jsonpatch>=1.11',
     # FIXME 'Invenio>2.1',
-    'dojson>=0.1.0.dev20150610',
+    'dojson>=0.1.0',
 ]
 
 test_requirements = [
@@ -89,7 +89,7 @@ with open(os.path.join('invenio_records', 'version.py'), 'rt') as fp:
     version = g['__version__']
 
 setup(
-    name='Invenio Records',
+    name='invenio-records',
     version=version,
     description=__doc__,
     long_description=readme + '\n\n' + history,
@@ -119,13 +119,14 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Topic :: Software Development :: Libraries :: Python Modules'
+        'Topic :: Software Development :: Libraries :: Python Modules',
         "Programming Language :: Python :: 2",
         # 'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         # 'Programming Language :: Python :: 3',
         # 'Programming Language :: Python :: 3.3',
         # 'Programming Language :: Python :: 3.4',
+        'Development Status :: 1 - Planning',
     ],
     tests_require=test_requirements,
     cmdclass={'test': PyTest},

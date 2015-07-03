@@ -22,10 +22,21 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""Version information for Invenio-Records.
-
-This file is imported by ``invenio_records.__init__``,
-and parsed by ``setup.py``.
-"""
-
-__version__ = "0.1.0"
+include *.py
+include *.rst
+include *.txt
+include LICENSE
+include pytest.ini
+include tox.ini
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs Makefile
+recursive-include invenio_records *.cfg
+recursive-include invenio_records *.css
+recursive-include invenio_records *.html
+recursive-include invenio_records *.js
+recursive-include invenio_records *.py
+recursive-include misc *.py
+recursive-include misc *.rst
+recursive-include tests *.cfg
+recursive-include tests *.py
