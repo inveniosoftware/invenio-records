@@ -21,14 +21,18 @@
 
 from __future__ import unicode_literals
 
-from .models import RecordMetadata as RecordMetadataModel
-
 
 RECORDS_BREADCRUMB_TITLE_KEY = 'title.title'
 """Key used to extract the breadcrumb title from the record."""
 
 RECORD_DOCUMENT_NAME_GENERATOR = ('invenio.modules.records.utils:'
                                   'default_name_generator')
+
+RECORD_PROCESSORS = {
+    'json': 'json.load',
+    'marcxml': 'invenio_records.manage:convert_marcxml',
+}
+"""Processors used to create records."""
 
 RECORD_DOCUMENT_VIEWRESTR_POLICY = 'ANY'
 """When a document belongs to more than one record, and this policy is set to

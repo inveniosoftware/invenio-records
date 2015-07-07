@@ -22,10 +22,14 @@
 from __future__ import print_function
 
 import argparse
-import json
+import six
 import sys
 
+from flask import current_app
+from werkzeug.utils import import_string
+
 from invenio.ext.script import Manager
+
 
 manager = Manager(usage=__doc__)
 
@@ -48,11 +52,11 @@ def convert_marcxml(source):
 def create(source, schema=None, input_type='json'):
     """Create new bibliographic record."""
     from .api import Record
-    processors = {
-        'json': json.load,
-        'marcxml': convert_marcxml,
-    }
-    data = processors[input_type](source)
+
+    processor = current_app.config['RECORD_PROCESSORS'][input_type]
+    if isinstance(processor, six.string_types):
+        processor = import_string(processor)
+    data = processor(source)
 
     if isinstance(data, dict):
         Record.create(data)
