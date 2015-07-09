@@ -25,7 +25,7 @@ from invenio.base.globals import cfg
 from invenio.base.helpers import unicodifier
 from invenio.base.utils import toposort_send
 from invenio.ext.sqlalchemy import db
-from invenio.modules.jsonalchemy.wrappers import SmartDict
+from invenio.utils.datastructures import SmartDict
 
 
 from jsonpatch import apply_patch
@@ -123,8 +123,7 @@ class Record(SmartDict):
     @classmethod
     def get_record(cls, recid, *args, **kwargs):
         obj = RecordMetadata.query.get(recid)
-        record = cls(obj.json, model=obj)
-        return record
+        return cls(obj.json, model=obj) if obj else None
 
     def dumps(self, **kwargs):
         # FIXME add keywords filtering
