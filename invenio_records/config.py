@@ -21,7 +21,6 @@
 
 from __future__ import unicode_literals
 
-
 RECORDS_BREADCRUMB_TITLE_KEY = 'title.title'
 """Key used to extract the breadcrumb title from the record."""
 
@@ -43,6 +42,7 @@ continue checking the document specific access rights."""
 
 RECORD_KEY_ALIASSES = {
     'recid': 'control_number',
+    '8560_f': 'electronic_location_and_access.electronic_name',
     '980': 'collections',
     '980__a': 'collections.primary',
     '980__b': 'collections.secondary',

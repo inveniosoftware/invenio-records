@@ -56,8 +56,6 @@ def request_record(f):
     @wraps(f)
     def decorated(recid, *args, **kwargs):
         from invenio.modules.collections.models import Collection
-        from invenio.legacy.search_engine import \
-            guess_primary_collection_of_a_record
 
         from .api import get_record
         from .access import check_user_can_view_record
@@ -71,10 +69,10 @@ def request_record(f):
             abort(404)
 
         g.collection = collection = Collection.query.filter(
-            Collection.name == guess_primary_collection_of_a_record(recid)).\
-            one()
+            Collection.name.in_(record['_collections'])).first()
 
-        (auth_code, auth_msg) = check_user_can_view_record(current_user, recid)
+        (auth_code, auth_msg) = check_user_can_view_record(
+            current_user, record)
 
         # only superadmins can use verbose parameter for obtaining debug
         # information

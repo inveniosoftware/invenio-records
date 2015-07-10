@@ -19,9 +19,12 @@
 
 """Define authorization actions and checks."""
 
+from collections import MutableMapping
+
 from invenio.base.globals import cfg
-from invenio.legacy.bibrecord import get_fieldvalues
 from invenio.modules.collections.cache import restricted_collection_cache
+
+from .api import get_record
 
 
 def check_email_or_group(user_info, email_or_group):
@@ -38,11 +41,12 @@ def check_uid(user_info, uid):
     return unicode(user_info['id']) == uid
 
 
-def check_authorized_tags(recid, tags, test_func):
+def check_authorized_tags(record, tags, test_func):
     """Check if tags in record matches a given test."""
     authorized_values = []
     for tag in tags:
-        authorized_values.extend(get_fieldvalues(recid, tag))
+        if tag in record:
+            authorized_values.extend(record.get(tag))
 
     for value in authorized_values:
         if test_func(value):
@@ -50,14 +54,14 @@ def check_authorized_tags(recid, tags, test_func):
     return False
 
 
-def is_user_in_tags(recid, user_info, user_id_tags, email_or_group_tags):
+def is_user_in_tags(record, user_info, user_id_tags, email_or_group_tags):
     """Check if user id or email is found in a records tags."""
-    if check_authorized_tags(recid, user_id_tags,
+    if check_authorized_tags(record, user_id_tags,
                              lambda uid: check_uid(user_info, uid)):
         return True
 
     return check_authorized_tags(
-        recid, email_or_group_tags,
+        record, email_or_group_tags,
         lambda val: check_email_or_group(user_info, val)
     )
 
@@ -78,13 +82,18 @@ def is_user_owner_of_record(user_info, recid):
         CFG_ACC_GRANT_AUTHOR_RIGHTS_TO_EMAILS_IN_TAGS, \
         CFG_ACC_GRANT_AUTHOR_RIGHTS_TO_USERIDS_IN_TAGS
 
+    if not isinstance(recid, MutableMapping):
+        record = get_record(int(recid))
+    else:
+        record = recid
+
     uid_tags = cfg.get('CFG_ACC_GRANT_AUTHOR_RIGHTS_TO_USERIDS_IN_TAGS',
                        CFG_ACC_GRANT_AUTHOR_RIGHTS_TO_EMAILS_IN_TAGS)
 
     email_tags = cfg.get('CFG_ACC_GRANT_AUTHOR_RIGHTS_TO_USERIDS_IN_TAGS',
                          CFG_ACC_GRANT_AUTHOR_RIGHTS_TO_USERIDS_IN_TAGS)
 
-    return is_user_in_tags(recid, user_info, uid_tags, email_tags)
+    return is_user_in_tags(record, user_info, uid_tags, email_tags)
 
 
 # FIXME: This method needs to be refactored
@@ -106,23 +115,24 @@ def is_user_viewer_of_record(user_info, recid):
         CFG_ACC_GRANT_VIEWER_RIGHTS_TO_EMAILS_IN_TAGS, \
         CFG_ACC_GRANT_VIEWER_RIGHTS_TO_USERIDS_IN_TAGS
 
+    if not isinstance(recid, MutableMapping):
+        record = get_record(int(recid))
+    else:
+        record = recid
+
     uid_tags = cfg.get('CFG_ACC_GRANT_VIEWER_RIGHTS_TO_USERIDS_IN_TAGS',
                        CFG_ACC_GRANT_VIEWER_RIGHTS_TO_USERIDS_IN_TAGS)
 
     email_tags = cfg.get('CFG_ACC_GRANT_VIEWER_RIGHTS_TO_EMAILS_IN_TAGS',
                          CFG_ACC_GRANT_VIEWER_RIGHTS_TO_EMAILS_IN_TAGS)
 
-    return is_user_in_tags(recid, user_info, uid_tags, email_tags)
+    return is_user_in_tags(record, user_info, uid_tags, email_tags)
 
 
-def get_restricted_collections_for_recid(recid, recreate_cache_if_needed=True):
-    """Return the list of restricted collections to which recid belongs."""
-    from invenio_records.api import get_record
-
+def get_restricted_collections_for_record(record, recreate_cache_if_needed=True):
+    """Return the list of restricted collections to which record belongs."""
     if recreate_cache_if_needed:
         restricted_collection_cache.recreate_cache_if_needed()
-
-    record = get_record(recid)
 
     return set(record.get('_collections', [])) & set([
         collection for collection in restricted_collection_cache.cache
@@ -151,30 +161,29 @@ def check_user_can_view_record(user_info, recid):
     :return: (0, ''), when authorization is granted, (>0, 'message') when
     authorization is not granted
     """
-    from invenio_records.api import get_record
     from invenio.modules.access.engine import acc_authorize_action
     from invenio.modules.access.local_config import VIEWRESTRCOLL
-    from invenio.modules.collections.cache import is_record_in_any_collection
-    from invenio.legacy.search_engine import record_exists
 
     policy = cfg['CFG_WEBSEARCH_VIEWRESTRCOLL_POLICY'].strip().upper()
 
-    if isinstance(recid, str):
-        recid = int(recid)
+    if not isinstance(recid, MutableMapping):
+        record = get_record(int(recid))
+    else:
+        record = recid
     # At this point, either webcoll has not yet run or there are some
     # restricted collections. Let's see first if the user own the record.
-    if is_user_owner_of_record(user_info, recid):
+    if is_user_owner_of_record(user_info, record):
         # Perfect! It's authorized then!
         return (0, '')
 
-    if is_user_viewer_of_record(user_info, recid):
+    if is_user_viewer_of_record(user_info, record):
         # Perfect! It's authorized then!
         return (0, '')
 
-    restricted_collections = get_restricted_collections_for_recid(
-        recid, recreate_cache_if_needed=False
+    restricted_collections = get_restricted_collections_for_record(
+        record, recreate_cache_if_needed=False
     )
-    if not restricted_collections and is_record_public(get_record(recid)):
+    if not restricted_collections and is_record_public(record):
         # The record is public and not part of any restricted collection
         return (0, '')
     if restricted_collections:
@@ -193,10 +202,11 @@ def check_user_can_view_record(user_info, recid):
                 return (0, '')
         # Depending on the policy, the user will be either authorized or not
         return auth_code, auth_msg
-    if is_record_in_any_collection(recid, recreate_cache_if_needed=False):
+    # FIXME is record in any collection
+    if bool(record.get('_collections', [])):
         # the record is not in any restricted collection
         return (0, '')
-    elif record_exists(recid) > 0:
+    elif record is not None:
         # We are in the case where webcoll has not run.
         # Let's authorize SUPERADMIN
         (auth_code, auth_msg) = acc_authorize_action(
