@@ -145,7 +145,7 @@ def metadata(recid, of='hd', ot=None):
     if get_output_format_content_type(of) != 'text/html':
         from invenio.modules.search.views.search import \
             response_formated_records
-        return response_formated_records([recid], g.collection, of, qid=None)
+        return response_formated_records([g.record], g.collection, of)
 
     # Send the signal 'document viewed'
     record_viewed.send(
