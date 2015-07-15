@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
-##
-## This file is part of Invenio.
-## Copyright (C) 2014 CERN.
-##
-## Invenio is free software; you can redistribute it and/or
-## modify it under the terms of the GNU General Public License as
-## published by the Free Software Foundation; either version 2 of the
-## License, or (at your option) any later version.
-##
-## Invenio is distributed in the hope that it will be useful, but
-## WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-## General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with Invenio; if not, write to the Free Software Foundation, Inc.,
-## 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#
+# This file is part of Invenio.
+# Copyright (C) 2014, 2015 CERN.
+#
+# Invenio is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# Invenio is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Invenio; if not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+
+"""Define tasks for managing Datacite DOIs."""
 
 from __future__ import absolute_import
 
@@ -24,10 +26,9 @@ from celery.utils.log import get_task_logger
 from invenio.base.globals import cfg
 from invenio.celery import celery
 from invenio.modules.formatter import format_record
-from invenio.modules.records.api import get_record
+from invenio.modules.pidstore.models import PersistentIdentifier
 
-from ..models import PersistentIdentifier
-
+from ..api import get_record
 
 # Setup Celery logger
 logger = get_task_logger(__name__)
@@ -36,9 +37,7 @@ logger = get_task_logger(__name__)
 @celery.task(ignore_result=True, max_retries=6, default_retry_delay=10 * 60,
              rate_limit="100/m")
 def datacite_sync(recid):
-    """
-    Check DOI in DataCite.
-    """
+    """Check DOI in DataCite."""
     record = get_record(recid)
 
     if record is None:
@@ -62,8 +61,7 @@ def datacite_sync(recid):
 @celery.task(ignore_result=True, max_retries=6, default_retry_delay=10 * 60,
              rate_limit="100/m")
 def datacite_update(recid):
-    """
-    Update DOI in DataCite
+    """Update DOI in DataCite.
 
     If it fails, it will retry every 10 minutes for 1 hour.
     """
@@ -104,8 +102,7 @@ def datacite_update(recid):
 
 @celery.task(ignore_result=True)
 def datacite_update_all(recids=None):
-    """
-    Update many DOIs in DataCite.
+    """Update many DOIs in DataCite.
 
     :param recids: List of record ids to update. Defaults to all
         registered DOIs.
@@ -129,8 +126,7 @@ def datacite_update_all(recids=None):
 @celery.task(ignore_result=True, max_retries=6, default_retry_delay=10 * 60,
              rate_limit="100/m")
 def datacite_delete(recid):
-    """
-    Delete DOI in DataCite
+    """Delete DOI in DataCite.
 
     If it fails, it will retry every 10 minutes for 1 hour.
     """
@@ -169,8 +165,7 @@ def datacite_delete(recid):
 @celery.task(ignore_result=True, max_retries=6, default_retry_delay=10 * 60,
              rate_limit="100/m")
 def datacite_register(recid):
-    """
-    Register a DOI for new publication
+    """Register a DOI for new publication.
 
     If it fails, it will retry every 10 minutes for 1 hour.
     """

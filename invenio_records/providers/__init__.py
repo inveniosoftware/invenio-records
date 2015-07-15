@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2014, 2015 CERN.
+# Copyright (C) 2015 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -17,12 +17,4 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-"""Define Celery tasks."""
-
-from __future__ import absolute_import
-
-from .datacite import datacite_delete, datacite_register, datacite_sync, \
-    datacite_update, datacite_update_all
-
-__all__ = ['datacite_delete', 'datacite_register', 'datacite_sync',
-           'datacite_update', 'datacite_update_all']
+"""Define PID providers."""
