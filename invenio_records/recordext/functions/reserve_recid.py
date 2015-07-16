@@ -19,7 +19,7 @@
 
 """Reserve record identifier."""
 
-from invenio.modules.pidstore.models import PersistentIdentifier
+from invenio_pidstore.models import PersistentIdentifier
 
 from invenio_records.signals import before_record_insert
 

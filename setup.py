@@ -39,6 +39,7 @@ requirements = [
     'jsonpatch>=1.11',
     # FIXME 'Invenio>2.1',
     'dojson>=0.1.0',
+    'invenio-pidstore>=0.1.0',  # TODO consider making it optional
 ]
 
 test_requirements = [

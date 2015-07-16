@@ -34,13 +34,13 @@ class DataCiteTasksTest(InvenioTestCase):
         self.app.config['CFG_DATACITE_PASSWORD'] = 'testpw'
         self.app.config['CFG_DATACITE_DOI_PREFIX'] = "10.1234"
 
-        from invenio.modules.pidstore.models import PersistentIdentifier
+        from invenio_pidstore.models import PersistentIdentifier
         self.pid = PersistentIdentifier.create("doi", "10.1234/invenio.1234")
         if not self.pid:
             raise RuntimeError("Dirty database state.")
 
     def tearDown(self):
-        from invenio.modules.pidstore.models import PersistentIdentifier, \
+        from invenio_pidstore.models import PersistentIdentifier, \
             PidLog
         PidLog.query.filter_by(id_pid=self.pid.id).delete()
         PersistentIdentifier.query.filter_by(
@@ -59,7 +59,7 @@ class DataCiteTasksTest(InvenioTestCase):
         )
         get_record_patch.return_value = r
 
-    @patch('invenio.modules.pidstore.tasks.datacite.get_record')
+    @patch('invenio_pidstore.tasks.datacite.get_record')
     @httpretty.activate
     def test_sync_registered(self, get_record_patch):
         self.patch_get_record(get_record_patch)
@@ -72,7 +72,7 @@ class DataCiteTasksTest(InvenioTestCase):
         )
 
         from invenio_records.tasks import datacite_sync
-        from invenio.modules.pidstore.models import PersistentIdentifier
+        from invenio_pidstore.models import PersistentIdentifier
 
         pid = PersistentIdentifier.get("doi", "10.1234/invenio.1234")
         self.assertEqual(pid.status, self.app.config['PIDSTORE_STATUS_NEW'])
