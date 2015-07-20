@@ -40,7 +40,7 @@ the access rights of the document. If the policy is set to `ANY` (default),
 then the user needs to be authorized to view at least one record in order to
 continue checking the document specific access rights."""
 
-RECORD_KEY_ALIASSES = {
+RECORD_KEY_ALIASES = {
     'recid': 'control_number',
     '8560_f': 'electronic_location_and_access.electronic_name',
     '980': 'collections',

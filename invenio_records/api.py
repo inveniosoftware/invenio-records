@@ -42,23 +42,23 @@ from .signals import (
 class Record(SmartDict):
 
     @property
-    def __key_aliasses__(self):
-        return cfg['RECORD_KEY_ALIASSES']
+    def __key_aliases__(self):
+        return cfg['RECORD_KEY_ALIASES']
 
     def __getitem__(self, key):
         try:
             return super(Record, self).__getitem__(key)
         except KeyError:
-            if key in self.__key_aliasses__:
+            if key in self.__key_aliases__:
                 return super(Record, self).__getitem__(
-                    self.__key_aliasses__[key]
+                    self.__key_aliases__[key]
                 )
             raise
 
     def __setitem__(self, key, value):
-        if key in self.__key_aliasses__:
+        if key in self.__key_aliases__:
             return super(Record, self).__setitem__(
-                self.__key_aliasses__[key], value
+                self.__key_aliases__[key], value
             )
         return super(Record, self).__setitem__(key, value)
 
