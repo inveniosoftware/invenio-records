@@ -50,13 +50,18 @@ class Record(SmartDict):
             return super(Record, self).__getitem__(key)
         except KeyError:
             if key in self.__key_aliases__:
-                return super(Record, self).__getitem__(
-                    self.__key_aliases__[key]
-                )
+                if callable(self.__key_aliases__[key]):
+                    return self.__key_aliases__[key](self, key)
+                else:
+                    return super(Record, self).__getitem__(
+                        self.__key_aliases__[key]
+                    )
             raise
 
     def __setitem__(self, key, value):
         if key in self.__key_aliases__:
+            if callable(self.__key_aliases__[key]):
+                raise TypeError('Complex aliases can not be set')
             return super(Record, self).__setitem__(
                 self.__key_aliases__[key], value
             )
