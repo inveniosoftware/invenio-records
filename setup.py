@@ -40,6 +40,7 @@ requirements = [
     # FIXME 'Invenio>2.1',
     'dojson>=0.1.1',
     'invenio-pidstore>=0.1.0',  # TODO consider making it optional
+    'invenio-jsonref>=0.1.0',
 ]
 
 test_requirements = [

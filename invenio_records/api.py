@@ -37,9 +37,9 @@ from .signals import (
     after_record_insert, after_record_update,
     before_record_insert, before_record_update
 )
+from invenio_jsonref.utils import JsonProxy
 
-
-class Record(SmartDict):
+class Record(SmartDict, JsonProxy):
 
     @property
     def __key_aliases__(self):
@@ -47,7 +47,14 @@ class Record(SmartDict):
 
     def __getitem__(self, key):
         try:
-            return super(Record, self).__getitem__(key)
+            # call SmartDict.__getitem__
+            value = super(Record, self).__getitem__(key)
+
+            # scan for {'$ref':..} dicts
+            referenced_value = self.create_references(value)
+            self[key] = referenced_value
+
+            return referenced_value
         except KeyError:
             if key in self.__key_aliases__:
                 if callable(self.__key_aliases__[key]):
