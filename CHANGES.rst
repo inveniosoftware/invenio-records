@@ -24,6 +24,28 @@
 Changes
 =======
 
+Version 0.2.0 (release 2015-07-29)
+----------------------------------
+
+New features
+~~~~~~~~~~~~
+
+- Moves PID provider for recids and Datacite tasks from Invenio.
+- Adds new config variable RECORD_PROCESSORS that allows to specify
+  which processors to use depending on the input type.
+
+Improved features
+~~~~~~~~~~~~~~~~~
+
+- If no record is found return `None` instead of raising
+  `AttributeError`.
+
+Bug fixes
+~~~~~~~~~
+
+- Fixes export of records in non HTML formats.
+
 Version 0.1.0 (release 2015-07-03)
+----------------------------------
 
 - Initial public release.

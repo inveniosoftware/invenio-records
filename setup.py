@@ -38,7 +38,7 @@ requirements = [
     'six>=1.7.2',
     'jsonpatch>=1.11',
     # FIXME 'Invenio>2.1',
-    'dojson>=0.1.0',
+    'dojson>=0.1.1',
     'invenio-pidstore>=0.1.0',  # TODO consider making it optional
 ]
 
@@ -48,6 +48,17 @@ test_requirements = [
     'pytest-pep8>=1.0.6',
     'coverage>=3.7.1',
 ]
+
+extras_require = {
+    'docs': [
+        'Sphinx>=1.3',
+        'sphinx_rtd_theme>=0.1.7',
+    ],
+    'documents': [
+        'invenio-documents>=0.1.0',
+    ],
+    'tests': test_requirements,
+}
 
 
 class PyTest(TestCommand):
@@ -106,13 +117,7 @@ setup(
     include_package_data=True,
     platforms='any',
     install_requires=requirements,
-    extras_require={
-        'docs': [
-            'Sphinx>=1.3',
-            'sphinx_rtd_theme>=0.1.7'
-        ],
-        'tests': test_requirements
-    },
+    extras_require=extras_require,
     classifiers=[
         'Environment :: Web Environment',
         'Intended Audience :: Developers',

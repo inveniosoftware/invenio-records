@@ -1,8 +1,8 @@
-====================================
- Invenio-Records v0.1.0 is released
-====================================
+========================
+ Invenio-Records v0.2.0
+========================
 
-Invenio-Records v0.1.0 was released on July 3, 2015.
+Invenio-Records v0.2.0 was released on July 29, 2015.
 
 About
 -----
@@ -11,20 +11,33 @@ Invenio-Records is a metadata storage module.
 
 *This is an experimental development preview release.*
 
-What's new
-----------
+New features
+------------
 
-- Initial public release.
+- Moves PID provider for recids and Datacite tasks from Invenio.
+- Adds new config variable RECORD_PROCESSORS that allows to specify
+  which processors to use depending on the input type.
+
+Improved features
+-----------------
+
+- If no record is found return `None` instead of raising
+  `AttributeError`.
+
+Bug fixes
+---------
+
+- Fixes export of records in non HTML formats.
 
 Installation
 ------------
 
-   $ pip install invenio-records
+   $ pip install invenio-records==0.2.0
 
 Documentation
 -------------
 
-   http://invenio-records.readthedocs.org/en/v0.1.0
+   http://invenio-records.readthedocs.org/en/v0.2.0
 
 Happy hacking and thanks for flying Invenio-Records.
 
