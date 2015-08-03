@@ -54,7 +54,7 @@ install:
   - "inveniomanage config create secret-key"
   - "inveniomanage config set CFG_EMAIL_BACKEND flask_email.backends.console.Mail"
   - "inveniomanage config set CFG_BIBSCHED_PROCESS_USER `whoami`"
-  - "inveniomanage config set PACKAGES ['invenio.base', 'invenio.modules.accounts', 'invenio.modules.collections', 'invenio_records']"
+  - "inveniomanage config set PACKAGES ['invenio_accounts', 'invenio.modules.collections', 'invenio_records', 'invenio.base']"
   - "inveniomanage config set CFG_TMPDIR /tmp"
 
 before_script:
