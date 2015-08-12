@@ -38,7 +38,9 @@ requirements = [
     'six>=1.7.2',
     'jsonpatch>=1.11',
     # FIXME 'Invenio>2.1',
+    'jsonschema>=2.5.1',
     'dojson>=0.1.1',
+    'invenio-formatter>=0.1.0',
     'invenio-pidstore>=0.1.0',  # TODO consider making it optional
 ]
 

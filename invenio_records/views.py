@@ -100,7 +100,7 @@ def request_record(f):
 
         def _format_record(record, of='hd', user_info=current_user, *args,
                            **kwargs):
-            from invenio.modules.formatter import format_record
+            from invenio_formatter import format_record
             return format_record(record, of, user_info=user_info, *args,
                                  **kwargs)
 
@@ -139,7 +139,7 @@ def metadata(recid, of='hd', ot=None):
     """Display formated record metadata."""
     # from invenio.legacy.bibrank.downloads_similarity import \
     #     register_page_view_event
-    from invenio.modules.formatter import get_output_format_content_type
+    from invenio_formatter import get_output_format_content_type
     # register_page_view_event(recid, current_user.get_id(),
     #                          str(request.remote_addr))
     if get_output_format_content_type(of) != 'text/html':
