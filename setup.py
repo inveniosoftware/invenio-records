@@ -46,6 +46,7 @@ requirements = [
 
 test_requirements = [
     'unittest2>=1.1.0',
+    'httpretty>=0.8.10',
     'Flask_Testing>=0.4.1',
     'pytest>=2.7.0',
     'pytest-cov>=1.8.0',

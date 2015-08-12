@@ -33,9 +33,9 @@ cache:
   - pip
 
 env:
-  - REQUIREMENTS=lowest REXTRAS=docs,test
-  - REQUIREMENTS=release REXTRAS=docs,test
-  - REQUIREMENTS=devel REXTRAS=docs,test
+  - REQUIREMENTS=lowest REXTRAS=docs,tests
+  - REQUIREMENTS=release REXTRAS=docs,tests
+  - REQUIREMENTS=devel REXTRAS=docs,tests
 
 python:
   - "2.7"
@@ -48,16 +48,16 @@ before_install:
   - "python requirements.py --extras=$REXTRAS --level=dev > .travis-devel-requirements.txt"
 
 install:
-  - "travis_retry pip install Invenio"
+  - "travis_retry pip install -e git+https://github.com/inveniosoftware/invenio.git#egg=Invenio"
   - "travis_retry pip install -r .travis-$REQUIREMENTS-requirements.txt --allow-all-external"
   - "travis_retry pip install -e .[$REXTRAS]"
-  - "inveniomanage config create secret-key"
-  - "inveniomanage config set CFG_EMAIL_BACKEND flask_email.backends.console.Mail"
-  - "inveniomanage config set CFG_BIBSCHED_PROCESS_USER `whoami`"
-  - "inveniomanage config set PACKAGES ['invenio_accounts', 'invenio.modules.collections', 'invenio_records', 'invenio_formatter', 'invenio.base']"
-  - "inveniomanage config set CFG_TMPDIR /tmp"
 
 before_script:
+#  - "inveniomanage config create secret-key"
+#  - "inveniomanage config set CFG_EMAIL_BACKEND flask_email.backends.console.Mail"
+#  - "inveniomanage config set CFG_BIBSCHED_PROCESS_USER `whoami`"
+#  - "inveniomanage config set PACKAGES ['invenio_accounts', 'invenio.modules.collections', 'invenio_records', 'invenio_formatter', 'invenio.base']"
+#  - "inveniomanage config set CFG_TMPDIR /tmp"
   - "inveniomanage database init --yes-i-know || echo ':('"
   - "inveniomanage database create --quiet || echo ':('"
 
