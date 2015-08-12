@@ -42,6 +42,7 @@ requirements = [
     'dojson>=0.1.1',
     'invenio-formatter>=0.1.0',
     'invenio-pidstore>=0.1.0',  # TODO consider making it optional
+    'invenio-jsonref>=0.1.0',
 ]
 
 test_requirements = [
