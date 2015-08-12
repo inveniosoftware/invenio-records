@@ -20,6 +20,8 @@
 notifications:
   email: false
 
+sudo: false
+
 services:
   - mysql
   - redis
@@ -39,22 +41,20 @@ python:
   - "2.7"
 
 before_install:
-  - "sudo apt-get update"
-  - "sudo apt-get install python-dev"
   - "travis_retry pip install --upgrade pip"
-  - "travis_retry pip install mock"
+  - "travis_retry pip install mock twine wheel"
   - "python requirements.py --extras=$REXTRAS --level=min > .travis-lowest-requirements.txt"
   - "python requirements.py --extras=$REXTRAS --level=pypi > .travis-release-requirements.txt"
   - "python requirements.py --extras=$REXTRAS --level=dev > .travis-devel-requirements.txt"
 
 install:
-  - "travis_retry pip install unittest2"
-  - "travis_retry pip install -r .travis-$REQUIREMENTS-requirements.txt --allow-all-external --quiet"
-  - "travis_retry pip install -e .[$REXTRAS] --quiet --process-dependency-links"
+  - "travis_retry pip install Invenio"
+  - "travis_retry pip install -r .travis-$REQUIREMENTS-requirements.txt --allow-all-external"
+  - "travis_retry pip install -e .[$REXTRAS]"
   - "inveniomanage config create secret-key"
   - "inveniomanage config set CFG_EMAIL_BACKEND flask_email.backends.console.Mail"
   - "inveniomanage config set CFG_BIBSCHED_PROCESS_USER `whoami`"
-  - "inveniomanage config set PACKAGES ['invenio_accounts', 'invenio.modules.collections', 'invenio_records', 'invenio.base']"
+  - "inveniomanage config set PACKAGES ['invenio_accounts', 'invenio.modules.collections', 'invenio_records', 'invenio_formatter', 'invenio.base']"
   - "inveniomanage config set CFG_TMPDIR /tmp"
 
 before_script:
@@ -67,3 +67,13 @@ script:
 
 after_success:
   - coveralls
+
+deploy:
+  provider: pypi
+  user: jirikuncar
+  password:
+    secure: O5BAgL7uQLyhVGk5/MLVUdDTBtaNexJNWNTXUioW97b6Sl8KdD2s+uJmVIluJ1CtO0r/uvogLNEyrDKPHBNTw8diPN+yXLhCpZe0aiM1AKYmIGDulicQcTNLG176A3QkYc1DW9HMN2d6Tm4bi3kieACtqByACgDPpso8engTvqBmHsl9f8VvEFdoT3O6/yPCi7P7IgWewr2/0l18Y/kmkQPiPYXmBF8hshuP812aV1h0MohxRoYl+rvIlGBFd5F06UZg/1mjxDCZgwxWEzutpZNW3doDZ4cPnJebv4SPuwY8+pTsJ8icIkoPofvkolhcudWLnfaPaR0dVIyHF1OkuNffLFMLKV8VxtHmmThACeRqUpi9Fs4u2ru7q84yDXPnM6cl9koNjAQRsT/caTzL/wNGJ/0SlcuoMEuwDBZWdOAxFf66l/ZyxjQTHLonybUPHKac1lsiV3IcVrJn4Ke4WttmXqGYcV1Rj6sdT7nFVUC0DvWiE+JkBc62XfLSkTWB1Q3rx1Tm7UACwYn6762N3r843EYEM3M4pwgy5IIwIz7XhmCD2W2ZFWXzlvBqBBdpy+w4+uxWk4LbvunNIOXrJtswMnjo93ZIQ2hqdbq3M12B6z74k6h4NjQ7CxhasGdSTCFR6B/5FejFUhH+0tTsUMXUaux7tKg4OaCbP3ZV7Qk=
+  distributions: "compile_catalog sdist bdist_wheel"
+  on:
+    tags: true
+    python: "2.7"

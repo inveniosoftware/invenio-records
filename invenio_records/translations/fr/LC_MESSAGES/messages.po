@@ -1,0 +1,38 @@
+# French translations for invenio-records.
+# Copyright (C) 2015 ORGANIZATION
+# This file is distributed under the same license as the invenio-records
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: invenio-records 0.2.1.dev20150729\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-08-12 11:44+0200\n"
+"PO-Revision-Date: 2015-08-12 11:49+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.0\n"
+
+#: invenio_records/views.py:134
+msgid "Information"
+msgstr ""
+
+#: invenio_records/views.py:162
+msgid "Files"
+msgstr ""
+
+#: invenio_records/templates/records/back_to_search_links_base.html:28
+msgid "Back to search"
+msgstr ""
+
+#: invenio_records/templates/records/back_to_search_links_base.html:41
+#: invenio_records/templates/records/back_to_search_links_base.html:57
+#: invenio_records/templates/records/back_to_search_links_base.html:67
+msgid "of"
+msgstr ""
+
