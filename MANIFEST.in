@@ -26,6 +26,7 @@ include *.py
 include *.rst
 include *.txt
 include LICENSE
+include babel.ini
 include pytest.ini
 include tox.ini
 recursive-include docs *.py
@@ -35,8 +36,10 @@ recursive-include invenio_records *.cfg
 recursive-include invenio_records *.css
 recursive-include invenio_records *.html
 recursive-include invenio_records *.js
+recursive-include invenio_records *.mo
+recursive-include invenio_records *.po
+recursive-include invenio_records *.pot
 recursive-include invenio_records *.py
-recursive-include misc *.py
-recursive-include misc *.rst
 recursive-include tests *.cfg
 recursive-include tests *.py
+recursive-include tests *.xml

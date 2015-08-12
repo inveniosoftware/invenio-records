@@ -35,3 +35,6 @@ missing
 node_modules/
 org.eclipse.core.resources.prefs
 tags
+
+# ignore compiled translations
+*.mo

@@ -24,6 +24,15 @@
 Changes
 =======
 
+Version 0.2.1 (release 2015-08-12)
+----------------------------------
+
+Bug fixes
+~~~~~~~~~
+
+- Adapts tests for non-repeatable subfields fixed in DoJSON==0.1.1.
+- Adds missing dependencies "JSONSchema" and  "invenio-formatter".
+
 Version 0.2.0 (release 2015-07-29)
 ----------------------------------
 
