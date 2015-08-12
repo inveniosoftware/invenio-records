@@ -129,7 +129,8 @@ def is_user_viewer_of_record(user_info, recid):
     return is_user_in_tags(record, user_info, uid_tags, email_tags)
 
 
-def get_restricted_collections_for_record(record, recreate_cache_if_needed=True):
+def get_restricted_collections_for_record(record,
+                                          recreate_cache_if_needed=True):
     """Return the list of restricted collections to which record belongs."""
     if recreate_cache_if_needed:
         restricted_collection_cache.recreate_cache_if_needed()
