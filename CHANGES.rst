@@ -24,6 +24,21 @@
 Changes
 =======
 
+Version 0.3.0 (release 2015-08-18)
+----------------------------------
+
+New features
+~~~~~~~~~~~~
+
+- Ports '/export' handler for formatting multiple records.
+
+Bug fixes
+~~~~~~~~~
+
+- Fixes imports of externalized packages and adds
+  'invenio-collections' to dependency list.
+
+
 Version 0.2.1 (release 2015-08-12)
 ----------------------------------
 

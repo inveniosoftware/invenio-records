@@ -26,3 +26,4 @@
 -e git+git://github.com/inveniosoftware/invenio-collections.git#egg=invenio-collections
 -e git+git://github.com/inveniosoftware/invenio-formatter.git#egg=invenio-formatter
 -e git+git://github.com/inveniosoftware/invenio-pidstore.git#egg=invenio-pidstore
+-e git+git://github.com/inveniosoftware/invenio-search.git#egg=invenio-search
