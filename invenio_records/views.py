@@ -30,6 +30,9 @@ from flask_breadcrumbs import default_breadcrumb_root
 from flask_login import current_user
 from flask_menu import register_menu
 
+from invenio_collections.decorators import check_collection
+from invenio_formatter import (get_output_format_content_type,
+                               response_formated_records)
 from invenio.base.decorators import wash_arguments
 from invenio.base.globals import cfg
 from invenio.base.i18n import _
@@ -136,13 +139,12 @@ def metadata(recid, of='hd', ot=None):
     """Display formated record metadata."""
     # from invenio.legacy.bibrank.downloads_similarity import \
     #     register_page_view_event
-    from invenio_formatter import get_output_format_content_type
     # register_page_view_event(recid, current_user.get_id(),
     #                          str(request.remote_addr))
     if get_output_format_content_type(of) != 'text/html':
-        from invenio.modules.search.views.search import \
-            response_formated_records
-        return response_formated_records([g.record], g.collection, of)
+        return response_formated_records(
+            [g.record], of, collections=g.collection
+        )
 
     # Send the signal 'document viewed'
     record_viewed.send(
@@ -219,3 +221,22 @@ def file(recid, filename):
 def no_recid():
     """Redirect to homepage."""
     return redirect("/")
+
+
+@blueprint.route('/export', methods=['GET', 'POST'])
+@wash_arguments({'of': (unicode, 'xm'), 'ot': (unicode, None)})
+@check_collection(default_collection=True)
+def export(collection, of, ot):
+    """
+    Export requested records to defined output format.
+
+    It uses following request values:
+        * of (string): output format
+        * recid ([int]): list of record IDs
+
+    """
+    from .api import get_record
+    # Get list of integers with record IDs.
+    recids = request.values.getlist('recid', type=int)
+    return response_formated_records([get_record(recid) for recid in recids],
+                                     of, ot=ot, collection=collection)
