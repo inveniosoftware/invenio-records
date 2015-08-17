@@ -20,6 +20,8 @@
 """Record API."""
 
 from flask import current_app
+from jsonpatch import apply_patch
+from jsonschema import validate
 
 from invenio.base.globals import cfg
 from invenio.base.helpers import unicodifier
@@ -27,16 +29,9 @@ from invenio.base.utils import toposort_send
 from invenio.ext.sqlalchemy import db
 from invenio.utils.datastructures import SmartDict
 
-
-from jsonpatch import apply_patch
-
-from jsonschema import validate
-
 from .models import RecordMetadata
-from .signals import (
-    after_record_insert, after_record_update,
-    before_record_insert, before_record_update
-)
+from .signals import (after_record_insert, after_record_update,
+                      before_record_insert, before_record_update)
 
 
 class Record(SmartDict):

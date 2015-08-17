@@ -23,8 +23,8 @@ from __future__ import absolute_import
 
 import errno
 import os
-import six
 
+import six
 from flask import g, request
 from werkzeug.utils import cached_property, import_string
 
@@ -35,7 +35,7 @@ from invenio.ext.cache import cache
 def get_unique_record_json(param):
     """API to query records from the database."""
     from .api import get_record
-    from invenio.modules.search.api import Query
+    from invenio_search.api import Query
     data, query = {}, {}
     data['status'] = 'notfound'
     recid = Query(param).search()
@@ -105,7 +105,7 @@ def references_nb_counts():
         return
 
     from invenio.legacy.bibrecord import record_get_field_instances
-    from invenio.modules.search.models import Field
+    from invenio_search.models import Field
 
     from .api import get_record
 

@@ -22,14 +22,13 @@
 from __future__ import print_function
 
 import argparse
-import six
 import sys
 
+import six
 from flask import current_app
 from werkzeug.utils import import_string
 
 from invenio.ext.script import Manager
-
 
 manager = Manager(usage=__doc__)
 

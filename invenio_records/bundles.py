@@ -23,7 +23,6 @@ from __future__ import unicode_literals
 
 from invenio.ext.assets import Bundle, RequireJSFilter
 
-
 js = Bundle(
     "js/records/init.js",
     filters=RequireJSFilter(),

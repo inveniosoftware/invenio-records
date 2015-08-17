@@ -24,7 +24,7 @@ from __future__ import unicode_literals
 RECORDS_BREADCRUMB_TITLE_KEY = 'title.title'
 """Key used to extract the breadcrumb title from the record."""
 
-RECORD_DOCUMENT_NAME_GENERATOR = ('invenio.modules.records.utils:'
+RECORD_DOCUMENT_NAME_GENERATOR = ('invenio_records.utils:'
                                   'default_name_generator')
 
 RECORD_PROCESSORS = {

@@ -56,7 +56,7 @@ before_script:
 #  - "inveniomanage config create secret-key"
 #  - "inveniomanage config set CFG_EMAIL_BACKEND flask_email.backends.console.Mail"
 #  - "inveniomanage config set CFG_BIBSCHED_PROCESS_USER `whoami`"
-#  - "inveniomanage config set PACKAGES ['invenio_accounts', 'invenio.modules.collections', 'invenio_records', 'invenio_formatter', 'invenio.base']"
+#  - "inveniomanage config set PACKAGES ['invenio_accounts', 'invenio_collections', 'invenio_records', 'invenio_formatter', 'invenio.base']"
 #  - "inveniomanage config set CFG_TMPDIR /tmp"
   - "inveniomanage database init --yes-i-know || echo ':('"
   - "inveniomanage database create --quiet || echo ':('"

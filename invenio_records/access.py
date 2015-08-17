@@ -22,7 +22,7 @@
 from collections import MutableMapping
 
 from invenio.base.globals import cfg
-from invenio.modules.collections.cache import restricted_collection_cache
+from invenio_collections.cache import restricted_collection_cache
 
 from .api import get_record
 

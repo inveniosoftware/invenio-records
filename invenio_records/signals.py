@@ -20,6 +20,7 @@
 """Record module signals."""
 
 from blinker import Namespace
+
 _signals = Namespace()
 
 record_viewed = _signals.signal('record-viewed')

@@ -24,13 +24,10 @@ from __future__ import unicode_literals
 import cStringIO
 from functools import wraps
 
-from flask import Blueprint, abort, current_app, flash, g, redirect, \
-    render_template, request, send_file, url_for
-
+from flask import (Blueprint, abort, current_app, flash, g, redirect,
+                   render_template, request, send_file, url_for)
 from flask_breadcrumbs import default_breadcrumb_root
-
 from flask_login import current_user
-
 from flask_menu import register_menu
 
 from invenio.base.decorators import wash_arguments
@@ -55,7 +52,7 @@ def request_record(f):
     """Perform standard operation to check record availability for user."""
     @wraps(f)
     def decorated(recid, *args, **kwargs):
-        from invenio.modules.collections.models import Collection
+        from invenio_collections.models import Collection
 
         from .api import get_record
         from .access import check_user_can_view_record
@@ -178,7 +175,7 @@ def files(recid):
 @request_record
 def file(recid, filename):
     """Serve attached documents."""
-    from invenio.modules.documents import api
+    from invenio_documents import api
     duuids = [uuid for (k, uuid) in g.record.get('_documents', [])
               if k == filename]
     error = 404
@@ -208,7 +205,7 @@ def file(recid, filename):
                              attachment_filename=filename)
         return send_file(document['uri'])
 
-    from invenio.modules.documents.utils import _get_legacy_bibdocs
+    from invenio_documents.utils import _get_legacy_bibdocs
     for fullpath, permission in _get_legacy_bibdocs(recid, filename=filename):
         if not permission:
             error = 401
