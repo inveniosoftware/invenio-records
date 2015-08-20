@@ -19,7 +19,7 @@
 
 """Change JSON data type from TEXT to LONGTEXT."""
 
-from invenio.modules.upgrader.api import op
+from invenio_upgrader.api import op
 
 import sqlalchemy as sa
 
