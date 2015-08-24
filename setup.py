@@ -37,13 +37,14 @@ requirements = [
     'Flask>=0.10.1',
     'six>=1.7.2',
     'jsonpatch>=1.11',
-    # FIXME 'Invenio>2.1',
     'jsonschema>=2.5.1',
     'dojson>=0.1.1',
+    # FIXME 'Invenio>2.1',
     'invenio-collections>=0.1.0',
-    'invenio-search>=0.1.0',
     'invenio-formatter>=0.2.0',
     'invenio-pidstore>=0.1.0',  # TODO consider making it optional
+    'invenio-search>=0.1.0',
+    'invenio-upgrader>=0.1.0',
 ]
 
 test_requirements = [
