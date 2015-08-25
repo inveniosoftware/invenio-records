@@ -6,9 +6,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: invenio-records 0.2.1.dev20150729\n"
+"Project-Id-Version: invenio-records 0.3.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-08-12 11:44+0200\n"
+"POT-Creation-Date: 2015-08-25 19:08+0200\n"
 "PO-Revision-Date: 2015-08-12 11:49+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Information"
 msgstr ""
 
-#: invenio_records/views.py:162
+#: invenio_records/views.py:161
 msgid "Files"
 msgstr ""
 

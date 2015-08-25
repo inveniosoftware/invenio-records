@@ -1,8 +1,8 @@
 ========================
- Invenio-Records v0.3.0
+ Invenio-Records v0.3.1
 ========================
 
-Invenio-Records v0.3.0 was released on August 18, 2015.
+Invenio-Records v0.3.1 was released on August 25, 2015.
 
 About
 -----
@@ -11,26 +11,23 @@ Invenio-Records is a metadata storage module.
 
 *This is an experimental development preview release.*
 
-New features
-------------
-
-- Ports '/export' handler for formatting multiple records.
-
 Bug fixes
 ---------
 
-- Fixes imports of externalized packages and adds
-  'invenio-collections' to dependency list.
+- Adds missing `invenio_upgrader` dependency following its separation
+  into standalone package.
+
+- Fixes invenio_upgrader imports.
 
 Installation
 ------------
 
-   $ pip install invenio-records==0.3.0
+   $ pip install invenio-records==0.3.1
 
 Documentation
 -------------
 
-   http://invenio-records.readthedocs.org/en/v0.3.0
+   http://invenio-records.readthedocs.org/en/v0.3.1
 
 Happy hacking and thanks for flying Invenio-Records.
 

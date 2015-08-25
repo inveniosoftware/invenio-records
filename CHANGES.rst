@@ -24,8 +24,19 @@
 Changes
 =======
 
-Version 0.3.0 (release 2015-08-18)
-----------------------------------
+Version 0.3.1 (released 2015-08-25)
+-----------------------------------
+
+Bug fixes
+~~~~~~~~~
+
+- Adds missing `invenio_upgrader` dependency following its separation
+  into standalone package.
+
+- Fixes invenio_upgrader imports.
+
+Version 0.3.0 (released 2015-08-18)
+-----------------------------------
 
 New features
 ~~~~~~~~~~~~
@@ -38,9 +49,8 @@ Bug fixes
 - Fixes imports of externalized packages and adds
   'invenio-collections' to dependency list.
 
-
-Version 0.2.1 (release 2015-08-12)
-----------------------------------
+Version 0.2.1 (released 2015-08-12)
+-----------------------------------
 
 Bug fixes
 ~~~~~~~~~
@@ -48,8 +58,8 @@ Bug fixes
 - Adapts tests for non-repeatable subfields fixed in DoJSON==0.1.1.
 - Adds missing dependencies "JSONSchema" and  "invenio-formatter".
 
-Version 0.2.0 (release 2015-07-29)
-----------------------------------
+Version 0.2.0 (released 2015-07-29)
+-----------------------------------
 
 New features
 ~~~~~~~~~~~~
@@ -69,7 +79,7 @@ Bug fixes
 
 - Fixes export of records in non HTML formats.
 
-Version 0.1.0 (release 2015-07-03)
-----------------------------------
+Version 0.1.0 (released 2015-07-03)
+-----------------------------------
 
 - Initial public release.
