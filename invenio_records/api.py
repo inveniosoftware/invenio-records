@@ -125,7 +125,8 @@ class Record(SmartDict):
 
     @classmethod
     def get_record(cls, recid, *args, **kwargs):
-        obj = RecordMetadata.query.get(recid)
+        with db.session.no_autoflush:
+            obj = RecordMetadata.query.get(recid)
         return cls(obj.json, model=obj) if obj else None
 
     def dumps(self, **kwargs):
