@@ -22,17 +22,20 @@
 from __future__ import unicode_literals
 
 import cStringIO
+
+import warnings
+
 from functools import wraps
 
 from flask import (Blueprint, abort, current_app, flash, g, redirect,
-                   render_template, request, send_file, url_for)
+                   render_template, request, send_file)
+
 from flask_breadcrumbs import default_breadcrumb_root
+
 from flask_login import current_user
+
 from flask_menu import register_menu
 
-from invenio_collections.decorators import check_collection
-from invenio_formatter import (get_output_format_content_type,
-                               response_formated_records)
 from invenio.base.decorators import wash_arguments
 from invenio.base.globals import cfg
 from invenio.base.i18n import _
@@ -40,6 +43,11 @@ from invenio.base.signals import pre_template_render
 from invenio.ext.template.context_processor import \
     register_template_context_processor
 from invenio.utils import apache
+
+from invenio_collections.decorators import check_collection
+
+from invenio_formatter import (get_output_format_content_type,
+                               response_formated_records)
 
 from .signals import record_viewed
 from .utils import visible_collection_tabs
@@ -165,11 +173,9 @@ def metadata(recid, of='hd', ot=None):
 def files(recid):
     """Return overview of attached files."""
     def get_files():
-        from invenio.legacy.bibdocfile.api import BibRecDocs
-        for bibdoc in BibRecDocs(recid).list_bibdocs():
-            for file in bibdoc.list_all_files():
-                yield file.get_url()
-
+        warnings.warn("Use of bibdocfile has been deprecated.",
+                      DeprecationWarning)
+        return []
     return render_template('records/files.html', files=list(get_files()))
 
 
@@ -206,13 +212,6 @@ def file(recid, filename):
             return send_file(file_, mimetype='application/octet-stream',
                              attachment_filename=filename)
         return send_file(document['uri'])
-
-    from invenio_documents.utils import _get_legacy_bibdocs
-    for fullpath, permission in _get_legacy_bibdocs(recid, filename=filename):
-        if not permission:
-            error = 401
-            continue
-        return send_file(fullpath)
 
     abort(error)
 
