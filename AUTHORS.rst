@@ -78,6 +78,7 @@ Invenio-Records is a metadata storage module.
 - Raja Sripada <rsripada@cern.ch>
 - Raquel Jimenez Encinar <raquel.jimenez.encinar@cern.ch>
 - Roman Chyla <roman.chyla@cern.ch>
+- Sami Hiltunen <sami.mikael.hiltunen@cern.ch>
 - Samuele Carli <samuele.carli@cern.ch>
 - Samuele Kaplun <samuele.kaplun@cern.ch>
 - Theodoropoulos Theodoros <theod@lib.auth.gr>

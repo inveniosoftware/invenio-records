@@ -78,7 +78,7 @@ def is_user_owner_of_record(user_info, recid):
     :type recid: positive integer
     :return: True if the user is 'owner' of the record; False otherwise
     """
-    from invenio.modules.access.local_config import \
+    from invenio_access.local_config import \
         CFG_ACC_GRANT_AUTHOR_RIGHTS_TO_EMAILS_IN_TAGS, \
         CFG_ACC_GRANT_AUTHOR_RIGHTS_TO_USERIDS_IN_TAGS
 
@@ -111,7 +111,7 @@ def is_user_viewer_of_record(user_info, recid):
     @return: True if the user is 'allow to view' the record; False otherwise
     @rtype: bool
     """
-    from invenio.modules.access.local_config import \
+    from invenio_access.local_config import \
         CFG_ACC_GRANT_VIEWER_RIGHTS_TO_EMAILS_IN_TAGS, \
         CFG_ACC_GRANT_VIEWER_RIGHTS_TO_USERIDS_IN_TAGS
 
@@ -162,8 +162,8 @@ def check_user_can_view_record(user_info, recid):
     :return: (0, ''), when authorization is granted, (>0, 'message') when
     authorization is not granted
     """
-    from invenio.modules.access.engine import acc_authorize_action
-    from invenio.modules.access.local_config import VIEWRESTRCOLL
+    from invenio_access.engine import acc_authorize_action
+    from invenio_access.local_config import VIEWRESTRCOLL
 
     policy = cfg['CFG_WEBSEARCH_VIEWRESTRCOLL_POLICY'].strip().upper()
 

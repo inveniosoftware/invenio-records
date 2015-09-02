@@ -40,6 +40,7 @@ requirements = [
     'jsonschema>=2.5.1',
     'dojson>=0.1.1',
     # FIXME 'Invenio>2.1',
+    'invenio-access>=0.1.0',
     'invenio-collections>=0.1.0',
     'invenio-formatter>=0.2.0',
     'invenio-pidstore>=0.1.0',  # TODO consider making it optional
@@ -71,6 +72,7 @@ extras_require = {
 
 
 class PyTest(TestCommand):
+
     """PyTest Test."""
 
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
