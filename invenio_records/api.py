@@ -103,6 +103,9 @@ class Record(SmartDict):
     def commit(self):
         db.session.begin(subtransactions=True)
         try:
+            from invenio.modules.jsonalchemy.registry import functions
+            list(functions('recordext'))
+
             toposort_send(before_record_update, self)
 
             if self.model is None:
