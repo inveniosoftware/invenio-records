@@ -39,12 +39,11 @@ requirements = [
     'jsonpatch>=1.11',
     'jsonschema>=2.5.1',
     'dojson>=0.1.1',
-    # FIXME 'Invenio>2.1',
     'invenio-access>=0.1.0',
-    'invenio-collections>=0.1.0',
-    'invenio-formatter>=0.2.0',
+    'invenio-collections>=0.1.2',
+    'invenio-formatter>=0.2.1',
     'invenio-pidstore>=0.1.0',  # TODO consider making it optional
-    'invenio-search>=0.1.0',
+    'invenio-search>=0.1.3',
     'invenio-upgrader>=0.1.0',
 ]
 
@@ -56,7 +55,7 @@ test_requirements = [
     'pytest-cov>=1.8.0',
     'pytest-pep8>=1.0.6',
     'coverage>=3.7.1',
-    'invenio-accounts>=0.1.0',
+    'invenio-accounts>=0.1.2',
 ]
 
 extras_require = {

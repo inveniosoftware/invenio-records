@@ -24,6 +24,25 @@
 Changes
 =======
 
+Version 0.3.2 (released 2015-09-06)
+-----------------------------------
+
+Incompatible changes
+~~~~~~~~~~~~~~~~~~~~
+
+- Removes dependency on legacy bibdocfile module.
+  (addresses inveniosoftware/invenio#3233)
+
+Bug fixes
+~~~~~~~~~
+
+- Disables autoflush when pulling records out of the database, to
+  prevent superfluous call to `flush()`. (#24)
+- Adds missing `invenio_access` dependency and amends past upgrade
+  recipes following its separation into standalone package.
+- Loads all recordext functions registered before updating a record
+  via `Record.commit()`.
+
 Version 0.3.1 (released 2015-08-25)
 -----------------------------------
 
