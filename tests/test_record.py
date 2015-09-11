@@ -24,7 +24,7 @@ from __future__ import unicode_literals
 import os
 import pkg_resources
 
-from invenio.testsuite import InvenioTestCase, make_test_suite, run_test_suite
+from invenio.testsuite import InvenioTestCase
 
 from dojson.contrib.marc21 import marc21
 from dojson.contrib.marc21.utils import create_record, split_blob
@@ -42,6 +42,16 @@ class TestRecord(InvenioTestCase):
             os.path.join('data', 'demo_record_marc_data.xml'))
         recs = [record for record in split_blob(xmltext)]
         assert len(recs) == 142
+
+    def test_exists(self):
+        """Test exists function."""
+        from invenio_records import models, api
+        record = models.Record()
+        self.create_objects([record])
+        record_id = record.id
+        assert api.exist(record_id) == True
+        self.delete_objects([record])
+        assert api.exist(record_id) == False
 
     def test_accented_unicode_letterst_test(self):
         """Record - accented Unicode letters."""

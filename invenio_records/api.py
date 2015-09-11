@@ -29,7 +29,7 @@ from invenio.base.utils import toposort_send
 from invenio.ext.sqlalchemy import db
 from invenio.utils.datastructures import SmartDict
 
-from .models import RecordMetadata
+from . import models
 from .signals import (after_record_insert, after_record_update,
                       before_record_insert, before_record_update)
 
@@ -84,7 +84,7 @@ class Record(SmartDict):
             if record.get('recid', None) is not None:
                 metadata['id'] = record.get('recid')
 
-            db.session.add(RecordMetadata(**metadata))
+            db.session.add(models.RecordMetadata(**metadata))
             db.session.commit()
 
             toposort_send(after_record_insert, record)
@@ -109,7 +109,7 @@ class Record(SmartDict):
             toposort_send(before_record_update, self)
 
             if self.model is None:
-                self.model = RecordMetadata.query.get(self['recid'])
+                self.model = models.RecordMetadata.query.get(self['recid'])
 
             self.model.json = dict(self)
 
@@ -126,12 +126,19 @@ class Record(SmartDict):
     @classmethod
     def get_record(cls, recid, *args, **kwargs):
         with db.session.no_autoflush:
-            obj = RecordMetadata.query.get(recid)
+            obj = models.RecordMetadata.query.get(recid)
         return cls(obj.json, model=obj) if obj else None
 
     def dumps(self, **kwargs):
         # FIXME add keywords filtering
         return dict(self)
+
+    @classmethod
+    def exist(cls, recid):
+        """Check if record exists."""
+        return db.session.query(
+            models.Record.query.filter_by(id=recid).exists()
+        ).scalar()
 
 
 # Functional interface
