@@ -30,6 +30,7 @@ from invenio.ext.sqlalchemy import db
 from invenio.utils.datastructures import SmartDict
 
 from .models import RecordMetadata
+from .registry import functions
 from .signals import (after_record_insert, after_record_update,
                       before_record_insert, before_record_update)
 
@@ -72,7 +73,6 @@ class Record(SmartDict):
         try:
             record = cls(unicodifier(data))
 
-            from invenio.modules.jsonalchemy.registry import functions
             list(functions('recordext'))
 
             toposort_send(before_record_insert, record)
@@ -103,7 +103,6 @@ class Record(SmartDict):
     def commit(self):
         db.session.begin(subtransactions=True)
         try:
-            from invenio.modules.jsonalchemy.registry import functions
             list(functions('recordext'))
 
             toposort_send(before_record_update, self)
