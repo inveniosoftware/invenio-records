@@ -23,7 +23,7 @@ from __future__ import absolute_import
 
 from celery.utils.log import get_task_logger
 
-from invenio.base.globals import cfg
+from invenio_base.globals import cfg
 from invenio.celery import celery
 from invenio_formatter import format_record
 from invenio_pidstore.models import PersistentIdentifier

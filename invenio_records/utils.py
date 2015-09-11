@@ -28,7 +28,7 @@ import six
 from flask import g, request
 from werkzeug.utils import cached_property, import_string
 
-from invenio.base.globals import cfg
+from invenio_base.globals import cfg
 from invenio.ext.cache import cache
 
 

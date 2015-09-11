@@ -23,9 +23,9 @@ from flask import current_app
 from jsonpatch import apply_patch
 from jsonschema import validate
 
-from invenio.base.globals import cfg
-from invenio.base.helpers import unicodifier
-from invenio.base.utils import toposort_send
+from invenio_base.globals import cfg
+from invenio_base.helpers import unicodifier
+from invenio_base.utils import toposort_send
 from invenio.ext.sqlalchemy import db
 from invenio.utils.datastructures import SmartDict
 

@@ -21,7 +21,7 @@
 
 from collections import MutableMapping
 
-from invenio.base.globals import cfg
+from invenio_base.globals import cfg
 from invenio_collections.cache import restricted_collection_cache
 
 from .api import get_record

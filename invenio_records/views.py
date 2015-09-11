@@ -36,10 +36,10 @@ from flask_login import current_user
 
 from flask_menu import register_menu
 
-from invenio.base.decorators import wash_arguments
-from invenio.base.globals import cfg
-from invenio.base.i18n import _
-from invenio.base.signals import pre_template_render
+from invenio_base.decorators import wash_arguments
+from invenio_base.globals import cfg
+from invenio_base.i18n import _
+from invenio_base.signals import pre_template_render
 from invenio.ext.template.context_processor import \
     register_template_context_processor
 from invenio.utils import apache
