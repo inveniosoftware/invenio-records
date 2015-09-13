@@ -19,10 +19,20 @@
 
 """Define authorization actions and checks."""
 
+import warnings
+
 from collections import MutableMapping
 
 from invenio.base.globals import cfg
-from invenio_collections.cache import restricted_collection_cache
+
+try:
+    from invenio_collections.cache import get_restricted_collections
+except ImportError:  # pragma: no cover
+    # remove when invenio-collections>=0.1.3
+    from invenio_collections.cache import restricted_collection_cache
+
+    def get_restricted_collections():
+        return restricted_collection_cache.cache
 
 from .api import get_record
 
@@ -129,15 +139,12 @@ def is_user_viewer_of_record(user_info, recid):
     return is_user_in_tags(record, user_info, uid_tags, email_tags)
 
 
-def get_restricted_collections_for_record(record,
-                                          recreate_cache_if_needed=True):
+def get_restricted_collections_for_record(record):
     """Return the list of restricted collections to which record belongs."""
-    if recreate_cache_if_needed:
-        restricted_collection_cache.recreate_cache_if_needed()
 
-    return set(record.get('_collections', [])) & set([
-        collection for collection in restricted_collection_cache.cache
-    ])
+    return set(record.get('_collections', [])) & set(
+        get_restricted_collections()
+    )
 
 
 def is_record_public(record):
@@ -190,19 +197,23 @@ def check_user_can_view_record(user_info, recid):
     if restricted_collections:
         # If there are restricted collections the user must be authorized to
         # all/any of them (depending on the policy)
-        auth_code, auth_msg = 0, ''
-        for collection in restricted_collections:
-            (auth_code, auth_msg) = acc_authorize_action(
-                user_info, VIEWRESTRCOLL, collection=collection
+        permitted_restricted_collections = set(user_info.get(
+            'precached_permitted_restricted_collections', []
+        ))
+
+        if policy != 'ANY':
+            not_authorized_collections = (
+                restricted_collections - permitted_restricted_collections
             )
-            if auth_code and policy != 'ANY':
-                # Ouch! the user is not authorized to this collection
-                return (auth_code, auth_msg)
-            elif auth_code == 0 and policy == 'ANY':
-                # Good! At least one collection is authorized
-                return (0, '')
-        # Depending on the policy, the user will be either authorized or not
-        return auth_code, auth_msg
+            if not_authorized_collections:
+                # The user is not authorized to all restricted collections.
+                return (1, not_authorized_collections)
+        else:
+            if not restricted_collections & permitted_restricted_collections:
+                # None of restricted collections is authorized.
+                return (1, restricted_collections)
+        return (0, '')
+
     # FIXME is record in any collection
     if bool(record.get('_collections', [])):
         # the record is not in any restricted collection
