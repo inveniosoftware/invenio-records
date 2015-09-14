@@ -24,6 +24,15 @@
 Changes
 =======
 
+Version 0.3.3 (released 2015-09-14)
+-----------------------------------
+
+Bug fixes
+~~~~~~~~~
+
+- Adds missing `invenio_base` dependency.
+- Removes dependency on JSONAlchemy from Invenio package.
+
 Version 0.3.2 (released 2015-09-06)
 -----------------------------------
 
