@@ -98,29 +98,6 @@ class NameGenerator(object):
 name_generator = NameGenerator()
 
 
-def references_nb_counts():
-    """Get number of references for the record `recid`."""
-    recid = request.view_args.get('recid')
-    if recid is None:
-        return
-
-    from invenio.legacy.bibrecord import record_get_field_instances
-    from invenio_search.models import Field
-
-    from .api import get_record
-
-    if not cfg['CFG_CERN_SITE']:
-        reftag = ""
-        reftags = list(Field.get_field_tags("reference"))
-        if reftags:
-            reftag = reftags[0]
-        tmprec = get_record(recid)
-        if reftag and len(reftag) > 4:
-            return len(record_get_field_instances(tmprec, reftag[0:3],
-                       reftag[3], reftag[4]))
-    return 0
-
-
 def citations_nb_counts():
     """Get number of citations for the record `recid`."""
     recid = request.view_args.get('recid')

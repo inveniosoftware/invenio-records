@@ -91,17 +91,7 @@ def request_record(f):
             flash(auth_msg, 'error')
             abort(apache.HTTP_UNAUTHORIZED)
 
-        # from invenio.legacy.search_engine import record_exists, \
-        #     get_merged_recid
-        # check if the current record has been deleted
-        # and has been merged, case in which the deleted record
-        # will be redirect to the new one
-        # record_status = record_exists(recid)
-        # merged_recid = get_merged_recid(recid)
-        # if record_status == -1 and merged_recid:
-        #     return redirect(url_for('record.metadata', recid=merged_recid))
-        # elif record_status == -1:
-        #     abort(apache.HTTP_GONE)  # The record is gone!
+        # TODO check record status (exists, merged, deleted)
 
         title = record.get(cfg.get('RECORDS_BREADCRUMB_TITLE_KEY'), '')
         tabs = []
@@ -145,10 +135,7 @@ def request_record(f):
                visible_when=visible_collection_tabs('metadata'))
 def metadata(recid, of='hd', ot=None):
     """Display formated record metadata."""
-    # from invenio.legacy.bibrank.downloads_similarity import \
-    #     register_page_view_event
-    # register_page_view_event(recid, current_user.get_id(),
-    #                          str(request.remote_addr))
+    # TODO add signal support
     if get_output_format_content_type(of) != 'text/html':
         return response_formated_records(
             [g.record], of, collections=g.collection
