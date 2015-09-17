@@ -43,12 +43,8 @@ class RecordID(PidProvider):
             record = Record(id=int(pid_value))
         else:
             record = Record()
-        try:
+        with db.session.begin_nested():
             db.session.add(record)
-            db.session.commit()
-        except SQLAlchemyError:
-            db.session.rollback()
-            raise ValueError("Duplicate value for %s" % (pid_value, ))
         return str(record.id)
 
     def reserve(self, pid, *args, **kwargs):

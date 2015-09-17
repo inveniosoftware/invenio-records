@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2014, 2015 CERN.
+# Copyright (C) 2015 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -17,17 +17,29 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-"""Define Celery tasks."""
+from invenio_celery import celery
+from invenio_ext.es import es
 
-from __future__ import absolute_import
 
-from .api import create_record
-from .datacite import datacite_delete, datacite_register, datacite_sync, \
-    datacite_update, datacite_update_all
-from .index import index_record
+@celery.task
+def index_record(recid, json):
+    """Index a record in elasticsearch."""
+    es.index(
+        index='records',
+        doc_type='record',
+        body=json,
+        id=recid
+    )
 
-__all__ = ('create_record',
-           'datacite_delete', 'datacite_register', 'datacite_sync',
-           'datacite_update', 'datacite_update_all',
-           'index_record'
-           )
+
+@celery.task
+def index_collection_percolator(name, dbquery):
+    """Create an elasticsearch percolator for a given query."""
+    from invenio_search.api import Query
+    from invenio_search.walkers.elasticsearch import ElasticSearchDSL
+    es.index(
+        index='records',
+        doc_type='.percolator',
+        body={'query': Query(dbquery).query.accept(ElasticSearchDSL())},
+        id=name
+    )

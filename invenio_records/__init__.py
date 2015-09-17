@@ -26,6 +26,8 @@
 
 from .version import __version__
 
+from .receivers import record_modification
+
 __all__ = (
     '__version__',
 )

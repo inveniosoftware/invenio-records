@@ -48,9 +48,11 @@ def convert_marcxml(source):
                 help="URL or path to a JSON Schema.")
 @manager.option('-t', '--input-type', dest='input_type', default='json',
                 help="Format of input file.")
-def create(source, schema=None, input_type='json'):
-    """Create new bibliographic record."""
-    from .api import Record
+@manager.option('--force', dest='force', action='store_true',
+                help="Force insert.")
+def create(source, schema=None, input_type='json', force=False):
+    """Create new bibliographic record(s)."""
+    from .tasks.api import create_record
 
     processor = current_app.config['RECORD_PROCESSORS'][input_type]
     if isinstance(processor, six.string_types):
@@ -58,9 +60,11 @@ def create(source, schema=None, input_type='json'):
     data = processor(source)
 
     if isinstance(data, dict):
-        Record.create(data)
+        create_record.delay(json=data, force=force)
     else:
-        [Record.create(item) for item in data]
+        from celery import group
+        job = group([create_record.s(json=item, force=force) for item in data])
+        result = job.apply_async()
 
 
 @manager.option('-p', '--patch', dest='patch',
@@ -77,6 +81,8 @@ def patch(patch, recid=None, schema=None, input_type='jsonpatch'):
 
     for r in recid or []:
         Record.get_record(r).patch(patch_content).commit()
+
+    db.session.commit()
 
 
 def main():

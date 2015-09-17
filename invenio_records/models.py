@@ -21,12 +21,15 @@
 
 from flask import current_app
 from intbitset import intbitset
+from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.schema import Index
 from werkzeug import cached_property
 
+from invenio_collections.models import Collection
 from invenio_ext.sqlalchemy import db, utils
 
+from .receivers import new_collection
 
 class Record(db.Model):
 
@@ -147,6 +150,11 @@ class RecordMetadata(db.Model):
     __mapper_args__ = {
         "version_id_col": version_id
     }
+
+
+# FIXME add after_delete
+listen(Collection, 'after_insert', new_collection)
+listen(Collection, 'after_update', new_collection)
 
 
 __all__ = (

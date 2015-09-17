@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2014, 2015 CERN.
+# Copyright (C) 2015 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -17,17 +17,20 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-"""Define Celery tasks."""
+from flask import current_app
+from flask_sqlalchemy import models_committed
 
-from __future__ import absolute_import
 
-from .api import create_record
-from .datacite import datacite_delete, datacite_register, datacite_sync, \
-    datacite_update, datacite_update_all
-from .index import index_record
+# FIXME add after_delete
+@models_committed.connect
+def record_modification(sender, changes):
+    from .models import RecordMetadata
+    from .tasks.index import index_record
+    for obj, change in changes:
+        if isinstance(obj, RecordMetadata) and change in ('insert', 'update'):
+            index_record.delay(obj.id, obj.json)
 
-__all__ = ('create_record',
-           'datacite_delete', 'datacite_register', 'datacite_sync',
-           'datacite_update', 'datacite_update_all',
-           'index_record'
-           )
+
+def new_collection(mapper, connection, target):
+    if target.dbquery is not None:
+        index_collection_percolator.delay(target.name, target.dbquery)
