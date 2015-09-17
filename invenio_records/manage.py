@@ -26,6 +26,7 @@ import sys
 
 import six
 from flask import current_app
+from sqlalchemy import exc
 from werkzeug.utils import import_string
 
 from invenio_ext.script import Manager
@@ -53,7 +54,6 @@ def convert_marcxml(source):
 def create(source, schema=None, input_type='json', force=False):
     """Create new bibliographic record(s)."""
     from .tasks.api import create_record
-
     processor = current_app.config['RECORD_PROCESSORS'][input_type]
     if isinstance(processor, six.string_types):
         processor = import_string(processor)
