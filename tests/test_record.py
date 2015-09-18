@@ -77,6 +77,27 @@ class TestRecord(InvenioTestCase):
         rec = {'control_number': '1'}
         self.assertRaises(ValidationError, validate, rec, schema)
 
+    def test_incoming_recid(self):
+        """Record - accented Unicode letters."""
+        xml = '''<record>
+          <controlfield tag="001">1000</controlfield>
+          <datafield tag="041" ind1=" " ind2=" ">
+            <subfield code="a">eng</subfield>
+          </datafield>
+          <datafield tag="100" ind1=" " ind2=" ">
+            <subfield code="a">Doe, John</subfield>
+          </datafield>
+          <datafield tag="245" ind1=" " ind2=" ">
+            <subfield code="a">title</subfield>
+          </datafield>
+        </record>
+        '''
+        rec = marc21.do(create_record(xml))
+        from invenio_records.api import Record
+        record = Record.create(rec)
+        self.assertEquals(record['recid'], 1000)
+
+
 
 class NoTest:
 # class TestLegacyExport(InvenioTestCase):
