@@ -27,7 +27,7 @@ from invenio_base.globals import cfg
 from invenio_base.helpers import unicodifier
 from invenio_base.utils import toposort_send
 from invenio_ext.sqlalchemy import db
-from invenio.utils.datastructures import SmartDict
+from invenio_utils.datastructures import SmartDict
 
 from .models import RecordMetadata
 from .registry import functions

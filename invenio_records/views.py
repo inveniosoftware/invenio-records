@@ -42,7 +42,7 @@ from invenio_base.i18n import _
 from invenio_base.signals import pre_template_render
 from invenio_ext.template.context_processor import \
     register_template_context_processor
-from invenio.utils import apache
+from invenio_utils import apache
 
 from invenio_collections.decorators import check_collection
 
