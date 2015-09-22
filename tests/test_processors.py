@@ -21,7 +21,7 @@ import os
 
 from mock import patch
 
-from invenio.testsuite import InvenioTestCase
+from invenio_testing import InvenioTestCase
 
 
 class TestProcessor(InvenioTestCase):

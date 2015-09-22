@@ -24,7 +24,7 @@ from __future__ import unicode_literals
 import os
 import pkg_resources
 
-from invenio.testsuite import InvenioTestCase, make_test_suite, run_test_suite
+from invenio_testing import InvenioTestCase
 
 from dojson.contrib.marc21 import marc21
 from dojson.contrib.marc21.utils import create_record, split_blob
@@ -33,12 +33,13 @@ from mock import patch
 
 
 class TestRecord(InvenioTestCase):
+
     """Record - demo file parsing test."""
 
     def test_records_created(self):
         """Record - demo file how many records are created."""
         xmltext = pkg_resources.resource_string(
-            'invenio.testsuite',
+            'invenio_testing',
             os.path.join('data', 'demo_record_marc_data.xml'))
         recs = [record for record in split_blob(xmltext)]
         assert len(recs) == 142
@@ -80,6 +81,7 @@ class TestRecord(InvenioTestCase):
 
 class NoTest:
 # class TestLegacyExport(InvenioTestCase):
+
     """Record - Legacy methods test."""
 
     def test_legacy_export_marcxml(self):
@@ -142,6 +144,7 @@ class NoTest:
 
 
 class TestMarcRecordCreation(InvenioTestCase):
+
     """Records from marc."""
 
     def test_rec_json_creation_from_marcxml(self):
@@ -472,12 +475,15 @@ class TestMarcRecordCreation(InvenioTestCase):
 
         assert 'main_entry_personal_name' in r
         assert 'added_entry_personal_name' in r
-        assert r['main_entry_personal_name']['personal_name'] == "Efstathiou, G P"
+        assert r['main_entry_personal_name'][
+            'personal_name'] == "Efstathiou, G P"
         assert len(r['added_entry_personal_name']) == 4
         assert 'title_statement' in r
-        assert r['title_statement']['title'] == "Constraints on $\Omega_{\Lambda}$ and $\Omega_{m}$from Distant Type 1a Supernovae and Cosmic Microwave Background Anisotropies"
+        assert r['title_statement'][
+            'title'] == "Constraints on $\Omega_{\Lambda}$ and $\Omega_{m}$from Distant Type 1a Supernovae and Cosmic Microwave Background Anisotropies"
         assert 'summary' in r
-        assert r['summary'][0]['summary'] == "We perform a combined likelihood analysis of the latest cosmic microwave background anisotropy data and distant Type 1a Supernova data of Perlmutter etal (1998a). Our analysis is restricted tocosmological models where structure forms from adiabatic initial fluctuations characterised by a power-law spectrum with negligible tensor component. Marginalizing over other parameters, our bestfit solution gives Omega_m = 0.25 (+0.18, -0.12) and Omega_Lambda = 0.63 (+0.17, -0.23) (95 % confidence errors) for the cosmic densities contributed by matter and a cosmological constantrespectively. The results therefore strongly favour a nearly spatially flat Universe with a non-zero cosmological constant."
+        assert r['summary'][0][
+            'summary'] == "We perform a combined likelihood analysis of the latest cosmic microwave background anisotropy data and distant Type 1a Supernova data of Perlmutter etal (1998a). Our analysis is restricted tocosmological models where structure forms from adiabatic initial fluctuations characterised by a power-law spectrum with negligible tensor component. Marginalizing over other parameters, our bestfit solution gives Omega_m = 0.25 (+0.18, -0.12) and Omega_Lambda = 0.63 (+0.17, -0.23) (95 % confidence errors) for the cosmic densities contributed by matter and a cosmological constantrespectively. The results therefore strongly favour a nearly spatially flat Universe with a non-zero cosmological constant."
 
         # self.assertTrue('reference' in r)
         # self.assertEquals(len(r['reference']), 36)
@@ -500,7 +506,7 @@ class TestMarcRecordCreation(InvenioTestCase):
 
 
 class NoTest:
-#class TestRecordDocuments(InvenioTestCase):
+# class TestRecordDocuments(InvenioTestCase):
 
     """Test record doccuments behaviour."""
 
