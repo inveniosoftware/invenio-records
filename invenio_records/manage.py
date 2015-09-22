@@ -28,7 +28,7 @@ import six
 from flask import current_app
 from werkzeug.utils import import_string
 
-from invenio.ext.script import Manager
+from invenio_ext.script import Manager
 
 manager = Manager(usage=__doc__)
 

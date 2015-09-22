@@ -26,7 +26,7 @@ from jsonschema import validate
 from invenio_base.globals import cfg
 from invenio_base.helpers import unicodifier
 from invenio_base.utils import toposort_send
-from invenio.ext.sqlalchemy import db
+from invenio_ext.sqlalchemy import db
 from invenio.utils.datastructures import SmartDict
 
 from .models import RecordMetadata

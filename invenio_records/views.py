@@ -40,7 +40,7 @@ from invenio_base.decorators import wash_arguments
 from invenio_base.globals import cfg
 from invenio_base.i18n import _
 from invenio_base.signals import pre_template_render
-from invenio.ext.template.context_processor import \
+from invenio_ext.template.context_processor import \
     register_template_context_processor
 from invenio.utils import apache
 

@@ -19,7 +19,7 @@
 
 """Define PID provider for recids."""
 
-from invenio.ext.sqlalchemy import db
+from invenio_ext.sqlalchemy import db
 from invenio_pidstore.provider import PidProvider
 
 from sqlalchemy.exc import SQLAlchemyError

@@ -25,7 +25,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.schema import Index
 from werkzeug import cached_property
 
-from invenio.ext.sqlalchemy import db, utils
+from invenio_ext.sqlalchemy import db, utils
 
 
 class Record(db.Model):

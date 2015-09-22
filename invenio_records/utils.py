@@ -29,7 +29,7 @@ from flask import g, request
 from werkzeug.utils import cached_property, import_string
 
 from invenio_base.globals import cfg
-from invenio.ext.cache import cache
+from invenio_ext.cache import cache
 
 
 def get_unique_record_json(param):
