@@ -44,7 +44,7 @@ python:
 
 before_install:
   - "travis_retry pip install --upgrade pip"
-  - "travis_retry pip install mock twine wheel coveralls"
+  - "travis_retry pip install check-manifest mock twine wheel coveralls"
   - "python requirements.py --extras=$REXTRAS --level=min > .travis-lowest-requirements.txt"
   - "python requirements.py --extras=$REXTRAS --level=pypi > .travis-release-requirements.txt"
   - "python requirements.py --extras=$REXTRAS --level=dev > .travis-devel-requirements.txt"
@@ -61,6 +61,7 @@ before_script:
   - "inveniomanage database create --quiet"
 
 script:
+  - "check-manifest --ignore .travis-\\*-requirements.txt"
   - "sphinx-build -qnN docs docs/_build/html"
   - "python setup.py test"
 
