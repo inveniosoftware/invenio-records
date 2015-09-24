@@ -46,6 +46,7 @@ requirements = [
     'invenio-pidstore>=0.1.1',  # TODO consider making it optional
     'invenio-search>=0.1.3',
     'invenio-upgrader>=0.1.0',
+    'invenio-celery>=0.1.0',
 ]
 
 test_requirements = [

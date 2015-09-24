@@ -30,3 +30,4 @@
 -e git+git://github.com/inveniosoftware/invenio-pidstore.git#egg=invenio-pidstore
 -e git+git://github.com/inveniosoftware/invenio-search.git#egg=invenio-search
 -e git+git://github.com/inveniosoftware/invenio-upgrader.git#egg=invenio-upgrader
+-e git+git://github.com/inveniosoftware/invenio-celery.git#egg=invenio-celery
