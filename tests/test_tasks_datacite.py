@@ -20,12 +20,12 @@
 from __future__ import absolute_import
 
 import httpretty
-from mock import patch
+
 from invenio_testing import InvenioTestCase
 
+from mock import patch
 
-# FIXME externalize module
-@nottest
+
 class DataCiteTasksTest(InvenioTestCase):
 
     def setUp(self):
