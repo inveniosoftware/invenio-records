@@ -22,12 +22,18 @@
 from __future__ import unicode_literals
 
 import os
-import pkg_resources
 
-from invenio_testing import InvenioTestCase
+import unittest
 
 from dojson.contrib.marc21 import marc21
+
 from dojson.contrib.marc21.utils import create_record, split_blob
+
+from invenio_documents.models import Document
+
+from invenio_record.models import Record
+
+from invenio_testing import InvenioTestCase
 
 from mock import patch
 
@@ -38,11 +44,11 @@ class TestRecord(InvenioTestCase):
 
     def test_records_created(self):
         """Record - demo file how many records are created."""
-        xmltext = pkg_resources.resource_string(
-            'invenio_testing',
-            os.path.join('data', 'demo_record_marc_data.xml'))
-        recs = [record for record in split_blob(xmltext)]
-        assert len(recs) == 142
+        xmlpath = os.path.join(os.path.dirname(__file__), 'data',
+                               'demo_record_marc_data.xml')
+        with open(xmlpath, 'r') as xmltext:
+            recs = [record for record in split_blob(xmltext)]
+            assert len(recs) == 142
 
     def test_accented_unicode_letterst_test(self):
         """Record - accented Unicode letters."""
@@ -79,8 +85,8 @@ class TestRecord(InvenioTestCase):
         self.assertRaises(ValidationError, validate, rec, schema)
 
 
-class NoTest:
-# class TestLegacyExport(InvenioTestCase):
+@unittest.skip('Skipped legacy tests')
+class TestLegacyExport(InvenioTestCase):
 
     """Record - Legacy methods test."""
 
@@ -475,15 +481,12 @@ class TestMarcRecordCreation(InvenioTestCase):
 
         assert 'main_entry_personal_name' in r
         assert 'added_entry_personal_name' in r
-        assert r['main_entry_personal_name'][
-            'personal_name'] == "Efstathiou, G P"
+        assert r['main_entry_personal_name']['personal_name'] == "Efstathiou, G P"
         assert len(r['added_entry_personal_name']) == 4
         assert 'title_statement' in r
-        assert r['title_statement'][
-            'title'] == "Constraints on $\Omega_{\Lambda}$ and $\Omega_{m}$from Distant Type 1a Supernovae and Cosmic Microwave Background Anisotropies"
+        assert r['title_statement']['title'] == "Constraints on $\Omega_{\Lambda}$ and $\Omega_{m}$from Distant Type 1a Supernovae and Cosmic Microwave Background Anisotropies"
         assert 'summary' in r
-        assert r['summary'][0][
-            'summary'] == "We perform a combined likelihood analysis of the latest cosmic microwave background anisotropy data and distant Type 1a Supernova data of Perlmutter etal (1998a). Our analysis is restricted tocosmological models where structure forms from adiabatic initial fluctuations characterised by a power-law spectrum with negligible tensor component. Marginalizing over other parameters, our bestfit solution gives Omega_m = 0.25 (+0.18, -0.12) and Omega_Lambda = 0.63 (+0.17, -0.23) (95 % confidence errors) for the cosmic densities contributed by matter and a cosmological constantrespectively. The results therefore strongly favour a nearly spatially flat Universe with a non-zero cosmological constant."
+        assert r['summary'][0]['summary'] == "We perform a combined likelihood analysis of the latest cosmic microwave background anisotropy data and distant Type 1a Supernova data of Perlmutter etal (1998a). Our analysis is restricted tocosmological models where structure forms from adiabatic initial fluctuations characterised by a power-law spectrum with negligible tensor component. Marginalizing over other parameters, our bestfit solution gives Omega_m = 0.25 (+0.18, -0.12) and Omega_Lambda = 0.63 (+0.17, -0.23) (95 % confidence errors) for the cosmic densities contributed by matter and a cosmological constantrespectively. The results therefore strongly favour a nearly spatially flat Universe with a non-zero cosmological constant."
 
         # self.assertTrue('reference' in r)
         # self.assertEquals(len(r['reference']), 36)
@@ -505,8 +508,8 @@ class TestMarcRecordCreation(InvenioTestCase):
         assert 'FFT__' in records[0]
 
 
-class NoTest:
-# class TestRecordDocuments(InvenioTestCase):
+@unittest.skip('Skipped legacy tests')
+class TestRecordDocuments(InvenioTestCase):
 
     """Test record doccuments behaviour."""
 

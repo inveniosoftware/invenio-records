@@ -58,6 +58,7 @@ test_requirements = [
     'pytest-pep8>=1.0.6',
     'coverage>=4.0.0',
     'invenio-accounts>=0.1.2',
+    'invenio-documents>=0.1.0',
     'invenio-testing>=0.1.0',
 ]
 
