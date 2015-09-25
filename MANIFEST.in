@@ -29,7 +29,7 @@ include LICENSE
 include babel.ini
 include pytest.ini
 include tox.ini
-include .travis.yml
+include .travis.yml .travis.invenio.cfg
 recursive-include docs *.py
 recursive-include docs *.rst
 recursive-include docs Makefile
