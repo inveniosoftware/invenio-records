@@ -22,14 +22,16 @@
 from __future__ import unicode_literals
 
 import os
-import pkg_resources
-
-from invenio.testsuite import InvenioTestCase, make_test_suite, run_test_suite
 
 from dojson.contrib.marc21 import marc21
+
 from dojson.contrib.marc21.utils import create_record, split_blob
 
+from invenio.testsuite import InvenioTestCase
+
 from mock import patch
+
+import pkg_resources
 
 
 class TestRecord(InvenioTestCase):
@@ -77,9 +79,30 @@ class TestRecord(InvenioTestCase):
         rec = {'control_number': '1'}
         self.assertRaises(ValidationError, validate, rec, schema)
 
+    def test_incoming_recid(self):
+        from invenio_records.errors import InvenioRecordsValueError
+        """Record - accented Unicode letters."""
+        xml = '''<record>
+          <controlfield tag="001">1000</controlfield>
+          <datafield tag="041" ind1=" " ind2=" ">
+            <subfield code="a">eng</subfield>
+          </datafield>
+          <datafield tag="100" ind1=" " ind2=" ">
+            <subfield code="a">Doe, John</subfield>
+          </datafield>
+          <datafield tag="245" ind1=" " ind2=" ">
+            <subfield code="a">title</subfield>
+          </datafield>
+        </record>
+        '''
+        rec = marc21.do(create_record(xml))
+        from invenio_records.api import Record
+        with self.assertRaises(InvenioRecordsValueError):
+            Record.create(rec)
+
 
 class NoTest:
-# class TestLegacyExport(InvenioTestCase):
+    # class TestLegacyExport(InvenioTestCase):
     """Record - Legacy methods test."""
 
     def test_legacy_export_marcxml(self):
@@ -472,12 +495,15 @@ class TestMarcRecordCreation(InvenioTestCase):
 
         assert 'main_entry_personal_name' in r
         assert 'added_entry_personal_name' in r
-        assert r['main_entry_personal_name']['personal_name'] == "Efstathiou, G P"
+        assert r['main_entry_personal_name'][
+            'personal_name'] == "Efstathiou, G P"
         assert len(r['added_entry_personal_name']) == 4
         assert 'title_statement' in r
-        assert r['title_statement']['title'] == "Constraints on $\Omega_{\Lambda}$ and $\Omega_{m}$from Distant Type 1a Supernovae and Cosmic Microwave Background Anisotropies"
+        assert r['title_statement'][
+            'title'] == "Constraints on $\Omega_{\Lambda}$ and $\Omega_{m}$from Distant Type 1a Supernovae and Cosmic Microwave Background Anisotropies"
         assert 'summary' in r
-        assert r['summary'][0]['summary'] == "We perform a combined likelihood analysis of the latest cosmic microwave background anisotropy data and distant Type 1a Supernova data of Perlmutter etal (1998a). Our analysis is restricted tocosmological models where structure forms from adiabatic initial fluctuations characterised by a power-law spectrum with negligible tensor component. Marginalizing over other parameters, our bestfit solution gives Omega_m = 0.25 (+0.18, -0.12) and Omega_Lambda = 0.63 (+0.17, -0.23) (95 % confidence errors) for the cosmic densities contributed by matter and a cosmological constantrespectively. The results therefore strongly favour a nearly spatially flat Universe with a non-zero cosmological constant."
+        assert r['summary'][0][
+            'summary'] == "We perform a combined likelihood analysis of the latest cosmic microwave background anisotropy data and distant Type 1a Supernova data of Perlmutter etal (1998a). Our analysis is restricted tocosmological models where structure forms from adiabatic initial fluctuations characterised by a power-law spectrum with negligible tensor component. Marginalizing over other parameters, our bestfit solution gives Omega_m = 0.25 (+0.18, -0.12) and Omega_Lambda = 0.63 (+0.17, -0.23) (95 % confidence errors) for the cosmic densities contributed by matter and a cosmological constantrespectively. The results therefore strongly favour a nearly spatially flat Universe with a non-zero cosmological constant."
 
         # self.assertTrue('reference' in r)
         # self.assertEquals(len(r['reference']), 36)
@@ -500,7 +526,7 @@ class TestMarcRecordCreation(InvenioTestCase):
 
 
 class NoTest:
-#class TestRecordDocuments(InvenioTestCase):
+    # class TestRecordDocuments(InvenioTestCase):
 
     """Test record doccuments behaviour."""
 

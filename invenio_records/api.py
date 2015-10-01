@@ -20,17 +20,29 @@
 """Record API."""
 
 from flask import current_app
-from jsonpatch import apply_patch
-from jsonschema import validate
 
-from invenio_base.globals import cfg
-from invenio_base.helpers import unicodifier
-from invenio_base.utils import toposort_send
 from invenio.ext.sqlalchemy import db
+
 from invenio.utils.datastructures import SmartDict
 
+from invenio_base.globals import cfg
+
+from invenio_base.helpers import unicodifier
+
+from invenio_base.utils import toposort_send
+
+from jsonpatch import apply_patch
+
+from jsonschema import validate
+
+from sqlalchemy.exc import IntegrityError
+
+from .errors import InvenioRecordsValueError
+
 from .models import RecordMetadata
+
 from .registry import functions
+
 from .signals import (after_record_insert, after_record_update,
                       before_record_insert, before_record_update)
 
@@ -90,6 +102,16 @@ class Record(SmartDict):
             toposort_send(after_record_insert, record)
 
             return record
+        except IntegrityError:
+            db.session.rollback()
+            db.session.rollback()
+            record = cls(unicodifier(data))
+            if record.get('recid', None) is not None:
+                recid = record.get('recid')
+                raise InvenioRecordsValueError(
+                    'recid %s, specified in the record, is not already registered into the system' %
+                    recid)
+            raise
         except Exception:
             current_app.logger.exception("Problem creating a record.")
             db.session.rollback()
