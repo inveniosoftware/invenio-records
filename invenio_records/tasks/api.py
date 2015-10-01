@@ -21,6 +21,7 @@ from __future__ import absolute_import
 
 
 from celery.utils.log import get_task_logger
+from sqlalchemy import exc
 
 from invenio_celery import celery
 

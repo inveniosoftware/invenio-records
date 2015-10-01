@@ -32,5 +32,6 @@ def record_modification(sender, changes):
 
 
 def new_collection(mapper, connection, target):
+    from .tasks.index import index_collection_percolator
     if target.dbquery is not None:
         index_collection_percolator.delay(target.name, target.dbquery)
