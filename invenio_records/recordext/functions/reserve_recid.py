@@ -27,11 +27,16 @@ from invenio_records.signals import before_record_insert
 @before_record_insert.connect
 def reserve_recid(record, *args, **kwargs):
     """Reserve a new record id for the record and set it inside."""
-    if record.get('recid', None) is None:
+    recid = record.get('recid', None)
+    if recid is None:
         pid = PersistentIdentifier.create('recid', pid_value=None,
                                           pid_provider='invenio')
         pid.reserve()
         record['recid'] = int(pid.pid_value)
+    elif not PersistentIdentifier.get('recid', pid_value=recid):
+        pid = PersistentIdentifier.create('recid', pid_value=recid,
+                                          pid_provider='invenio')
+        pid.reserve()
 
 
 # FIXME @after_record_insert.connect
