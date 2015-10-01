@@ -20,16 +20,19 @@
 """Record models."""
 
 from flask import current_app
+
 from intbitset import intbitset
-from sqlalchemy.event import listen
-from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.schema import Index
-from werkzeug import cached_property
 
 from invenio_collections.models import Collection
-from invenio_ext.sqlalchemy import db, utils
+
+from invenio_ext.sqlalchemy import db
+
+from sqlalchemy.event import listen
+
+from werkzeug import cached_property
 
 from .receivers import new_collection
+
 
 class Record(db.Model):
 
