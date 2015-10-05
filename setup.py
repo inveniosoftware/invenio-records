@@ -65,7 +65,7 @@ test_requirements = [
     'invenio-accounts>=0.1.2',
     'invenio-documents>=0.1.0.post2',
     'invenio-testing>=0.1.0',
-    'mock>=1.0.0',
+    'mock>=1.0.1',
 ]
 
 extras_require = {
