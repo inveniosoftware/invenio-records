@@ -50,16 +50,15 @@ class DataCiteTasksTest(InvenioTestCase):
     def patch_get_record(self, get_record_patch):
         from invenio_records.api import Record
         r = Record(
-            json={
+            {
                 self.app.config['PIDSTORE_DATACITE_RECORD_DOI_FIELD']:
                 '10.1234/invenio.1234',
                 'recid': 1,
-            },
-            master_format='json'
+            }
         )
         get_record_patch.return_value = r
 
-    @patch('invenio_pidstore.tasks.datacite.get_record')
+    @patch('invenio_records.tasks.datacite.get_record')
     @httpretty.activate
     def test_sync_registered(self, get_record_patch):
         self.patch_get_record(get_record_patch)

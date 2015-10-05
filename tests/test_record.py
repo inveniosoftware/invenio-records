@@ -29,10 +29,6 @@ from dojson.contrib.marc21 import marc21
 
 from dojson.contrib.marc21.utils import create_record, split_blob
 
-from invenio_documents.models import Document
-
-from invenio_record.models import Record
-
 from invenio_testing import InvenioTestCase
 
 from mock import patch
@@ -47,7 +43,7 @@ class TestRecord(InvenioTestCase):
         xmlpath = os.path.join(os.path.dirname(__file__), 'data',
                                'demo_record_marc_data.xml')
         with open(xmlpath, 'r') as xmltext:
-            recs = [record for record in split_blob(xmltext)]
+            recs = [record for record in split_blob(xmltext.read())]
             assert len(recs) == 142
 
     def test_accented_unicode_letterst_test(self):
@@ -93,6 +89,7 @@ class TestLegacyExport(InvenioTestCase):
     def test_legacy_export_marcxml(self):
         """Record - legacy export marxml."""
         # FIXME: use a better way to compare
+        from invenio_record.models import Record
         from invenio.legacy.bibrecord import create_record, records_identical
         blob = '''
             <record>
@@ -121,6 +118,7 @@ class TestLegacyExport(InvenioTestCase):
 
     def test_legacy_create_recstruct(self):
         """Record - create recstruct."""
+        from invenio_record.models import Record
         from invenio.legacy.bibrecord import create_record, records_identical
 
         blob = '''
@@ -521,6 +519,7 @@ class TestRecordDocuments(InvenioTestCase):
     def test_restricted_record_non_restricted_document(
             self, check_user_can_view_record_patch):
         """Record - Restrcited access to record documents."""
+        from invenio_documents.models import Document
         d = Document.create({'title': 'Document 1',
                              'description': 'Testing 1',
                              'restriction': {'email': 'user@invenio.org'},

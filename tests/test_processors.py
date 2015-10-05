@@ -27,8 +27,8 @@ from invenio_testing import InvenioTestCase
 class TestProcessor(InvenioTestCase):
     """Test processor."""
 
-    @patch('invenio_records.api.Record')
-    def test_processor_string(self, Record):
+    @patch('invenio_records.tasks.api.create_record')
+    def test_processor_string(self, create_record):
         """Processor - try import string."""
         from invenio_records.manage import create
         self.app.config['RECORD_PROCESSORS'] = {
@@ -36,10 +36,10 @@ class TestProcessor(InvenioTestCase):
         }
         create(open(os.path.join(os.path.dirname(__file__),
                "data/sample-records.xml")), input_type="marcxml")
-        self.assertEquals(Record.create.call_count, 2)
+        self.assertEquals(create_record.s.call_count, 2)
 
-    @patch('invenio_records.api.Record')
-    def test_processor_callable(self, Record):
+    @patch('invenio_records.tasks.api.create_record')
+    def test_processor_callable(self, create_record):
         """Processor - try import callable."""
         from invenio_records.manage import create
         from invenio_records.manage import convert_marcxml
@@ -48,4 +48,4 @@ class TestProcessor(InvenioTestCase):
         }
         create(open(os.path.join(os.path.dirname(__file__),
                "data/sample-records.xml")), input_type="marcxml")
-        self.assertEquals(Record.create.call_count, 2)
+        self.assertEquals(create_record.s.call_count, 2)
