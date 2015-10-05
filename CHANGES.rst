@@ -24,6 +24,47 @@
 Changes
 =======
 
+Version 0.3.4 (released 2015-10-05)
+-----------------------------------
+
+Incompatible changes
+~~~~~~~~~~~~~~~~~~~~
+
+- Removes legacy bibrecord dependency. (addresses
+  inveniosoftware/invenio#3233) (#18) (addresses
+  inveniosoftware/invenio#3508)
+
+New features
+~~~~~~~~~~~~
+
+- Adds new flag to `inveniomanage record create`, `--force` to force
+  saving the record to the database even if the recid is already
+  there.
+- Adds new celery task to save a new record to the database.
+
+Bug fixes
+~~~~~~~~~
+
+- Adds missing dependencies to mock>=1.0.0, intbitset>=2.0, invenio-
+  ext>=0.2.1, SQLAlchemy>=1.0, invenio-documents>=0.1.0, blinker>=1.4,
+  dojson>=0.1.1.
+- Uses nested transactions instead of sub-transactions to persist
+  record modifications. (#22)
+- Moves invenio-testing/data/demo_record_marc_data.xml to invenio-
+  records/tests/data/demo_record_marc_data.xml.
+- Adds missing dependency to invenio-documents>=0.1.0.
+- Enables DataCiteTasksTest class which was marked to be enabled after
+  module separation.
+- Upgrades invenio-base minimum version to 0.3.0.
+- Removes dependencies to invenio.utils and replaces them with
+  invenio_utils.
+- Removes dependencies to invenio.ext and replaces them with
+  invenio_ext.
+- Removes dependencies to invenio.testsuite and replaces them with
+  invenio_testing.
+- Removes calls to PluginManager consider_setuptools_entrypoints()
+  removed in PyTest 2.8.0.
+
 Version 0.3.3 (released 2015-09-14)
 -----------------------------------
 
