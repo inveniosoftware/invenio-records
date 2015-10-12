@@ -40,14 +40,16 @@ from invenio_base.decorators import wash_arguments
 from invenio_base.globals import cfg
 from invenio_base.i18n import _
 from invenio_base.signals import pre_template_render
-from invenio_ext.template.context_processor import \
-    register_template_context_processor
-from invenio_utils import apache
 
 from invenio_collections.decorators import check_collection
 
+from invenio_ext.template.context_processor import \
+    register_template_context_processor
+
 from invenio_formatter import (get_output_format_content_type,
                                response_formated_records)
+
+from invenio_utils import apache
 
 from .signals import record_viewed
 from .utils import visible_collection_tabs
@@ -84,7 +86,7 @@ def request_record(f):
 
         # only superadmins can use verbose parameter for obtaining debug
         # information
-        if not current_user.is_super_admin and 'verbose' in kwargs:
+        if not current_user.is_superadmin and 'verbose' in kwargs:
             kwargs['verbose'] = 0
 
         if auth_code:
