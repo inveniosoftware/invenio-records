@@ -17,6 +17,7 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
+"""Create table record_json."""
 
 import warnings
 
@@ -31,7 +32,8 @@ depends_on = ['records_2014_04_14_json_type_fix']
 
 
 def info():
-    return "Create table record_json."
+    """Return information about upgrade recipe."""
+    return __doc__
 
 
 def do_upgrade():

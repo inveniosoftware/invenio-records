@@ -22,12 +22,7 @@
 from __future__ import absolute_import
 
 from .api import create_record
-from .datacite import datacite_delete, datacite_register, datacite_sync, \
-    datacite_update, datacite_update_all
-from .index import index_record
 
-__all__ = ('create_record',
-           'datacite_delete', 'datacite_register', 'datacite_sync',
-           'datacite_update', 'datacite_update_all',
-           'index_record'
-           )
+__all__ = (
+    'create_record',
+)

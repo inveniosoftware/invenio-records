@@ -22,5 +22,30 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-[pytest]
-addopts = --pep8 --ignore=docs --cov=invenio_records --cov-report=term-missing
+"""Invenio-Records is a metadata storage module."""
+
+from __future__ import absolute_import, print_function
+
+from . import config
+from .cli import records as records_cmd
+
+
+class InvenioRecords(object):
+    """Invenio-Records extension."""
+
+    def __init__(self, app=None):
+        """Extension initialization."""
+        if app:
+            self.init_app(app)
+
+    def init_app(self, app):
+        """Flask application initialization."""
+        self.init_config(app)
+        app.cli.add_command(records_cmd)
+        app.extensions['invenio-records'] = self
+
+    def init_config(self, app):
+        """Initialize configuration."""
+        for k in dir(config):
+            if k.startswith('RECORDS_'):
+                app.config.setdefault(k, getattr(config, k))

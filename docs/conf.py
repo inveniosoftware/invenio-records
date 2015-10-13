@@ -24,18 +24,19 @@
 
 from __future__ import print_function
 
-import sys
 import os
-import shlex
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('_ext'))
+import sphinx.environment
+from docutils.utils import get_source_line
 
-import ultramock
-ultramock.activate()
+
+def _warn_node(self, msg, node):
+    """Do not warn on external images."""
+    if not msg.startswith('nonlocal image URI found:'):
+        self._warnfunc(msg, '%s:%s' % get_source_line(node))
+
+sphinx.environment.BuildEnvironment.warn_node = _warn_node
+
 
 # -- General configuration ------------------------------------------------
 
@@ -47,7 +48,10 @@ ultramock.activate()
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.coverage',
+    'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.viewcode',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -130,17 +134,20 @@ todo_include_todos = False
 
 
 # -- Options for HTML output ----------------------------------------------
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+html_theme = 'alabaster'
 
-# only set the theme when we are not on RTD
-if not on_rtd:
-    try:
-        import sphinx_rtd_theme
-        html_theme = "sphinx_rtd_theme"
-        html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-    except ImportError:
-        print("`sphinx_rtd_theme` not found, pip install it", file=sys.stderr)
-        html_theme = 'alabaster'
+html_theme_options = {
+    'description': 'Invenio-Records is a metadata storage module.',
+    'github_user': 'inveniosoftware',
+    'github_repo': 'invenio-records',
+    'github_button': False,
+    'github_banner': True,
+    'show_powered_by': False,
+    'extra_nav_links': {
+        'invenio-records@GitHub': 'http://github.com/inveniosoftware/invenio-records',
+        'invenio-records@PyPI': 'http://pypi.python.org/pypi/invenio-records/',
+    }
+}
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
@@ -172,7 +179,7 @@ if not on_rtd:
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+#html_static_path = ['_static']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -188,7 +195,15 @@ html_static_path = ['_static']
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
+html_sidebars = {
+    '**': [
+        'about.html',
+        'navigation.html',
+        'relations.html',
+        'searchbox.html',
+        'donate.html',
+    ]
+}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
@@ -302,7 +317,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   (master_doc, 'invenio-records', u'Invenio-Records Documentation',
-   author, 'invenio-records', 'Invenio Record API.',
+   author, 'invenio-records', 'Invenio-Records is a metadata storage module.',
    'Miscellaneous'),
 ]
 

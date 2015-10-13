@@ -27,61 +27,56 @@
 import os
 import sys
 
-from setuptools import setup
+from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
 readme = open('README.rst').read()
 history = open('CHANGES.rst').read()
 
-requirements = [
-    'blinker>=1.4',
-    'dojson>=0.1.1',
-    'Flask>=0.10.1',
-    'six>=1.7.2',
-    'jsonpatch>=1.11',
-    'jsonschema>=2.5.1',
-    'dojson>=0.1.1',
-    'intbitset>=2.0',
-    'invenio-access>=0.2.0',
-    'invenio-base>=0.3.1',
-    'invenio-collections>=0.2.0',
-    'invenio-ext>=0.3.1',
-    'invenio-formatter>=0.2.2.post1',
-    'invenio-pidstore>=0.1.2',
-    'invenio-search>=0.1.4',
-    'invenio-upgrader>=0.2.0',
-    'invenio-celery>=0.1.1',
-    'SQLAlchemy>=1.0',
-]
 
-test_requirements = [
-    'unittest2>=1.1.0',
-    'httpretty>=0.8.10',
-    'Flask_Testing>=0.4.1',
-    'pytest>=2.8.0',
-    'pytest-cov>=2.1.0',
+tests_require = [
+    'check-manifest>=0.25',
+    'coverage>=4.0',
+    'invenio-db[all]>=1.0.0a3',
+    'isort>=4.2.2',
+    'pep257>=0.7.0',
+    'pytest-cache>=1.0',
+    'pytest-cov>=1.8.0',
     'pytest-pep8>=1.0.6',
-    'coverage>=4.0.0',
-    'invenio-accounts>=0.2.0',
-    'invenio-documents>=0.1.0.post2',
-    'invenio-testing>=0.1.1',
-    'mock>=1.0.1',
+    'pytest>=2.8.0',
 ]
 
 extras_require = {
     'docs': [
-        'Sphinx>=1.3',
-        'sphinx_rtd_theme>=0.1.7',
+        "Sphinx>=1.3",
     ],
-    'documents': [
-        'invenio-documents>=0.1.0',
-    ],
-    'tests': test_requirements,
+    'tests': tests_require,
 }
+
+extras_require['all'] = []
+for reqs in extras_require.values():
+    extras_require['all'].extend(reqs)
+
+setup_requires = [
+    'Babel>=1.3',
+]
+
+install_requires = [
+    'blinker>=1.4',
+    'flask-celeryext>=0.1.0',
+    'invenio-db>=1.0.0a3',
+    'jsonpatch>=1.11',
+    'jsonschema>=2.5.1',
+    'sqlalchemy-utils>=0.31.0',
+]
+
+if sys.version_info < (3, 2):
+    install_requires.append('functools32>=3.2.3-2')
+
+packages = find_packages()
 
 
 class PyTest(TestCommand):
-
     """PyTest Test."""
 
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
@@ -101,8 +96,11 @@ class PyTest(TestCommand):
     def finalize_options(self):
         """Finalize pytest."""
         TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
+        if hasattr(self, '_test_args'):
+            self.test_suite = ''
+        else:
+            self.test_args = []
+            self.test_suite = True
 
     def run_tests(self):
         """Run tests."""
@@ -122,19 +120,27 @@ setup(
     version=version,
     description=__doc__,
     long_description=readme + '\n\n' + history,
-    keywords='invenio records',
+    keywords='invenio metadata',
     license='GPLv2',
     author='CERN',
     author_email='info@invenio-software.org',
     url='https://github.com/inveniosoftware/invenio-records',
-    packages=[
-        'invenio_records',
-    ],
+    packages=packages,
     zip_safe=False,
     include_package_data=True,
     platforms='any',
-    install_requires=requirements,
+    entry_points={
+        'invenio_db.models': [
+            'invenio_records = invenio_records.models',
+        ],
+        'invenio_i18n.translations': [
+            'invenio_records = invenio_records',
+        ],
+    },
     extras_require=extras_require,
+    install_requires=install_requires,
+    setup_requires=setup_requires,
+    tests_require=tests_require,
     classifiers=[
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
@@ -143,14 +149,13 @@ setup(
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        "Programming Language :: Python :: 2",
-        # 'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
-        # 'Programming Language :: Python :: 3',
-        # 'Programming Language :: Python :: 3.3',
-        # 'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Development Status :: 1 - Planning',
     ],
-    tests_require=test_requirements,
     cmdclass={'test': PyTest},
 )
