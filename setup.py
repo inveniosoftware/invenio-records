@@ -43,14 +43,14 @@ requirements = [
     'dojson>=0.1.1',
     'intbitset>=2.0',
     'invenio-access>=0.2.0',
-    'invenio-base>=0.3.0',
-    'invenio-collections>=0.1.2',
-    'invenio-ext>=0.3.0',
-    'invenio-formatter>=0.2.1',
+    'invenio-base>=0.3.1',
+    'invenio-collections>=0.2.0',
+    'invenio-ext>=0.3.1',
+    'invenio-formatter>=0.2.2.post1',
     'invenio-pidstore>=0.1.2',
-    'invenio-search>=0.1.3',
-    'invenio-upgrader>=0.1.0',
-    'invenio-celery>=0.1.0',
+    'invenio-search>=0.1.4',
+    'invenio-upgrader>=0.2.0',
+    'invenio-celery>=0.1.1',
     'SQLAlchemy>=1.0',
 ]
 
@@ -62,9 +62,9 @@ test_requirements = [
     'pytest-cov>=2.1.0',
     'pytest-pep8>=1.0.6',
     'coverage>=4.0.0',
-    'invenio-accounts>=0.1.2',
+    'invenio-accounts>=0.2.0',
     'invenio-documents>=0.1.0.post2',
-    'invenio-testing>=0.1.0',
+    'invenio-testing>=0.1.1',
     'mock>=1.0.1',
 ]
 
