@@ -49,10 +49,12 @@ class DataCiteTasksTest(InvenioTestCase):
 
     def patch_get_record(self, get_record_patch):
         from invenio_records.api import Record
+        self.app.config[
+            'PIDSTORE_DATACITE_RECORD_DOI_FIELD'] = '10.1234/invenio.1234'
         r = Record(
             {
-                self.app.config['PIDSTORE_DATACITE_RECORD_DOI_FIELD']:
-                '10.1234/invenio.1234',
+                # self.app.config['PIDSTORE_DATACITE_RECORD_DOI_FIELD']:
+                #   '10.1234/invenio.1234',
                 'recid': 1,
             }
         )

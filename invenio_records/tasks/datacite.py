@@ -23,19 +23,26 @@ from __future__ import absolute_import
 
 from celery.utils.log import get_task_logger
 
+from flask import current_app
+
 from invenio_base.globals import cfg
-from invenio_celery import celery
+
+from invenio_celery import InvenioCelery
+
 from invenio_formatter import format_record
+
 from invenio_pidstore.models import PersistentIdentifier
 
 from ..api import get_record
 
 # Setup Celery logger
+celery = InvenioCelery(current_app)
+
 logger = get_task_logger(__name__)
 
 
-@celery.task(ignore_result=True, max_retries=6, default_retry_delay=10 * 60,
-             rate_limit="100/m")
+@celery.celery.task(ignore_result=True, max_retries=6,
+                    default_retry_delay=10 * 60, rate_limit="100/m")
 def datacite_sync(recid):
     """Check DOI in DataCite."""
     record = get_record(recid)
@@ -58,8 +65,8 @@ def datacite_sync(recid):
         logger.info("Successfully synchronized DOI %s." % doi_val)
 
 
-@celery.task(ignore_result=True, max_retries=6, default_retry_delay=10 * 60,
-             rate_limit="100/m")
+@celery.celery.task(ignore_result=True, max_retries=6,
+                    default_retry_delay=10 * 60, rate_limit="100/m")
 def datacite_update(recid):
     """Update DOI in DataCite.
 
@@ -100,7 +107,7 @@ def datacite_update(recid):
             logger.info("Successfully updated DOI %s." % doi_val)
 
 
-@celery.task(ignore_result=True)
+@celery.celery.task(ignore_result=True)
 def datacite_update_all(recids=None):
     """Update many DOIs in DataCite.
 
@@ -123,8 +130,8 @@ def datacite_update_all(recids=None):
         datacite_update.delay(pid.object_value)
 
 
-@celery.task(ignore_result=True, max_retries=6, default_retry_delay=10 * 60,
-             rate_limit="100/m")
+@celery.celery.task(ignore_result=True, max_retries=6,
+                    default_retry_delay=10 * 60, rate_limit="100/m")
 def datacite_delete(recid):
     """Delete DOI in DataCite.
 
@@ -162,8 +169,8 @@ def datacite_delete(recid):
             logger.info("Successfully inactivated DOI %s." % doi_val)
 
 
-@celery.task(ignore_result=True, max_retries=6, default_retry_delay=10 * 60,
-             rate_limit="100/m")
+@celery.celery.task(ignore_result=True, max_retries=6,
+                    default_retry_delay=10 * 60, rate_limit="100/m")
 def datacite_register(recid):
     """Register a DOI for new publication.
 

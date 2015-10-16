@@ -17,11 +17,18 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-from invenio_celery import celery
+"""Elasticsearch indexing."""
+
+from flask import current_app
+
+from invenio_celery import InvenioCelery
+
 from invenio_ext.es import es
 
+celery = InvenioCelery(current_app)
 
-@celery.task
+
+@celery.celery.task
 def index_record(recid, json):
     """Index a record in elasticsearch."""
     es.index(
@@ -32,7 +39,7 @@ def index_record(recid, json):
     )
 
 
-@celery.task
+@celery.celery.task
 def index_collection_percolator(name, dbquery):
     """Create an elasticsearch percolator for a given query."""
     from invenio_search.api import Query
