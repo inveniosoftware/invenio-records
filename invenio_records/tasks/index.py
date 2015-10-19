@@ -17,13 +17,17 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-import six
+"""Record indexing related Celery tasks."""
 
-from invenio.base.globals import cfg
+import six
 from invenio_celery import celery
 from invenio_ext.es import es
 from invenio_search.api import Query
 from invenio_search.walkers.elasticsearch import ElasticSearchDSL
+
+from invenio.base.globals import cfg
+
+from ..signals import before_record_index
 
 
 def get_record_index(record):
@@ -39,6 +43,7 @@ def get_record_index(record):
 @celery.task
 def index_record(recid, json):
     """Index a record in elasticsearch."""
+    before_record_index.send(recid, json=json)
     index = get_record_index(json) or cfg['SEARCH_ELASTIC_DEFAULT_INDEX']
     es.index(
         index=index,
