@@ -17,21 +17,28 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
+"""Tasks API."""
+
 from __future__ import absolute_import
 
-
 from celery.utils.log import get_task_logger
+
+from flask import current_app
+
+from invenio_celery import InvenioCelery
+
 from sqlalchemy import exc
 
-from invenio_celery import celery
-
 from ..api import Record
+
+celery = InvenioCelery(current_app)
 
 logger = get_task_logger(__name__)
 
 
-@celery.task
+@celery.celery.task
 def create_record(json, force=False):
+    """Create record."""
     from invenio_ext.sqlalchemy import db
     try:
         return Record.create(json).get('recid')
