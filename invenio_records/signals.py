@@ -57,7 +57,7 @@ Example subscriber
     )
 """
 
-after_record_insert = _signals.signal('before-record-insert')
+after_record_insert = _signals.signal('after-record-insert')
 """Signal sent after a record is inserted.
 
 .. note::
@@ -67,5 +67,5 @@ after_record_insert = _signals.signal('before-record-insert')
 before_record_update = _signals.signal('before-record-update')
 """Signal sent before a record is update."""
 
-after_record_update = _signals.signal('before-record-update')
+after_record_update = _signals.signal('after-record-update')
 """Signal sent after a record is updated."""
