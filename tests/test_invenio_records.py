@@ -78,7 +78,7 @@ def test_db():
     with app.app_context():
         create_database(db.engine.url)
         db.create_all()
-        assert len(db.metadata.tables) == 1
+        assert len(db.metadata.tables) == 3
 
     data = {'recid': 1, 'title': 'Test'}
     from invenio_records.models import Record as RM
@@ -150,7 +150,7 @@ def test_cli():
     runner = CliRunner()
     script_info = ScriptInfo(create_app=lambda info: app)
 
-    assert len(db.metadata.tables) == 1
+    assert len(db.metadata.tables) == 3
 
     # Test merging a base another file.
     with runner.isolated_filesystem():

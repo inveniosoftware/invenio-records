@@ -24,9 +24,21 @@
 
 """Record models."""
 
+import pkg_resources
+
 from invenio_db import db
+from sqlalchemy_continuum import make_versioned
 from sqlalchemy_utils.models import Timestamp
 from sqlalchemy_utils.types import JSONType
+
+try:
+    pkg_resources.get_distribution('invenio_accounts')
+except pkg_resources.DistributionNotFound:
+    user_cls = None
+else:
+    from invenio_accounts.models import User as user_cls
+
+make_versioned(user_cls=user_cls)
 
 
 class Record(db.Model, Timestamp):
@@ -35,6 +47,9 @@ class Record(db.Model, Timestamp):
     Additionally it contains two columns ``created`` and ``updated``
     with automatically managed timestamps.
     """
+
+    # Enables SQLAlchemy-Continuum versioning
+    __versioned__ = {}
 
     __tablename__ = 'record'
 

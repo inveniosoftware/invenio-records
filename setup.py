@@ -37,7 +37,7 @@ history = open('CHANGES.rst').read()
 tests_require = [
     'check-manifest>=0.25',
     'coverage>=4.0',
-    'invenio-db[all]>=1.0.0a3',
+    'invenio-db[all]>=1.0.0a4',
     'isort>=4.2.2',
     'pep257>=0.7.0',
     'pytest-cache>=1.0',
@@ -64,9 +64,10 @@ setup_requires = [
 install_requires = [
     'blinker>=1.4',
     'flask-celeryext>=0.1.0',
-    'invenio-db>=1.0.0a3',
+    'invenio-db>=1.0.0a4',
     'jsonpatch>=1.11',
     'jsonschema>=2.5.1',
+    'sqlalchemy-continuum>=1.2.1',
     'sqlalchemy-utils>=0.31.0',
 ]
 
