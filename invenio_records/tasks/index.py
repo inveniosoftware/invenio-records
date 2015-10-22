@@ -17,13 +17,19 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
+"""Record indexing related Celery tasks."""
+
 from invenio_celery import celery
+
 from invenio_ext.es import es
+
+from ..signals import before_record_index
 
 
 @celery.task
 def index_record(recid, json):
     """Index a record in elasticsearch."""
+    before_record_index.send(recid, json=json)
     es.index(
         index='records',
         doc_type='record',

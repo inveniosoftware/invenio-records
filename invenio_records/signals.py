@@ -69,3 +69,21 @@ before_record_update = _signals.signal('before-record-update')
 
 after_record_update = _signals.signal('after-record-update')
 """Signal sent after a record is updated."""
+
+before_record_index = _signals.signal('before-record-index')
+"""Signal sent before a record is indexed.
+
+Example subscriber
+
+.. code-block:: python
+
+    def listener(sender, **kwargs):
+        info = fetch_some_info_for_recid(sender)
+        kwargs['json']['more_info'] = info
+
+    from invenio_records.signals import before_record_index
+
+    before_record_index.connect(
+        listener
+    )
+"""
