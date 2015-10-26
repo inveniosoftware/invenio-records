@@ -131,6 +131,9 @@ setup(
     include_package_data=True,
     platforms='any',
     entry_points={
+        'invenio_base.apps': [
+            'invenio_records = invenio_records:InvenioRecords',
+        ],
         'invenio_db.models': [
             'invenio_records = invenio_records.models',
         ],
