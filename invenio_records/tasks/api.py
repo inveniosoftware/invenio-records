@@ -23,6 +23,7 @@ from __future__ import absolute_import
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from flask import current_app
 from sqlalchemy import exc
 
 from ..api import Record
@@ -39,7 +40,7 @@ def create_record(data=None, force=False):
     except exc.IntegrityError:
         if force:
             current_app.logger.warning(
-                "Trying to force insert: {0}".format(json))
-            return Record(json).commit().get('recid')
+                "Trying to force insert: {0}".format(data))
+            return Record(data).commit().get('recid')
     finally:
         db.session.commit()
