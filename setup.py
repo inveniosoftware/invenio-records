@@ -71,9 +71,6 @@ install_requires = [
     'sqlalchemy-utils>=0.31.0',
 ]
 
-if sys.version_info < (3, 2):
-    install_requires.append('functools32>=3.2.3-2')
-
 packages = find_packages()
 
 

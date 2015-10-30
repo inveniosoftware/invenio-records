@@ -30,7 +30,6 @@ import json
 import sys
 
 import click
-from flask import current_app
 from flask_cli import with_appcontext
 from invenio_db import db
 
@@ -59,7 +58,7 @@ def create(source, schema, force):
     else:
         from celery import group
         job = group([create_record.s(data=item, force=force) for item in data])
-        result = job.apply_async()
+        job.apply_async()
 
 
 @records.command()
