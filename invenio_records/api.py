@@ -29,7 +29,8 @@ from invenio_db import db
 from jsonpatch import apply_patch
 from jsonschema import validate
 
-from .models import Record as RecordMetadata
+from .errors import RecordNotCommitableError
+from .models import RecordMetadata
 from .signals import after_record_insert, after_record_update, \
     before_record_insert, before_record_update
 
@@ -40,7 +41,7 @@ class Record(dict):
     @property
     def __key_aliases__(self):
         """Return key aliases."""
-        return current_app.config.get('RECORD_KEY_ALIASES', {})
+        return current_app.config.get('RECORDS_KEY_ALIASES', {})
 
     def __getitem__(self, key):
         """Try to get aliased item on ``KeyError``."""
@@ -66,51 +67,61 @@ class Record(dict):
             )
         return super(Record, self).__setitem__(key, value)
 
-    def __init__(self, data, model=None):
-        """Initialize instance with dictionary data and SQLAlchemy model.
-
-        :param data: dict with record metadata
-        :param model: :class:`~invenio_records.models.Record` instance
-        """
-        self.model = model
-        super(Record, self).__init__(data)
-
     @classmethod
-    def create(cls, data, schema=None, identifier_key='recid'):
+    def create(cls, data, id_=None):
         """Create a record instance and store it in database."""
         with db.session.begin_nested():
             record = cls(data)
 
             before_record_insert.send(record)
 
-            if schema is not None:
-                validate(record, schema)
-                record['$schema'] = schema
+            record.validate()
 
-            metadata = dict(json=dict(record))
-            if identifier_key is not None and \
-                    record.get(identifier_key) is not None:
-                metadata['id'] = record.get(identifier_key)
+            record.model = RecordMetadata(id=id_, json=record)
 
-            record.model = model = RecordMetadata(**metadata)
-            db.session.add(model)
+            db.session.add(record.model)
 
         after_record_insert.send(record)
         return record
 
+    @classmethod
+    def get_record(cls, id):
+        """Get record instance.
+
+        Raises database exception if record does not exists.
+        """
+        with db.session.no_autoflush:
+            obj = RecordMetadata.query.filter_by(id=id).one()
+            return cls(obj.json, model=obj)
+
+    def __init__(self, data, model=None):
+        """Initialize instance with dictionary data and SQLAlchemy model.
+
+        :param data: dict with record metadata
+        :param model: :class:`~invenio_records.models.RecordMetadata` instance
+        """
+        self.model = model
+        super(Record, self).__init__(data)
+
+    @property
+    def id(self):
+        """Get model identifier."""
+        return self.model.id if self.model else None
+
     def patch(self, patch):
-        """Patch a record metadata and update database row."""
-        model = self.model
+        """Patch record metadata."""
         data = apply_patch(dict(self), patch)
-        return self.__class__(data, model=model)
+        return self.__class__(data, model=self.model)
 
     def commit(self):
         """Store changes on current instance in database."""
+        if self.model is None:
+            raise RecordNotCommitableError()
+
         with db.session.begin_nested():
             before_record_update.send(self)
 
-            if self.model is None:
-                self.model = RecordMetadata.query.get(self['recid'])
+            self.validate()
 
             self.model.json = dict(self)
 
@@ -119,23 +130,12 @@ class Record(dict):
         after_record_update.send(self)
         return self
 
-    @classmethod
-    def get_record(cls, recid, *args, **kwargs):
-        """Return record instance.
-
-        Raises database exception if record does not exists.
-        """
-        with db.session.no_autoflush:
-            obj = RecordMetadata.query.filter_by(id=recid).one()
-            return cls(obj.json, model=obj)
+    def validate(self):
+        """Validate record according to schema defined in ``$schema`` key."""
+        if '$schema' in self:
+            return validate(self, self['$schema'])
+        return True
 
     def dumps(self, **kwargs):
         """Return pure Python dictionary with record metadata."""
-        # FIXME add keywords filtering
-        # TODO add signal support
         return dict(self)
-
-
-# Functional interface
-create_record = Record.create
-get_record = Record.get_record

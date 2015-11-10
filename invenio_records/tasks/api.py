@@ -32,15 +32,16 @@ logger = get_task_logger(__name__)
 
 
 @shared_task
-def create_record(data=None, force=False):
+def create_record(data=None, id_=None, force=False):
     """Create record from given data."""
     from invenio_db import db
     try:
-        return Record.create(data).get('recid')
+        return Record.create(data, id_=id_).id
     except exc.IntegrityError:
         if force:
             current_app.logger.warning(
-                "Trying to force insert: {0}".format(data))
-            return Record(data).commit().get('recid')
+                "Trying to force insert: {0}".format(id_))
+            record = Record.get_record(id_)
+            return Record(data, model=record.model).commit().id
     finally:
         db.session.commit()

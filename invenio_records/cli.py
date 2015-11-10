@@ -45,10 +45,9 @@ def records():
 
 @records.command()
 @click.argument('source', type=click.File('r'), default=sys.stdin)
-@click.option('-s', '--schema', default=None)
 @click.option('--force', is_flag=True, default=False)
 @with_appcontext
-def create(source, schema, force):
+def create(source, force):
     """Create new bibliographic record(s)."""
     from .tasks.api import create_record
     data = json.load(source)
@@ -63,16 +62,15 @@ def create(source, schema, force):
 
 @records.command()
 @click.argument('patch', type=click.File('r'), default=sys.stdin)
-@click.option('-r', '--recid', multiple=True)
-@click.option('-s', '--schema', default=None)
+@click.option('-r', '--record', multiple=True)
 @with_appcontext
-def patch(patch, recid, schema):
+def patch(patch, record):
     """Patch existing bibliographic record."""
     from .api import Record
 
     patch_content = patch.read()
 
-    if recid:
-        for r in recid:
-            Record.get_record(int(r)).patch(patch_content).commit()
+    if record:
+        for rec in record:
+            Record.get_record(rec).patch(patch_content).commit()
         db.session.commit()

@@ -22,21 +22,14 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""Package configuration."""
+"""Errors for records module."""
 
-RECORDS_BREADCRUMB_TITLE_KEY = 'title_statement.title'
-"""Key used to extract the breadcrumb title from the record."""
+from __future__ import absolute_import, print_function
 
-RECORDS_PROCESSORS = {
-    'json': 'json.load',
-    'marcxml': 'invenio_records.cli:_convert_marcxml',
-}
-"""Processors used to create records."""
 
-RECORDS_KEY_ALIASES = {
-    'recid': 'control_number',
-    '8560_f': 'electronic_location_and_access.electronic_name',
-    '980': 'collections',
-    '980__a': 'collections.primary',
-    '980__b': 'collections.secondary',
-}
+class RecordsError(Exception):
+    """Base class for errors in records module."""
+
+
+class RecordNotCommitableError(RecordsError):
+    """Error raised when record has no model and thus not commitable."""

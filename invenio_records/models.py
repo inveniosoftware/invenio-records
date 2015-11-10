@@ -25,11 +25,11 @@
 """Record models."""
 
 import pkg_resources
-
+import uuid
 from invenio_db import db
 from sqlalchemy_continuum import make_versioned
 from sqlalchemy_utils.models import Timestamp
-from sqlalchemy_utils.types import JSONType
+from sqlalchemy_utils.types import JSONType, UUIDType
 
 try:
     pkg_resources.get_distribution('invenio_accounts')
@@ -41,7 +41,7 @@ else:
 make_versioned(user_cls=user_cls)
 
 
-class Record(db.Model, Timestamp):
+class RecordMetadata(db.Model, Timestamp):
     """Represent a record metadata inside the SQL database.
 
     Additionally it contains two columns ``created`` and ``updated``
@@ -54,10 +54,11 @@ class Record(db.Model, Timestamp):
     __tablename__ = 'record'
 
     id = db.Column(
-        db.Integer,
+        UUIDType,
         primary_key=True,
-        autoincrement=True,
+        default=uuid.uuid4,
     )
+    """Record identifier."""
 
     json = db.Column(JSONType, default=lambda: dict(), nullable=True)
     """Store metadata in JSON format.
@@ -68,7 +69,7 @@ class Record(db.Model, Timestamp):
     """
 
     version_id = db.Column(db.Integer, nullable=False)
-    """It is used by SQLAlchemy for optimistic concurency control."""
+    """It is used by SQLAlchemy for optimistic concurrency control."""
 
     __mapper_args__ = {
         'version_id_col': version_id
@@ -76,5 +77,5 @@ class Record(db.Model, Timestamp):
 
 
 __all__ = (
-    'Record',
+    'RecordMetadata',
 )
