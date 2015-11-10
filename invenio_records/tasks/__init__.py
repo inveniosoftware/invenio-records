@@ -18,11 +18,3 @@
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 """Define Celery tasks."""
-
-from __future__ import absolute_import
-
-from .api import create_record
-
-__all__ = (
-    'create_record',
-)
