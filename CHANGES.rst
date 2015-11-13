@@ -24,8 +24,29 @@
 Changes
 =======
 
-Version 1.0.0 (released 2015-11-09)
+Version 1.0.0 (released 2015-11-13)
 -----------------------------------
+
+What's new
+~~~~~~~~~~
+
+- Initial public release after architecture change.
+
+Incompatible changes
+~~~~~~~~~~~~~~~~~~~~
+
+- Changes primary key of records to UUIDType instead of auto-
+  incrementing integers.
+- Removes functional interface to records.
+- Renames SQLAlchemy model from Record to RecordMetadata to avoid
+  naming confusion with API Record class.
+- Refactors code to use Invenio-DB and removes legacy code. Web
+  interface and REST API will be provided via separate packages.
+
+Bug fixes
+~~~~~~~~~
+
+- Fixes typo in configuration variables.
 
 Version 0.3.4 (released 2015-10-05)
 -----------------------------------

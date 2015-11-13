@@ -2,7 +2,7 @@
  Invenio-Records v1.0.0
 ========================
 
-Invenio-Records v1.0.0 was released on November 9, 2015.
+Invenio-Records v1.0.0 was released on November 13, 2015.
 
 About
 -----
@@ -15,6 +15,22 @@ What's new
 ----------
 
 - Initial public release after architecture change.
+
+Incompatible changes
+--------------------
+
+- Changes primary key of records to UUIDType instead of auto-
+  incrementing integers.
+- Removes functional interface to records.
+- Renames SQLAlchemy model from Record to RecordMetadata to avoid
+  naming confusion with API Record class.
+- Refactors code to use Invenio-DB and removes legacy code. Web
+  interface and REST API will be provided via separate packages.
+
+Bug fixes
+---------
+
+- Fixes typo in configuration variables.
 
 Installation
 ------------
