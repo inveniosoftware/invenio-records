@@ -51,7 +51,7 @@ class RecordMetadata(db.Model, Timestamp):
     # Enables SQLAlchemy-Continuum versioning
     __versioned__ = {}
 
-    __tablename__ = 'record'
+    __tablename__ = 'records_metadata'
 
     id = db.Column(
         UUIDType,
