@@ -83,7 +83,16 @@ def test_db():
         assert 'records_metadata_version' in db.metadata.tables
         assert 'transaction' in db.metadata.tables
 
-    data = {'title': 'Test'}
+    schema = {
+        'type': 'object',
+        'properties': {
+            'title': {'type': 'string'},
+            'field': {'type': 'boolean'},
+            'hello': {'type': 'array'},
+        },
+        'required': ['title'],
+    }
+    data = {'title': 'Test', '$schema': schema}
     from invenio_records.models import RecordMetadata as RM
 
     # Create a record

@@ -27,14 +27,16 @@
 from flask import current_app
 from invenio_db import db
 from jsonpatch import apply_patch
-from jsonschema import validate
 from sqlalchemy.orm.exc import NoResultFound
+from werkzeug.local import LocalProxy
 
 from .errors import MissingModelError
 from .models import RecordMetadata
 from .signals import after_record_delete, after_record_insert, \
     after_record_revert, after_record_update, before_record_delete, \
     before_record_insert, before_record_revert, before_record_update
+
+_records_state = LocalProxy(lambda: current_app.extensions['invenio-records'])
 
 
 class RecordBase(dict):
@@ -101,7 +103,7 @@ class RecordBase(dict):
     def validate(self):
         """Validate record according to schema defined in ``$schema`` key."""
         if '$schema' in self:
-            return validate(self, self['$schema'])
+            return _records_state.validate(self, self['$schema'])
         return True
 
     def dumps(self, **kwargs):

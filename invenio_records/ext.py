@@ -26,23 +26,45 @@
 
 from __future__ import absolute_import, print_function
 
+from jsonresolver import JSONResolver
+from jsonresolver.contrib.jsonschema import ref_resolver_factory
+from jsonschema import validate
+
 from . import config
 from .cli import records as records_cmd
+
+
+class _RecordsState(object):
+    """State for record JSON resolver."""
+
+    def __init__(self, app, entry_point_group=None):
+        """Initialize state."""
+        self.app = app
+        self.resolver = JSONResolver(entry_point_group=entry_point_group)
+        self.ref_resolver_cls = ref_resolver_factory(self.resolver)
+
+    def validate(self, data, schema):
+        """Validate data using schema with ``JSONResolver``."""
+        return validate(data, schema,
+                        resolver=self.ref_resolver_cls.from_schema(schema))
 
 
 class InvenioRecords(object):
     """Invenio-Records extension."""
 
-    def __init__(self, app=None):
+    def __init__(self, app=None, **kwargs):
         """Extension initialization."""
         if app:
-            self.init_app(app)
+            self._state = self.init_app(app, **kwargs)
 
-    def init_app(self, app):
+    def init_app(self, app,
+                 entry_point_group='invenio_records.jsonresolver', **kwargs):
         """Flask application initialization."""
         self.init_config(app)
         app.cli.add_command(records_cmd)
-        app.extensions['invenio-records'] = self
+        state = _RecordsState(app, entry_point_group=entry_point_group)
+        app.extensions['invenio-records'] = state
+        return state
 
     def init_config(self, app):
         """Initialize configuration."""

@@ -74,6 +74,7 @@ install_requires = [
     'flask-celeryext>=0.1.0',
     'invenio-db>=1.0.0a4',
     'jsonpatch>=1.11',
+    'jsonresolver>=0.1.0',
     'jsonschema>=2.5.1',
     'sqlalchemy-continuum>=1.2.1',
     'sqlalchemy-utils>=0.31.0',
