@@ -27,15 +27,51 @@
 
 from __future__ import absolute_import, print_function
 
+import os
+import shutil
+import tempfile
+
 import pytest
 from flask import Flask
+from flask_celeryext import FlaskCeleryExt
+from flask_cli import FlaskCLI
+from invenio_db import InvenioDB, db
+from sqlalchemy_utils.functions import create_database, database_exists
+
+from invenio_records import InvenioRecords
 
 
 @pytest.fixture()
-def app():
+def app(request):
     """Flask application fixture."""
-    app = Flask('testapp')
+    instance_path = tempfile.mkdtemp()
+    app = Flask(__name__, instance_path=instance_path)
     app.config.update(
-        TESTING=True
+        CELERY_ALWAYS_EAGER=True,
+        CELERY_CACHE_BACKEND="memory",
+        CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+        CELERY_RESULT_BACKEND="cache",
+        SECRET_KEY="CHANGE_ME",
+        SECURITY_PASSWORD_SALT="CHANGE_ME_ALSO",
+        SQLALCHEMY_DATABASE_URI=os.environ.get(
+            'SQLALCHEMY_DATABASE_URI', 'sqlite:///test.db'),
+        SQLALCHEMY_ECHO=True,
+        TESTING=True,
     )
+    FlaskCLI(app)
+    FlaskCeleryExt(app)
+    InvenioDB(app)
+    InvenioRecords(app)
+
+    with app.app_context():
+        if not database_exists(str(db.engine.url)):
+            create_database(str(db.engine.url))
+        db.drop_all()
+        db.create_all()
+
+    def teardown():
+        shutil.rmtree(instance_path)
+
+    request.addfinalizer(teardown)
+
     return app

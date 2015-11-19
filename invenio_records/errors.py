@@ -31,5 +31,5 @@ class RecordsError(Exception):
     """Base class for errors in records module."""
 
 
-class RecordNotCommitableError(RecordsError):
-    """Error raised when record has no model and thus not commitable."""
+class MissingModelError(RecordsError):
+    """Error raised when record has no model."""

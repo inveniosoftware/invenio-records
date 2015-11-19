@@ -74,3 +74,15 @@ before_record_update = _signals.signal('before-record-update')
 
 after_record_update = _signals.signal('after-record-update')
 """Signal sent after a record is updated."""
+
+before_record_delete = _signals.signal('before-record-delete')
+"""Signal is sent before a record is delete."""
+
+after_record_delete = _signals.signal('after-record-delete')
+"""Signal sent after a record is delete."""
+
+before_record_revert = _signals.signal('before-record-revert')
+"""Signal is sent before a record is revert."""
+
+after_record_revert = _signals.signal('after-record-revert')
+"""Signal sent after a record is revert."""

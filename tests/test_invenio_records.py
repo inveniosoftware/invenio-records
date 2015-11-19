@@ -33,15 +33,15 @@ import uuid
 import pytest
 from click.testing import CliRunner
 from flask import Flask
-from flask_celeryext import create_celery_app
 from flask_cli import FlaskCLI, ScriptInfo
 from invenio_db import InvenioDB, db
 from invenio_db.cli import db as db_cmd
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy_utils.functions import create_database, drop_database
+from sqlalchemy_utils.functions import create_database, database_exists, \
+    drop_database
 
 from invenio_records import InvenioRecords, Record, cli
-from invenio_records.errors import RecordNotCommitableError
+from invenio_records.errors import MissingModelError
 
 
 def test_version():
@@ -76,7 +76,8 @@ def test_db():
     InvenioRecords(app)
 
     with app.app_context():
-        create_database(db.engine.url)
+        if not database_exists(db.engine.url):
+            create_database(db.engine.url)
         db.create_all()
         assert len(db.metadata.tables) == 3
 
@@ -117,7 +118,7 @@ def test_db():
     # Cannot commit record without model (i.e. Record.create_record)
     with app.app_context():
         record3 = Record({'title': 'Not possible'})
-        with pytest.raises(RecordNotCommitableError):
+        with pytest.raises(MissingModelError):
             record3.commit()
 
     with app.app_context():
@@ -125,26 +126,8 @@ def test_db():
         drop_database(db.engine.url)
 
 
-def test_cli():
+def test_cli(app):
     """Test CLI."""
-    app = Flask(__name__)
-    app.config.update(
-        CELERY_ALWAYS_EAGER=True,
-        CELERY_CACHE_BACKEND="memory",
-        CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
-        CELERY_RESULT_BACKEND="cache",
-        SECRET_KEY="CHANGE_ME",
-        SECURITY_PASSWORD_SALT="CHANGE_ME_ALSO",
-        SQLALCHEMY_DATABASE_URI=os.environ.get(
-            'SQLALCHEMY_DATABASE_URI', 'sqlite:///test.db'
-        ),
-    )
-    FlaskCLI(app)
-    InvenioDB(app)
-    InvenioRecords(app)
-
-    create_celery_app(app)
-
     runner = CliRunner()
     script_info = ScriptInfo(create_app=lambda info: app)
 
