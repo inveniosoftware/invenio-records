@@ -30,6 +30,8 @@ import sys
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
+PY3 = sys.version_info[0] == 3
+
 readme = open('README.rst').read()
 history = open('CHANGES.rst').read()
 
@@ -45,6 +47,9 @@ tests_require = [
     'pytest-pep8>=1.0.6',
     'pytest>=2.8.0',
 ]
+
+if not PY3:
+    tests_require.append('ipaddr>=2.1.11')
 
 extras_require = {
     'access': [
