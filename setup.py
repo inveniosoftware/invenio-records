@@ -47,6 +47,9 @@ tests_require = [
 ]
 
 extras_require = {
+    'access': [
+        'invenio-access>=1.0.0a1',
+    ],
     'docs': [
         'Sphinx>=1.3',
     ],
@@ -140,6 +143,9 @@ setup(
         'invenio_i18n.translations': [
             'invenio_records = invenio_records',
         ],
+        'invenio_access.actions': [
+            'record_view = invenio_records.permissions:RecordViewActionNeed',
+        ]
     },
     extras_require=extras_require,
     install_requires=install_requires,

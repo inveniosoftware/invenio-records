@@ -79,7 +79,9 @@ def test_db():
         if not database_exists(db.engine.url):
             create_database(db.engine.url)
         db.create_all()
-        assert len(db.metadata.tables) == 3
+        assert 'records_metadata' in db.metadata.tables
+        assert 'records_metadata_version' in db.metadata.tables
+        assert 'transaction' in db.metadata.tables
 
     data = {'title': 'Test'}
     from invenio_records.models import RecordMetadata as RM
@@ -131,7 +133,9 @@ def test_cli(app):
     runner = CliRunner()
     script_info = ScriptInfo(create_app=lambda info: app)
 
-    assert len(db.metadata.tables) == 3
+    assert 'records_metadata' in db.metadata.tables
+    assert 'records_metadata_version' in db.metadata.tables
+    assert 'transaction' in db.metadata.tables
 
     from invenio_records.models import RecordMetadata as RM
 

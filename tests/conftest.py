@@ -55,7 +55,6 @@ def app(request):
         SECURITY_PASSWORD_SALT="CHANGE_ME_ALSO",
         SQLALCHEMY_DATABASE_URI=os.environ.get(
             'SQLALCHEMY_DATABASE_URI', 'sqlite:///test.db'),
-        SQLALCHEMY_ECHO=True,
         TESTING=True,
     )
     FlaskCLI(app)
