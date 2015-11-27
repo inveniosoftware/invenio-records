@@ -63,12 +63,11 @@ def app(request):
     InvenioRecords(app)
 
     with app.app_context():
-        if not database_exists(str(db.engine.url)):
-            create_database(str(db.engine.url))
-        db.drop_all()
         db.create_all()
 
     def teardown():
+        with app.app_context():
+            db.drop_all()
         shutil.rmtree(instance_path)
 
     request.addfinalizer(teardown)

@@ -76,8 +76,6 @@ def test_db():
     InvenioRecords(app)
 
     with app.app_context():
-        if not database_exists(db.engine.url):
-            create_database(db.engine.url)
         db.create_all()
         assert 'records_metadata' in db.metadata.tables
         assert 'records_metadata_version' in db.metadata.tables
@@ -134,7 +132,6 @@ def test_db():
 
     with app.app_context():
         db.drop_all()
-        drop_database(db.engine.url)
 
 
 def test_cli(app):
@@ -160,9 +157,6 @@ def test_cli(app):
                 "op": "replace", "path": "/title", "value": "Patched Test"
             }], ensure_ascii=False).encode('utf-8'))
 
-        runner.invoke(db_cmd, ['init'], obj=script_info)
-        runner.invoke(db_cmd, ['create'], obj=script_info)
-
         result = runner.invoke(cli.records, [], obj=script_info)
         assert result.exit_code == 0
 
@@ -186,6 +180,3 @@ def test_cli(app):
             record = Record.get_record(recid)
             assert record['title'] == 'Patched Test'
             assert record.model.version_id == 2
-
-        runner.invoke(db_cmd, ['drop', '--yes-i-know'], obj=script_info)
-        runner.invoke(db_cmd, ['destroy', '--yes-i-know'], obj=script_info)

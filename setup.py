@@ -30,8 +30,6 @@ import sys
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
-PY3 = sys.version_info[0] == 3
-
 readme = open('README.rst').read()
 history = open('CHANGES.rst').read()
 
@@ -39,7 +37,6 @@ history = open('CHANGES.rst').read()
 tests_require = [
     'check-manifest>=0.25',
     'coverage>=4.0',
-    'invenio-db[all]>=1.0.0a4',
     'isort>=4.2.2',
     'pep257>=0.7.0',
     'pytest-cache>=1.0',
@@ -48,9 +45,6 @@ tests_require = [
     'pytest>=2.8.0',
 ]
 
-if not PY3:
-    tests_require.append('ipaddr>=2.1.11')
-
 extras_require = {
     'access': [
         'invenio-access>=1.0.0a1',
@@ -58,11 +52,22 @@ extras_require = {
     'docs': [
         'Sphinx>=1.3',
     ],
+    'mysql': [
+        'invenio-db[mysql]>=1.0.0a6',
+    ],
+    'postgresql': [
+        'invenio-db[postgresql]>=1.0.0a6',
+    ],
+    'sqlite': [
+        'invenio-db>=1.0.0a6',
+    ],
     'tests': tests_require,
 }
 
 extras_require['all'] = []
-for reqs in extras_require.values():
+for name, reqs in extras_require.items():
+    if name in ('mysql', 'postgresql', 'sqlite'):
+        continue
     extras_require['all'].extend(reqs)
 
 setup_requires = [
@@ -72,7 +77,6 @@ setup_requires = [
 install_requires = [
     'blinker>=1.4',
     'flask-celeryext>=0.1.0',
-    'invenio-db>=1.0.0a4',
     'jsonpatch>=1.11',
     'jsonresolver>=0.1.0',
     'jsonschema>=2.5.1',
