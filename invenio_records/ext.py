@@ -68,6 +68,7 @@ class InvenioRecords(object):
 
     def init_config(self, app):
         """Initialize configuration."""
+        app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', True)
         for k in dir(config):
             if k.startswith('RECORDS_'):
                 app.config.setdefault(k, getattr(config, k))
