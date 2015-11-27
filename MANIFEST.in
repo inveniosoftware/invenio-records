@@ -47,5 +47,6 @@ recursive-include invenio_records *.html
 recursive-include invenio_records *.mo
 recursive-include invenio_records *.po
 recursive-include invenio_records *.pot
+recursive-include invenio_records *.xml
 recursive-include tests *.py
 recursive-include tests *.xml
