@@ -150,7 +150,7 @@ setup(
             'invenio_records = invenio_records',
         ],
         'invenio_access.actions': [
-            'record_view = invenio_records.permissions:RecordViewActionNeed',
+            'records_read_all = invenio_records.permissions:records_read_all',
         ]
     },
     extras_require=extras_require,

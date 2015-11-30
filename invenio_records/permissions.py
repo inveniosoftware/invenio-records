@@ -37,16 +37,20 @@ from functools import partial
 from invenio_access.permissions import DynamicPermission, \
     ParameterizedActionNeed
 
-RecordViewActionNeed = partial(ParameterizedActionNeed, 'record-view')
-"""Action need for viewing a record."""
+RecordReadActionNeed = partial(ParameterizedActionNeed, 'records-read')
+"""Action need for reading a record."""
+
+records_read_all = RecordReadActionNeed(None)
+"""Read all records action need."""
 
 
 class RecordPermission(DynamicPermission):
-    """General permission for a record."""
+    """General dynamic permission for a record."""
 
     def __init__(self, record):
         """Initialize permission."""
-        super(RecordPermission, self).__init__(RecordViewActionNeed(record.id))
+        super(RecordPermission, self).__init__(
+            RecordReadActionNeed(str(record.id)))
 
 
 def permission_factory(record):
