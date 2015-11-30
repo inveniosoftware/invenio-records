@@ -27,7 +27,7 @@
 Note, the permissions are dependent on Invenio-Access so you must install
 Invenio-Records with this extra dependency:
 
-.. code-block: console
+.. code-block:: console
 
    $ pip install invenio-records[access]
 """

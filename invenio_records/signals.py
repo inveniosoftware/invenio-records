@@ -28,23 +28,6 @@ from blinker import Namespace
 
 _signals = Namespace()
 
-record_viewed = _signals.signal('record-viewed')
-"""Signal is sent when a detailed view of record is displayed.
-
-Parameters:
-    recid       - id of record
-    id_user     - id of user or 0 for guest
-    request     - flask request object
-
-Example subscriber:
-
-.. code-block:: python
-
-     def subscriber(sender, recid=0, id_user=0, request=None):
-         ...
-
-"""
-
 before_record_insert = _signals.signal('before-record-insert')
 """Signal is sent before a record is inserted.
 
@@ -56,17 +39,15 @@ Example subscriber
         sender['key'] = sum(args)
 
     from invenio_records.signals import before_record_insert
-
-    before_record_insert.connect(
-        listener
-    )
+    before_record_insert.connect(listener)
 """
 
 after_record_insert = _signals.signal('after-record-insert')
 """Signal sent after a record is inserted.
 
 .. note::
-    No modification are allowed on record object.
+
+   No modification are allowed on record object.
 """
 
 before_record_update = _signals.signal('before-record-update')

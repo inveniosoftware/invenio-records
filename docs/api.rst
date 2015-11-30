@@ -25,6 +25,40 @@
 API Docs
 ========
 
-invenio_records
+Flask extension
 ---------------
+.. automodule:: invenio_records.ext
+   :members:
+   :undoc-members:
 
+
+Record API
+----------
+.. automodule:: invenio_records.api
+   :members:
+   :undoc-members:
+
+Errors
+------
+.. automodule:: invenio_records.errors
+   :members:
+   :undoc-members:
+
+
+Permissions
+-----------
+.. automodule:: invenio_records.permissions
+   :members:
+   :undoc-members:
+
+Signals
+-------
+.. automodule:: invenio_records.signals
+   :members:
+   :undoc-members:
+
+Configuration
+-------------
+.. automodule:: invenio_records.config
+   :members:
+   :undoc-members:
