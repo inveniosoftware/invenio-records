@@ -28,14 +28,18 @@ from __future__ import absolute_import, print_function
 
 import uuid
 
+import pytest
 from flask_principal import UserNeed
-from invenio_access import InvenioAccess
-from invenio_access.models import ActionUsers
 from invenio_accounts.models import User
 from invenio_db import db
 
+from invenio_access import InvenioAccess
+from invenio_access.models import ActionUsers
 from invenio_records import Record
-from invenio_records.permissions import permission_factory, records_read_all
+from invenio_records.permissions import create_permission_factory, \
+    delete_permission_factory, read_permission_factory, records_create_all, \
+    records_delete_all, records_read_all, records_update_all, \
+    update_permission_factory
 
 
 class FakeIdentity(object):
@@ -45,8 +49,16 @@ class FakeIdentity(object):
         """Initialize fake identity."""
         self.provides = provides
 
+perm_params = [
+    (records_read_all.value, read_permission_factory),
+    (records_create_all.value, create_permission_factory),
+    (records_update_all.value, update_permission_factory),
+    (records_delete_all.value, delete_permission_factory),
+]
 
-def test_permission_factory(app):
+
+@pytest.mark.parametrize("action,permission_factory", perm_params)
+def test_permission_factory(app, action, permission_factory):
     """Test revisions."""
     InvenioAccess(app)
     with app.app_context():
@@ -60,9 +72,9 @@ def test_permission_factory(app):
             db.session.add(user_one)
             db.session.add(user_none)
 
-            db.session.add(ActionUsers(action=records_read_all.value,
+            db.session.add(ActionUsers(action=action,
                                        user=user_all, argument=None))
-            db.session.add(ActionUsers(action=records_read_all.value,
+            db.session.add(ActionUsers(action=action,
                                        user=user_one, argument=str(rec_uuid)))
 
             record = Record.create({'title': 'permission test'}, id_=rec_uuid)

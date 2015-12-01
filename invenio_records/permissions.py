@@ -37,22 +37,47 @@ from functools import partial
 from invenio_access.permissions import DynamicPermission, \
     ParameterizedActionNeed
 
+
 RecordReadActionNeed = partial(ParameterizedActionNeed, 'records-read')
 """Action need for reading a record."""
 
 records_read_all = RecordReadActionNeed(None)
 """Read all records action need."""
 
+RecordCreateActionNeed = partial(ParameterizedActionNeed, 'records-create')
+"""Action need for creating a record."""
 
-class RecordPermission(DynamicPermission):
-    """General dynamic permission for a record."""
+records_create_all = RecordCreateActionNeed(None)
+"""Create all records action need."""
 
-    def __init__(self, record):
-        """Initialize permission."""
-        super(RecordPermission, self).__init__(
-            RecordReadActionNeed(str(record.id)))
+RecordUpdateActionNeed = partial(ParameterizedActionNeed, 'records-update')
+"""Action need for updating a record."""
+
+records_update_all = RecordUpdateActionNeed(None)
+"""Update all records action need."""
+
+RecordDeleteActionNeed = partial(ParameterizedActionNeed, 'records-delete')
+"""Action need for deleting a record."""
+
+records_delete_all = RecordDeleteActionNeed(None)
+"""Delete all records action need."""
 
 
-def permission_factory(record):
-    """Factory for creating permissions for records."""
-    return RecordPermission(record)
+def read_permission_factory(record):
+    """Factory for creating read permissions for records."""
+    return DynamicPermission(RecordReadActionNeed(str(record.id)))
+
+
+def create_permission_factory(record):
+    """Factory for creating create permissions for records."""
+    return DynamicPermission(RecordCreateActionNeed(str(record.id)))
+
+
+def update_permission_factory(record):
+    """Factory for creating update permissions for records."""
+    return DynamicPermission(RecordUpdateActionNeed(str(record.id)))
+
+
+def delete_permission_factory(record):
+    """Factory for creating delete permissions for records."""
+    return DynamicPermission(RecordDeleteActionNeed(str(record.id)))
