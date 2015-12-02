@@ -151,7 +151,7 @@ setup(
             'invenio_records = invenio_records.models',
         ],
         'invenio_i18n.translations': [
-            'invenio_records = invenio_records',
+            'messages = invenio_records',
         ],
         'invenio_access.actions': [
             'records_read_all = invenio_records.permissions:records_read_all',
