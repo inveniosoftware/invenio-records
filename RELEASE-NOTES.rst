@@ -2,7 +2,7 @@
  Invenio-Records v1.0.0
 ========================
 
-Invenio-Records v1.0.0 was released on December 1, 2015.
+Invenio-Records v1.0.0 was released on December 2, 2015.
 
 About
 -----
