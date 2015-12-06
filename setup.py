@@ -61,6 +61,9 @@ extras_require = {
     'sqlite': [
         'invenio-db>=1.0.0a6',
     ],
+    'admin': [
+        'Flask-Admin>=1.3.0',
+    ],
     'tests': tests_require,
 }
 
@@ -155,7 +158,10 @@ setup(
         ],
         'invenio_access.actions': [
             'records_read_all = invenio_records.permissions:records_read_all',
-        ]
+        ],
+        'invenio_admin.views': [
+            'invenio_records = invenio_records.admin:record_adminview',
+        ],
     },
     extras_require=extras_require,
     install_requires=install_requires,
