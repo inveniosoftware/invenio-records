@@ -81,8 +81,5 @@ celery = create_celery_app(app)
 @app.route("/")
 def index():
     """Basic test view."""
-    from invenio_records.models import Record
-    return jsonify(records=[r.json for r in Record.query.all()])
-
-if __name__ == "__main__":
-    app.run()
+    from invenio_records.models import RecordMetadata
+    return jsonify(records=[r.json for r in RecordMetadata.query.all()])

@@ -30,8 +30,15 @@ import json
 import sys
 
 import click
+from flask import current_app
 from flask_cli import with_appcontext
 from invenio_db import db
+from sqlalchemy import exc
+
+try:
+    from itertools import zip_longest
+except ImportError:
+    from itertools import izip_longest as zip_longest
 
 
 #
@@ -45,32 +52,60 @@ def records():
 
 @records.command()
 @click.argument('source', type=click.File('r'), default=sys.stdin)
+@click.option('-i', '--id', 'ids', multiple=True)
 @click.option('--force', is_flag=True, default=False)
 @with_appcontext
-def create(source, force):
+def create(source, ids, force):
     """Create new bibliographic record(s)."""
-    from .tasks.api import create_record
+    # Make sure that all imports are done with application context.
+    from sqlalchemy_continuum import versioning_manager
+    from .api import Record
+    from .models import RecordMetadata
+
     data = json.load(source)
 
     if isinstance(data, dict):
-        create_record.delay(data=data, force=force)
-    else:
-        from celery import group
-        job = group([create_record.s(data=item, force=force) for item in data])
-        job.apply_async()
+        data = [data]
+
+    if ids:
+        assert len(ids) == len(data), 'Not enough identifiers.'
+
+    for record, id_ in zip_longest(data, ids):
+        try:
+            click.echo(Record.create(record, id_=id_).id)
+        except exc.IntegrityError:
+            if force:
+                current_app.logger.warning(
+                    "Trying to force insert: {0}".format(id_))
+                # IMPORTANT: We need to create new transtaction for
+                # SQLAlchemy-Continuum as we are using no autoflush
+                # in Record.get_record.
+                uow = versioning_manager.unit_of_work(db.session)
+                transaction = uow.create_transaction(db.session)
+                # Use low-level database model to retreive an instance.
+                model = RecordMetadata.query.get(id_)
+                click.echo(Record(record, model=model).commit().id)
+            else:
+                raise click.BadParameter(
+                    'Record with id={0} already exists. If you want to '
+                    'override its data use --force.'.format(id_),
+                    param_hint='ids',
+                )
+        db.session.flush()
+    db.session.commit()
 
 
 @records.command()
 @click.argument('patch', type=click.File('r'), default=sys.stdin)
-@click.option('-r', '--record', multiple=True)
+@click.option('-i', '--id', 'ids', multiple=True)
 @with_appcontext
-def patch(patch, record):
+def patch(patch, ids):
     """Patch existing bibliographic record."""
     from .api import Record
 
     patch_content = patch.read()
 
-    if record:
-        for rec in record:
-            Record.get_record(rec).patch(patch_content).commit()
+    if ids:
+        for id_ in ids:
+            Record.get_record(id_).patch(patch_content).commit()
         db.session.commit()

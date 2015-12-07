@@ -149,12 +149,17 @@ def test_cli(app):
     with runner.isolated_filesystem():
         with open('record.json', 'wb') as f:
             f.write(json.dumps(
-                {"title": "Test"}, ensure_ascii=False
+                {'title': 'Test'}, ensure_ascii=False
+            ).encode('utf-8'))
+
+        with open('records.json', 'wb') as f:
+            f.write(json.dumps(
+                [{'title': 'Test1'}, {'title': 'Test2'}], ensure_ascii=False
             ).encode('utf-8'))
 
         with open('record.patch', 'wb') as f:
             f.write(json.dumps([{
-                "op": "replace", "path": "/title", "value": "Patched Test"
+                'op': 'replace', 'path': '/title', 'value': 'Patched Test'
             }], ensure_ascii=False).encode('utf-8'))
 
         result = runner.invoke(cli.records, [], obj=script_info)
@@ -166,13 +171,14 @@ def test_cli(app):
         result = runner.invoke(cli.records, ['create', 'record.json'],
                                obj=script_info)
         assert result.exit_code == 0
+        recid = result.output.split('\n')[0]
 
         with app.app_context():
             assert RM.query.count() == 1
-            recid = RM.query.first().id
+            assert recid == str(RM.query.first().id)
 
         result = runner.invoke(cli.records,
-                               ['patch', 'record.patch', '-r', recid],
+                               ['patch', 'record.patch', '-i', recid],
                                obj=script_info)
         assert result.exit_code == 0
 
@@ -180,3 +186,76 @@ def test_cli(app):
             record = Record.get_record(recid)
             assert record['title'] == 'Patched Test'
             assert record.model.version_id == 2
+
+        # Test generated UUIDs
+        recid1 = uuid.uuid4()
+        recid2 = uuid.uuid4()
+        assert recid1 != recid2
+
+        # More ids than records.
+        result = runner.invoke(
+            cli.records,
+            ['create', 'record.json', '-i', recid1, '--id', recid2],
+            obj=script_info
+        )
+        assert result.exit_code == -1
+
+        result = runner.invoke(
+            cli.records,
+            ['create', 'record.json', '-i', recid],
+            obj=script_info
+        )
+        assert result.exit_code == 2
+
+        result = runner.invoke(
+            cli.records,
+            ['create', 'record.json', '-i', recid, '--force'],
+            obj=script_info
+        )
+        assert result.exit_code == 0
+
+        with app.app_context():
+            record = Record.get_record(recid)
+            assert record.model.version_id == 3
+
+        result = runner.invoke(
+            cli.records,
+            ['create', 'records.json', '-i', recid1],
+            obj=script_info
+        )
+        assert result.exit_code == -1
+
+        result = runner.invoke(
+            cli.records,
+            ['create', 'records.json', '-i', recid1, '-i', recid2],
+            obj=script_info
+        )
+        assert result.exit_code == 0
+        with app.app_context():
+            assert 3 == RM.query.count()
+
+        # Check metadata after force insert.
+        result = runner.invoke(
+            cli.records,
+            ['create', 'record.json', '-i', recid1, '--force'],
+            obj=script_info
+        )
+        assert result.exit_code == 0
+        with app.app_context():
+            record = Record.get_record(recid1)
+            assert 'Test' == record['title']
+            assert 'Test1' == record.revisions[0]['title']
+
+        # More modifications of record 1.
+        result = runner.invoke(
+            cli.records,
+            ['create', 'records.json', '-i', recid1, '--id', recid2,
+             '--force'],
+            obj=script_info
+        )
+        assert result.exit_code == 0
+        with app.app_context():
+            record = Record.get_record(recid1)
+            assert 'Test1' == record['title']
+            assert 'Test' == record.revisions[1]['title']
+            assert 'Test1' == record.revisions[0]['title']
