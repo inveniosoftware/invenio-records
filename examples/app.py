@@ -22,27 +22,33 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
+"""Minimal Invenio-Records application example for development.
 
-"""Minimal Flask application example for development.
-
-Create database and tables:
-
-.. code-block:: console
+Create database and tables::
 
    $ cd examples
+   $ mkdir -p instance
    $ flask -a app.py db init
    $ flask -a app.py db create
 
-Create a record:
+Create test record::
 
-.. code-block:: console
+   $ echo '{"title": "Test title"}' | flask -a app.py records create \
+      -i deadbeef-9fe4-43d3-a08f-38c2b309afba
 
-   $ echo '{"title": "Test"}' | flask -a app.py records create
-
-Run the development server:
+Run the development server::
 
    $ flask -a app.py --debug run --debugger
+
+Retrieve record via web::
+
+   $ curl http://127.0.0.1:5000/deadbeef-9fe4-43d3-a08f-38c2b309afba
+
+Retrieve record via shell::
+
    $ flask -a app.py shell
+   >>> from invenio_records.api import Record
+   >>> Record.get_record('deadbeef-9fe4-43d3-a08f-38c2b309afba')
 """
 
 from __future__ import absolute_import, print_function
@@ -78,8 +84,8 @@ InvenioRecords(app)
 celery = create_celery_app(app)
 
 
-@app.route("/")
-def index():
-    """Basic test view."""
-    from invenio_records.models import RecordMetadata
-    return jsonify(records=[r.json for r in RecordMetadata.query.all()])
+@app.route("/<uuid>")
+def index(uuid):
+    """Retrieve record."""
+    from invenio_records.api import Record
+    return jsonify(Record.get_record(uuid))

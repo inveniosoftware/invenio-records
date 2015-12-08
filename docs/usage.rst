@@ -27,3 +27,14 @@
 =======
 
 .. automodule:: invenio_records
+
+Invenio-Records is typically used as part of the Invenio digital repository
+ecosystem. Please see `Invenio <http://pythonhosted.org/invenio>`_ documentation
+for more.
+
+If you'd like to use Invenio-Records in a standalone manner, here is a simple
+minimal example that is useful among others for Invenio-Records developments.
+
+.. include:: ../examples/app.py
+   :start-after: to any jurisdiction.
+   :literal:
