@@ -106,6 +106,10 @@ class RecordBase(dict):
             return _records_state.validate(self, self['$schema'])
         return True
 
+    def replace_refs(self):
+        """Replace the ``$ref`` keys within the JSON."""
+        return _records_state.replace_refs(self)
+
     def dumps(self, **kwargs):
         """Return pure Python dictionary with record metadata."""
         return dict(self)

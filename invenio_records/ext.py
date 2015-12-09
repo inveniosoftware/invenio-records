@@ -26,7 +26,9 @@
 
 from __future__ import absolute_import, print_function
 
+from jsonref import JsonRef
 from jsonresolver import JSONResolver
+from jsonresolver.contrib.jsonref import json_loader_factory
 from jsonresolver.contrib.jsonschema import ref_resolver_factory
 from jsonschema import validate
 
@@ -42,11 +44,16 @@ class _RecordsState(object):
         self.app = app
         self.resolver = JSONResolver(entry_point_group=entry_point_group)
         self.ref_resolver_cls = ref_resolver_factory(self.resolver)
+        self.loader_cls = json_loader_factory(self.resolver)
 
     def validate(self, data, schema):
         """Validate data using schema with ``JSONResolver``."""
         return validate(data, schema,
                         resolver=self.ref_resolver_cls.from_schema(schema))
+
+    def replace_refs(self, data):
+        """Replace the JSON reference objects with ``JsonRef``."""
+        return JsonRef.replace_refs(data, loader=self.loader_cls())
 
 
 class InvenioRecords(object):

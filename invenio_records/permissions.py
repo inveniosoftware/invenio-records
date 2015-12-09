@@ -37,7 +37,6 @@ from functools import partial
 from invenio_access.permissions import DynamicPermission, \
     ParameterizedActionNeed
 
-
 RecordReadActionNeed = partial(ParameterizedActionNeed, 'records-read')
 """Action need for reading a record."""
 

@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
@@ -21,11 +22,14 @@
 # In applying this license, CERN does not
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
+"""Resolve JSON for FundRef funders."""
+
+from __future__ import absolute_import, print_function
+
+import jsonresolver
 
 
-pep257 invenio_records && \
-isort -rc -c -df **/*.py && \
-check-manifest --ignore ".travis-*" && \
-sphinx-build -qnNW docs docs/_build/html && \
-python setup.py test && \
-sphinx-build -qnNW -b doctest docs docs/_build/doctest
+@jsonresolver.route('/<item>', host='foo.bar')
+def test_resolver(item):
+    """Resolve the JsonRef funder."""
+    return {'name': item}

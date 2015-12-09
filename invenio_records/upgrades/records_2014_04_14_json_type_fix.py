@@ -19,10 +19,8 @@
 
 """Change JSON data type from TEXT to LONGTEXT."""
 
-from invenio_upgrader.api import op
-
 import sqlalchemy as sa
-
+from invenio_upgrader.api import op
 from sqlalchemy.dialects import mysql
 from sqlalchemy.exc import OperationalError
 

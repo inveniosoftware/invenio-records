@@ -33,9 +33,7 @@ import re
 import sys
 
 import mock
-
 import pkg_resources
-
 import setuptools
 
 

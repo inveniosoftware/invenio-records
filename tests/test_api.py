@@ -30,6 +30,8 @@ from datetime import datetime, timedelta
 
 import pytest
 from invenio_db import db
+from jsonresolver import JSONResolver
+from jsonresolver.contrib.jsonref import json_loader_factory
 from sqlalchemy.orm.exc import NoResultFound
 
 from invenio_records import Record
@@ -188,3 +190,17 @@ def test_missing_model(app):
         pytest.raises(MissingModelError, record.commit)
         pytest.raises(MissingModelError, record.delete)
         pytest.raises(MissingModelError, record.revert, -1)
+
+
+def test_record_replace_refs(app):
+    """Test the replacement of JSON references using JSONResolver."""
+    with app.app_context():
+        record = Record.create({
+            'bazzer': {'$ref': 'http://foo.bar/baz.json'},
+            'spammer': {'$ref': 'http://foo.bar/spam.json'}
+        })
+        app.extensions['invenio-records'].loader_cls = json_loader_factory(
+            JSONResolver(plugins=['demo.json_resolver']))
+        out_json = record.replace_refs()
+        assert out_json['bazzer']['name'] == 'baz.json'
+        assert out_json['spammer']['name'] == 'spam.json'

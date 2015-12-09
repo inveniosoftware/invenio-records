@@ -24,8 +24,9 @@
 
 """Record models."""
 
-import pkg_resources
 import uuid
+
+import pkg_resources
 from invenio_db import db
 from sqlalchemy_continuum import make_versioned
 from sqlalchemy_utils.models import Timestamp

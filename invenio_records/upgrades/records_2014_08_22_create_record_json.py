@@ -21,12 +21,9 @@
 
 import warnings
 
-from invenio_ext.sqlalchemy import db
-
 import sqlalchemy as sa
-
+from invenio_ext.sqlalchemy import db
 from invenio_upgrader.api import op
-
 
 depends_on = ['records_2014_04_14_json_type_fix']
 

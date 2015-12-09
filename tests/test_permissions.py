@@ -30,11 +30,11 @@ import uuid
 
 import pytest
 from flask_principal import UserNeed
+from invenio_access import InvenioAccess
+from invenio_access.models import ActionUsers
 from invenio_accounts.models import User
 from invenio_db import db
 
-from invenio_access import InvenioAccess
-from invenio_access.models import ActionUsers
 from invenio_records import Record
 from invenio_records.permissions import create_permission_factory, \
     delete_permission_factory, read_permission_factory, records_create_all, \
