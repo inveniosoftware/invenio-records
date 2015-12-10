@@ -57,6 +57,7 @@ Invenio-Records is a metadata storage module.
 - Joe Blaylock <jrbl@slac.stanford.edu>
 - Kamil Neczaj <kamil.neczaj@cern.ch>
 - Krzysztof Lis <krzysztof.lis@cern.ch>
+- Krzysztof Nowak <k.nowak@cern.ch>
 - Kyriakos Liakopoulos <kyriakos.liakopoulos@cern.ch>
 - Lars Christian Raae <lars.christian.raae@cern.ch>
 - Lars Holm Nielsen <lars.holm.nielsen@cern.ch>
