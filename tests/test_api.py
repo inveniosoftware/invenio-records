@@ -196,11 +196,26 @@ def test_record_replace_refs(app):
     """Test the replacement of JSON references using JSONResolver."""
     with app.app_context():
         record = Record.create({
-            'bazzer': {'$ref': 'http://foo.bar/baz.json'},
-            'spammer': {'$ref': 'http://foo.bar/spam.json'}
+            'one': {'$ref': 'http://nest.ed/A'},
+            'three': {'$ref': 'http://nest.ed/ABC'}
         })
         app.extensions['invenio-records'].loader_cls = json_loader_factory(
             JSONResolver(plugins=['demo.json_resolver']))
         out_json = record.replace_refs()
-        assert out_json['bazzer']['name'] == 'baz.json'
-        assert out_json['spammer']['name'] == 'spam.json'
+        expected_json = {
+            'one': {
+                'letter': 'A',
+                'next': '.',
+            },
+            'three': {
+                'letter': 'A',
+                'next': {
+                    'letter': 'B',
+                    'next': {
+                        'letter': 'C',
+                        'next': '.',
+                    },
+                },
+            },
+        }
+        assert out_json == expected_json

@@ -22,14 +22,16 @@
 # In applying this license, CERN does not
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
-"""Resolve JSON for FundRef funders."""
+"""Test JSON resolver."""
 
 from __future__ import absolute_import, print_function
 
 import jsonresolver
 
 
-@jsonresolver.route('/<item>', host='foo.bar')
+@jsonresolver.route('/<item>', host='nest.ed')
 def test_resolver(item):
-    """Resolve the JsonRef funder."""
-    return {'name': item}
+    """Create a nested JSON."""
+    next_ = {'$ref': 'http://nest.ed/{}'.format(item[1:]), } if len(item[1:]) \
+        else '.'
+    return {'letter': item[0], 'next': next_}
