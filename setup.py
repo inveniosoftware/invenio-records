@@ -54,13 +54,13 @@ extras_require = {
         'Sphinx>=1.3',
     ],
     'mysql': [
-        'invenio-db[mysql]>=1.0.0a7',
+        'invenio-db[mysql,versioning]>=1.0.0a8',
     ],
     'postgresql': [
-        'invenio-db[postgresql]>=1.0.0a7',
+        'invenio-db[postgresql,versioning]>=1.0.0a8',
     ],
     'sqlite': [
-        'invenio-db>=1.0.0a7',
+        'invenio-db[versioning]>=1.0.0a8',
     ],
     'admin': [
         'Flask-Admin>=1.3.0',
@@ -85,7 +85,6 @@ install_requires = [
     'jsonresolver>=0.1.0',
     'jsonref>=0.1',
     'jsonschema>=2.5.1',
-    'sqlalchemy-continuum>=1.2.1',
     'sqlalchemy-utils>=0.31.0',
 ]
 

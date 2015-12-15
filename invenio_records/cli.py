@@ -58,7 +58,6 @@ def records():
 def create(source, ids, force):
     """Create new bibliographic record(s)."""
     # Make sure that all imports are done with application context.
-    from sqlalchemy_continuum import versioning_manager
     from .api import Record
     from .models import RecordMetadata
 
@@ -80,7 +79,8 @@ def create(source, ids, force):
                 # IMPORTANT: We need to create new transtaction for
                 # SQLAlchemy-Continuum as we are using no autoflush
                 # in Record.get_record.
-                uow = versioning_manager.unit_of_work(db.session)
+                vm = current_app.extensions['invenio-db'].versioning_manager
+                uow = vm.unit_of_work(db.session)
                 transaction = uow.create_transaction(db.session)
                 # Use low-level database model to retreive an instance.
                 model = RecordMetadata.query.get(id_)

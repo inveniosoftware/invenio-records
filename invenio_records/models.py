@@ -28,18 +28,8 @@ import uuid
 
 import pkg_resources
 from invenio_db import db
-from sqlalchemy_continuum import make_versioned
 from sqlalchemy_utils.models import Timestamp
 from sqlalchemy_utils.types import JSONType, UUIDType
-
-try:
-    pkg_resources.get_distribution('invenio_accounts')
-except pkg_resources.DistributionNotFound:
-    user_cls = None
-else:
-    from invenio_accounts.models import User as user_cls
-
-make_versioned(user_cls=user_cls)
 
 
 class RecordMetadata(db.Model, Timestamp):
