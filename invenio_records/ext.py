@@ -48,6 +48,8 @@ class _RecordsState(object):
 
     def validate(self, data, schema):
         """Validate data using schema with ``JSONResolver``."""
+        if not isinstance(schema, dict):
+            schema = {'$ref': schema}
         return validate(data, schema,
                         resolver=self.ref_resolver_cls.from_schema(schema))
 

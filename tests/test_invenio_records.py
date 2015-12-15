@@ -36,6 +36,7 @@ from flask import Flask
 from flask_cli import FlaskCLI, ScriptInfo
 from invenio_db import InvenioDB, db
 from invenio_db.cli import db as db_cmd
+from jsonschema.exceptions import ValidationError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy_utils.functions import create_database, database_exists, \
     drop_database
@@ -129,6 +130,19 @@ def test_db():
         record3 = Record({'title': 'Not possible'})
         with pytest.raises(MissingModelError):
             record3.commit()
+
+    with app.app_context():
+        data = {
+            '$schema': 'http://json-schema.org/geo#',
+            'latitude': 42,
+            'longitude': 42,
+        }
+        record_with_schema = Record.create(data).commit()
+        db.session.commit()
+
+        record_with_schema['latitude'] = 'invalid'
+        with pytest.raises(ValidationError):
+            record_with_schema.commit()
 
     with app.app_context():
         db.drop_all()
