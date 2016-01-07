@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -31,7 +31,6 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.local import LocalProxy
 
 from .errors import MissingModelError
-from .models import RecordMetadata
 from .signals import after_record_delete, after_record_insert, \
     after_record_revert, after_record_update, before_record_delete, \
     before_record_insert, before_record_revert, before_record_update
@@ -121,6 +120,7 @@ class Record(RecordBase):
     @classmethod
     def create(cls, data, id_=None):
         """Create a record instance and store it in database."""
+        from .models import RecordMetadata
         with db.session.begin_nested():
             record = cls(data)
 
@@ -141,6 +141,7 @@ class Record(RecordBase):
 
         Raises database exception if record does not exists.
         """
+        from .models import RecordMetadata
         with db.session.no_autoflush:
             obj = RecordMetadata.query.filter_by(id=id).one()
             # PostgreSQL JSON type stores None as a JSON value "null", while
