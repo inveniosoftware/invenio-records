@@ -26,6 +26,7 @@
 
 from __future__ import absolute_import, print_function
 
+import uuid
 from datetime import datetime, timedelta
 
 import pytest
@@ -170,6 +171,72 @@ def test_revisions(app):
 
         assert 2 in record.revisions
         assert 5 not in record.revisions
+
+
+def test_record_update_mutable(app):
+    """Test updating mutables in a record."""
+    recid = uuid.UUID('262d2748-ba41-456f-a844-4d043a419a6f')
+    with app.app_context():
+        # Create a new record with two mutables, a list and a dict
+        rec = Record.create(
+                {
+                    'title': 'Title',
+                    'list': ['foo', ],
+                    'dict': {'moo': 'boo'},
+                },
+                id_=recid)
+        # Make sure mutables are there before and after commit
+        assert rec == {
+            'title': 'Title',
+            'list': ['foo', ],
+            'dict': {'moo': 'boo'}
+        }
+        db.session.commit()
+        db.session.expunge_all()
+        rec = Record.get_record(recid)
+        assert rec == {
+            'title': 'Title',
+            'list': ['foo', ],
+            'dict': {'moo': 'boo'}
+        }
+
+        # Set the mutables under key
+        rec['list'] = ['bar', ]
+        rec['dict'] = {'eggs': 'bacon'}
+        rec.commit()
+        # Make sure it commits to DB
+        assert rec == {
+            'title': 'Title',
+            'list': ['bar', ],
+            'dict': {'eggs': 'bacon'}
+        }
+        db.session.commit()
+        db.session.expunge_all()
+        rec = Record.get_record(recid)
+        assert rec == {
+            'title': 'Title',
+            'list': ['bar', ],
+            'dict': {'eggs': 'bacon'}
+        }
+
+        # Update the mutables under key
+        rec['list'].append('spam')
+        rec['dict']['ham'] = 'chicken'
+        rec.commit()
+        # Make sure it commits to DB
+        assert rec == {
+            'title': 'Title',
+            'list': ['bar', 'spam'],
+            'dict': {'eggs': 'bacon', 'ham': 'chicken'}
+        }
+        db.session.commit()
+        db.session.expunge_all()
+        rec = Record.get_record(recid)
+        assert rec == {
+            'title': 'Title',
+            'list': ['bar', 'spam'],
+            'dict': {'eggs': 'bacon', 'ham': 'chicken'}
+        }
 
 
 def test_missing_model(app):

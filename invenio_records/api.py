@@ -27,6 +27,7 @@
 from flask import current_app
 from invenio_db import db
 from jsonpatch import apply_patch
+from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.local import LocalProxy
 
@@ -166,6 +167,7 @@ class Record(RecordBase):
             self.validate()
 
             self.model.json = dict(self)
+            flag_modified(self.model, 'json')
 
             db.session.merge(self.model)
 
