@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -51,6 +51,9 @@ class _RecordsState(object):
         if not isinstance(schema, dict):
             schema = {'$ref': schema}
         return validate(data, schema,
+                        types=self.app.config.get(
+                            "RECORDS_VALIDATION_TYPES", {}
+                        ),
                         resolver=self.ref_resolver_cls.from_schema(schema))
 
     def replace_refs(self, data):
