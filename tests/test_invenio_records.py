@@ -30,16 +30,14 @@ import json
 import os
 import uuid
 
+import mock
 import pytest
 from click.testing import CliRunner
 from flask import Flask
 from flask_cli import FlaskCLI, ScriptInfo
 from invenio_db import InvenioDB, db
-from invenio_db.cli import db as db_cmd
 from jsonschema.exceptions import ValidationError
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy_utils.functions import create_database, database_exists, \
-    drop_database
 
 from invenio_records import InvenioRecords, Record, cli
 from invenio_records.errors import MissingModelError
@@ -290,3 +288,43 @@ def test_cli(app):
             assert 'Test1' == record['title']
             assert 'Test' == record.revisions[1]['title']
             assert 'Test1' == record.revisions[0]['title']
+
+
+def mock_record_validate(self):
+    """Mock validation."""
+    pass
+
+
+@mock.patch('invenio_records.api.Record.validate', mock_record_validate)
+def test_cli_record_create_schema(app):
+    """Test cli record create schema."""
+    runner = CliRunner()
+    script_info = ScriptInfo(create_app=lambda info: app)
+
+    assert 'records_metadata' in db.metadata.tables
+    assert 'records_metadata_version' in db.metadata.tables
+    assert 'transaction' in db.metadata.tables
+
+    from invenio_records.models import RecordMetadata as RM
+
+    # Test merging a base another file.
+    with runner.isolated_filesystem():
+        with open('record.json', 'wb') as f:
+            f.write(json.dumps(
+                {'title': 'Test'}, ensure_ascii=False
+            ).encode('utf-8'))
+
+        # test schema
+        schema = ('http://localhost:5000/'
+                  'marc21bibliographic/marc21bibliographic-v1.0.0.json')
+        result = runner.invoke(
+            cli.records,
+            ['create', 'record.json', '-s', schema],
+            obj=script_info
+        )
+        assert result.exit_code == 0
+        recid = result.output.split('\n')[0]
+
+        with app.app_context():
+            record = RM.query.filter_by(id=recid).first()
+            assert schema == record.json['$schema']

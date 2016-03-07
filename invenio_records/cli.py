@@ -54,8 +54,9 @@ def records():
 @click.argument('source', type=click.File('r'), default=sys.stdin)
 @click.option('-i', '--id', 'ids', multiple=True)
 @click.option('--force', is_flag=True, default=False)
+@click.option('-s', '--schema', default=None, help="Set the schema")
 @with_appcontext
-def create(source, ids, force):
+def create(source, ids, force, schema):
     """Create new bibliographic record(s)."""
     # Make sure that all imports are done with application context.
     from .api import Record
@@ -71,6 +72,8 @@ def create(source, ids, force):
 
     for record, id_ in zip_longest(data, ids):
         try:
+            if schema:
+                record['$schema'] = schema
             click.echo(Record.create(record, id_=id_).id)
         except exc.IntegrityError:
             if force:
