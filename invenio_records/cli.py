@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -30,20 +30,54 @@ import json
 import sys
 
 import click
+import pkg_resources
 from flask import current_app
 from flask_cli import with_appcontext
 from invenio_db import db
 from sqlalchemy import exc
 
 try:
+    pkg_resources.get_distribution('invenio_pidstore')
+except pkg_resources.DistributionNotFound:
+    HAS_PIDSTORE = False
+else:
+    HAS_PIDSTORE = True
+
+try:
     from itertools import zip_longest
 except ImportError:
     from itertools import izip_longest as zip_longest
 
+if HAS_PIDSTORE:
+    def process_minter(value):
+        """Load minter from PIDStore registry based on given value."""
+        from invenio_pidstore import current_pidstore
+
+        if 'invenio-pidstore' not in current_app.extensions:
+            raise click.ClickException(
+                'Invenio-PIDStore has not been intialized.'
+            )
+
+        try:
+            return current_pidstore.minters[value]
+        except KeyError:
+            raise click.BadParameter(
+                'Unknown minter {0}. Please use one of {1}.'.format(
+                    value, ', '.join(current_pidstore.minters.keys())
+                )
+            )
+
+    option_pid_minter = click.option('--pid-minter', multiple=True,
+                                     default=None)
+else:
+    def option_pid_minter(_):
+        """Empty option."""
+        return _
 
 #
 # Record management commands
 #
+
 
 @click.group()
 def records():
@@ -54,12 +88,15 @@ def records():
 @click.argument('source', type=click.File('r'), default=sys.stdin)
 @click.option('-i', '--id', 'ids', multiple=True)
 @click.option('--force', is_flag=True, default=False)
+@option_pid_minter
 @with_appcontext
-def create(source, ids, force):
+def create(source, ids, force, pid_minter=None):
     """Create new bibliographic record(s)."""
     # Make sure that all imports are done with application context.
     from .api import Record
     from .models import RecordMetadata
+
+    pid_minter = [process_minter(minter) for minter in pid_minter or []]
 
     data = json.load(source)
 
@@ -71,6 +108,9 @@ def create(source, ids, force):
 
     for record, id_ in zip_longest(data, ids):
         try:
+            for minter in pid_minter:
+                minter(id_, record)
+
             click.echo(Record.create(record, id_=id_).id)
         except exc.IntegrityError:
             if force:

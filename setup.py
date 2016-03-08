@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -49,6 +49,9 @@ tests_require = [
 extras_require = {
     'access': [
         'invenio-access>=1.0.0a1',
+    ],
+    'pidstore': [
+        'invenio-pidstore>=1.0.0a6',
     ],
     'docs': [
         'Sphinx>=1.3',

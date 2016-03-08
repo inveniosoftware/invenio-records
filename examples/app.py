@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -55,12 +55,21 @@ from __future__ import absolute_import, print_function
 
 import os
 
+import pkg_resources
 from flask import Flask, jsonify, render_template
 from flask_celeryext import create_celery_app
 from flask_cli import FlaskCLI
 from invenio_db import InvenioDB
 
 from invenio_records import InvenioRecords
+
+try:
+    pkg_resources.get_distribution('invenio_pidstore')
+except pkg_resources.DistributionNotFound:
+    HAS_PIDSTORE = False
+else:
+    HAS_PIDSTORE = True
+    from invenio_pidstore import InvenioPIDStore
 
 # Create Flask application
 app = Flask(__name__)
@@ -80,6 +89,9 @@ if db_uri is not None:
 FlaskCLI(app)
 InvenioDB(app)
 InvenioRecords(app)
+
+if HAS_PIDSTORE:
+    InvenioPIDStore(app)
 
 celery = create_celery_app(app)
 

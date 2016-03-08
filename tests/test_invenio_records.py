@@ -199,14 +199,17 @@ def test_cli(app):
         with app.app_context():
             assert RM.query.count() == 0
 
-        result = runner.invoke(cli.records, ['create', 'record.json'],
+        result = runner.invoke(cli.records, ['create', 'record.json',
+                                             '--pid-minter', 'recid'],
                                obj=script_info)
         assert result.exit_code == 0
         recid = result.output.split('\n')[0]
 
         with app.app_context():
             assert RM.query.count() == 1
-            assert recid == str(RM.query.first().id)
+            record = RM.query.first()
+            assert recid == str(record.id)
+            assert 1 == record.json['control_number']
 
         result = runner.invoke(cli.records,
                                ['patch', 'record.patch', '-i', recid],
