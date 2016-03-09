@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <collection xmlns="http://www.loc.gov/MARC21/slim">
-  <record>
-    <controlfield tag="001">1</controlfield>
+<record>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">CERN-EX-0106015</subfield>
     </datafield>
@@ -35,7 +34,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">2</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">CERN-EX-0104007</subfield>
     </datafield>
@@ -66,7 +64,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">3</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">CERN-HI-6902127</subfield>
     </datafield>
@@ -85,7 +82,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">4</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">CERN-DI-9906028</subfield>
     </datafield>
@@ -107,7 +103,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">5</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">CERN-DI-9905005</subfield>
     </datafield>
@@ -132,7 +127,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">6</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">CERN-HI-6206002</subfield>
     </datafield>
@@ -161,7 +155,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">7</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">CERN-GE-9806033</subfield>
     </datafield>
@@ -184,7 +177,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">8</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">astro-ph/9812226</subfield>
     </datafield>
@@ -228,7 +220,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">9</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -264,7 +255,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">10</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ex/0201013</subfield>
     </datafield>
@@ -1249,7 +1239,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">11</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">astro-ph/0101431</subfield>
     </datafield>
@@ -1293,7 +1282,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">12</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ph/0105155</subfield>
     </datafield>
@@ -1386,7 +1374,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">13</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -1423,7 +1410,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">14</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -1453,7 +1439,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">15</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">astro-ph/0104076</subfield>
     </datafield>
@@ -1497,7 +1482,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">16</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -1531,7 +1515,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">17</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -1830,7 +1813,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">18</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -1884,7 +1866,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">19</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -1918,7 +1899,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">20</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -1946,7 +1926,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">21</controlfield>
     <datafield tag="020" ind1=" " ind2=" ">
       <subfield code="a">0898710022</subfield>
     </datafield>
@@ -1981,7 +1960,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">22</controlfield>
     <datafield tag="020" ind1=" " ind2=" ">
       <subfield code="a">0844621951</subfield>
     </datafield>
@@ -2021,7 +1999,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">23</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -2053,7 +2030,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">24</controlfield>
     <datafield tag="020" ind1=" " ind2=" ">
       <subfield code="a">1563964554</subfield>
     </datafield>
@@ -2086,7 +2062,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">25</controlfield>
     <datafield tag="020" ind1=" " ind2=" ">
       <subfield code="a">2225350574</subfield>
     </datafield>
@@ -2114,7 +2089,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">26</controlfield>
     <datafield tag="020" ind1=" " ind2=" ">
       <subfield code="a">2225350574</subfield>
     </datafield>
@@ -2142,7 +2116,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">27</controlfield>
     <datafield tag="020" ind1=" " ind2=" ">
       <subfield code="a">0023506709</subfield>
     </datafield>
@@ -2172,7 +2145,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">28</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -2200,7 +2172,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">29</controlfield>
     <datafield tag="020" ind1=" " ind2=" ">
       <subfield code="a">0720421039</subfield>
     </datafield>
@@ -2231,7 +2202,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">30</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -2257,7 +2227,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">31</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -2285,7 +2254,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">32</controlfield>
     <datafield tag="020" ind1=" " ind2=" ">
       <subfield code="a">0471155039</subfield>
     </datafield>
@@ -2311,7 +2279,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">33</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -2334,7 +2301,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">34</controlfield>
     <datafield tag="020" ind1=" " ind2=" ">
       <subfield code="a">0387940758</subfield>
     </datafield>
@@ -2361,7 +2327,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">35</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -2402,7 +2367,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">36</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -2439,7 +2403,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">37</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -2480,7 +2443,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">38</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">spa</subfield>
     </datafield>
@@ -2521,7 +2483,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">39</controlfield>
     <datafield tag="020" ind1=" " ind2=" ">
       <subfield code="a">0612382052</subfield>
     </datafield>
@@ -2565,7 +2526,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">40</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -2599,7 +2559,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">41</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -2636,7 +2595,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">42</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -2670,7 +2628,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">43</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">gr-qc/0204045</subfield>
     </datafield>
@@ -2705,7 +2662,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">44</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">gr-qc/0204046</subfield>
     </datafield>
@@ -2744,7 +2700,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">45</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-th/0204098</subfield>
     </datafield>
@@ -2773,7 +2728,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">46</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-th/0204099</subfield>
     </datafield>
@@ -2816,7 +2770,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">47</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ph/0204132</subfield>
     </datafield>
@@ -2856,7 +2809,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">48</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ph/0204133</subfield>
     </datafield>
@@ -2891,7 +2843,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">49</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ph/0204134</subfield>
     </datafield>
@@ -2929,7 +2880,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">50</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ph/0204135</subfield>
     </datafield>
@@ -2967,7 +2917,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">51</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ph/0204136</subfield>
     </datafield>
@@ -3017,7 +2966,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">52</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ph/0204137</subfield>
     </datafield>
@@ -3054,7 +3002,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">53</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ph/0204138</subfield>
     </datafield>
@@ -3091,7 +3038,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">54</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ph/0204139</subfield>
     </datafield>
@@ -3132,7 +3078,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">55</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ph/0204140</subfield>
     </datafield>
@@ -3179,7 +3124,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">56</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ph/0204141</subfield>
     </datafield>
@@ -3214,7 +3158,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">57</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-th/0204100</subfield>
     </datafield>
@@ -3257,7 +3200,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">58</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ph/0204142</subfield>
     </datafield>
@@ -3297,7 +3239,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">59</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-ph/0204143</subfield>
     </datafield>
@@ -3338,7 +3279,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">60</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-th/0204101</subfield>
     </datafield>
@@ -3376,7 +3316,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">61</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-th/0204102</subfield>
     </datafield>
@@ -3414,7 +3353,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">62</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">nucl-th/0204031</subfield>
     </datafield>
@@ -3451,7 +3389,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">63</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">nucl-th/0204032</subfield>
     </datafield>
@@ -3486,7 +3423,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">64</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">nucl-th/0204033</subfield>
     </datafield>
@@ -3521,7 +3457,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">65</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">nucl-th/0204034</subfield>
     </datafield>
@@ -3550,7 +3485,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">66</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">SCAN-9605068</subfield>
     </datafield>
@@ -3590,7 +3524,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">67</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -3621,7 +3554,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">68</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-th/0003289</subfield>
     </datafield>
@@ -3658,7 +3590,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">69</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">eng</subfield>
     </datafield>
@@ -3705,7 +3636,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">70</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-th/0003291</subfield>
     </datafield>
@@ -3731,7 +3661,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">71</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">SCAN-9605071</subfield>
     </datafield>
@@ -3816,7 +3745,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">72</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-th/0003293</subfield>
     </datafield>
@@ -3845,7 +3773,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">73</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-th/0003294</subfield>
     </datafield>
@@ -3871,7 +3798,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">74</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-th/0003295</subfield>
     </datafield>
@@ -3903,7 +3829,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">75</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">rus</subfield>
     </datafield>
@@ -3930,7 +3855,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">76</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">gre</subfield>
     </datafield>
@@ -3986,7 +3910,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">77</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
       <subfield code="a">2345180CERCER</subfield>
@@ -4025,7 +3948,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">78</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
       <subfield code="a">2292727CERCER</subfield>
     </datafield>
@@ -4067,7 +3989,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">79</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
       <subfield code="a">2307939CERCER</subfield>
@@ -4118,7 +4039,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">80</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
       <subfield code="a">2327507CERCER</subfield>
@@ -4160,7 +4080,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">81</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
       <subfield code="a">2341644CERCER</subfield>
@@ -4220,7 +4139,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">82</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
       <subfield code="a">2342206CERCER</subfield>
@@ -4259,7 +4177,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">83</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
       <subfield code="a">2344398</subfield>
@@ -4304,7 +4221,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">84</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
       <subfield code="a">2355566CERCER</subfield>
@@ -4352,7 +4268,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">85</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
       <subfield code="a">2356302CERCER</subfield>
@@ -4395,7 +4310,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">86</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <controlfield tag="005">20041129103619.0</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
@@ -4456,7 +4370,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">87</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
       <subfield code="a">2373792CERCER</subfield>
@@ -4489,7 +4402,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">88</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-th/0307041</subfield>
@@ -4522,7 +4434,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">89</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <controlfield tag="005">20070403111954.0</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
@@ -4563,7 +4474,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">90</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <controlfield tag="005">20060124104603.0</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
@@ -4600,7 +4510,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">91</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <controlfield tag="005">20060713170102.0</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
@@ -4640,7 +4549,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">92</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <controlfield tag="005">20060616163757.0</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
@@ -4695,7 +4603,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">93</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">hep-th/0703265</subfield>
@@ -4737,7 +4644,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">94</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
       <subfield code="a">0237765CERCER</subfield>
@@ -4779,7 +4685,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">95</controlfield>
     <datafield tag="035" ind1="" ind2="">
       <subfield code="a">0289446CERCER</subfield>
     </datafield>
@@ -4815,7 +4720,6 @@
   <!--by 999C5s to 909C4-->
   <!--It's probably a good article, anyway-->
   <record>
-    <controlfield tag="001">96</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
       <subfield code="a">2174811CERCER</subfield>
@@ -4875,7 +4779,6 @@
     <!--the reference-->
   </record>
   <record>
-    <controlfield tag="001">97</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <controlfield tag="005">20060914104330.0</controlfield>
     <datafield tag="035" ind1="" ind2="">
@@ -4929,7 +4832,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">98</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <controlfield tag="005">20070110102840.0</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
@@ -4962,7 +4864,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">99</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">BUL-NEWS-2009-001</subfield>
     </datafield>
@@ -4988,7 +4889,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">100</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">BUL-NEWS-2009-002</subfield>
     </datafield>
@@ -5014,7 +4914,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">101</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">BUL-NEWS-2009-003</subfield>
     </datafield>
@@ -5044,7 +4943,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">102</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">BUL-SCIENCE-2009-001</subfield>
     </datafield>
@@ -5070,7 +4968,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">103</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">BUL-NEWS-2009-004</subfield>
     </datafield>
@@ -5092,7 +4989,6 @@
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">104</controlfield>
     <datafield tag="041" ind1=" " ind2=" ">
       <subfield code="a">zho</subfield>
     </datafield>
@@ -5123,7 +5019,6 @@ Only the mountain and I.
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">105</controlfield>
     <controlfield tag="005">20110118111428.0</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
         <subfield code="a">882629</subfield>
@@ -5163,7 +5058,6 @@ Only the mountain and I.
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">106</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
         <subfield code="a">33028075</subfield>
@@ -5199,7 +5093,6 @@ Only the mountain and I.
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">107</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <controlfield tag="005">20080521084337.0</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
@@ -5260,7 +5153,6 @@ Only the mountain and I.
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">108</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <controlfield tag="005">20090128145544.0</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
@@ -5307,7 +5199,6 @@ Only the mountain and I.
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">109</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <controlfield tag="005">20080909102446.0</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
@@ -5367,7 +5258,6 @@ Only the mountain and I.
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">110</controlfield>
     <controlfield tag="003">SzGeCERN</controlfield>
     <controlfield tag="005">20040304154728.0</controlfield>
     <datafield tag="035" ind1=" " ind2=" ">
@@ -5425,7 +5315,6 @@ Only the mountain and I.
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">111</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">BUL-SCIENCE-2009-002</subfield>
     </datafield>
@@ -5451,7 +5340,6 @@ Only the mountain and I.
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">112</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">BUL-NEWS-2009-005</subfield>
     </datafield>
@@ -5474,7 +5362,6 @@ Only the mountain and I.
     </datafield>
   </record>
   <record>
-    <controlfield tag="001">113</controlfield>
     <datafield tag="037" ind1=" " ind2=" ">
       <subfield code="a">CERN-MOVIE-2010-075</subfield>
     </datafield>
