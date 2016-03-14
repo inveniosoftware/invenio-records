@@ -23,3 +23,4 @@
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
 -e git+git://github.com/inveniosoftware/invenio-db.git#egg=invenio-db
+-e git+git://github.com/inveniosoftware/invenio-pidstore.git#egg=invenio-pidstore

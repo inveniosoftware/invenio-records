@@ -51,7 +51,7 @@ extras_require = {
         'invenio-access>=1.0.0a1',
     ],
     'pidstore': [
-        'invenio-pidstore>=1.0.0a6',
+        'invenio-pidstore>=1.0.0a7',
     ],
     'docs': [
         'Sphinx>=1.3',

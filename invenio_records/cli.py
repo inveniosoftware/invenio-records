@@ -28,6 +28,7 @@ from __future__ import absolute_import, print_function
 
 import json
 import sys
+import uuid
 
 import click
 import pkg_resources
@@ -107,6 +108,7 @@ def create(source, ids, force, pid_minter=None):
         assert len(ids) == len(data), 'Not enough identifiers.'
 
     for record, id_ in zip_longest(data, ids):
+        id_ = id_ or uuid.uuid4()
         try:
             for minter in pid_minter:
                 minter(id_, record)
@@ -121,7 +123,7 @@ def create(source, ids, force, pid_minter=None):
                 # in Record.get_record.
                 vm = current_app.extensions['invenio-db'].versioning_manager
                 uow = vm.unit_of_work(db.session)
-                transaction = uow.create_transaction(db.session)
+                uow.create_transaction(db.session)
                 # Use low-level database model to retreive an instance.
                 model = RecordMetadata.query.get(id_)
                 click.echo(Record(record, model=model).commit().id)
