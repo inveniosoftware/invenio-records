@@ -1,8 +1,8 @@
 ===========================
- Invenio-Records v1.0.0a10
+ Invenio-Records v1.0.0a11
 ===========================
 
-Invenio-Records v1.0.0a10 was released on February 23, 2016.
+Invenio-Records v1.0.0a11 was released on March 14, 2016.
 
 About
 -----
@@ -35,7 +35,7 @@ Bug fixes
 Installation
 ------------
 
-   $ pip install invenio-records==1.0.0a10
+   $ pip install invenio-records==1.0.0a11
 
 Documentation
 -------------
