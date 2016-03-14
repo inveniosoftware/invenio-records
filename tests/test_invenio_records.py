@@ -35,11 +35,8 @@ from click.testing import CliRunner
 from flask import Flask
 from flask_cli import FlaskCLI, ScriptInfo
 from invenio_db import InvenioDB, db
-from invenio_db.cli import db as db_cmd
 from jsonschema.exceptions import ValidationError
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy_utils.functions import create_database, database_exists, \
-    drop_database
 
 from invenio_records import InvenioRecords, Record, cli
 from invenio_records.errors import MissingModelError
@@ -175,6 +172,7 @@ def test_cli(app):
     assert 'transaction' in db.metadata.tables
 
     from invenio_records.models import RecordMetadata as RM
+    from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 
     # Test merging a base another file.
     with runner.isolated_filesystem():
@@ -208,8 +206,13 @@ def test_cli(app):
         with app.app_context():
             assert RM.query.count() == 1
             record = RM.query.first()
+            assert recid
             assert recid == str(record.id)
-            assert 1 == record.json['control_number']
+            assert "1" == record.json['control_number']
+            pid = PersistentIdentifier.query.filter_by(
+                object_uuid=record.id).one()
+            assert pid.status == PIDStatus.REGISTERED
+            assert pid.pid_value
 
         result = runner.invoke(cli.records,
                                ['patch', 'record.patch', '-i', recid],
