@@ -44,6 +44,31 @@ def strip_ms(dt):
     return dt - timedelta(microseconds=dt.microsecond)
 
 
+def test_get_records(app):
+    """Test bulk record fetching."""
+    with app.app_context():
+        # Create test records
+        test_records = [
+            Record.create({'title': 'test1'}),
+            Record.create({'title': 'to_be_deleted'}),
+            Record.create({'title': 'test3'}),
+        ]
+        db.session.commit()
+        test_ids = [record.id for record in test_records]
+
+        # Fetch test records
+        assert len(Record.get_records(test_ids)) == 3
+
+        test_records[1].delete()
+
+        # should not show deleted
+        db.session.commit()
+        assert len(Record.get_records(test_ids)) == 2
+
+        # should show deleted
+        assert len(Record.get_records(test_ids, with_deleted=True)) == 3
+
+
 def test_revision_id_created_updated_properties(app):
     """Test properties."""
     with app.app_context():

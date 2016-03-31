@@ -28,6 +28,7 @@ import uuid
 
 import pkg_resources
 from invenio_db import db
+from sqlalchemy.dialects import postgresql
 from sqlalchemy_utils.models import Timestamp
 from sqlalchemy_utils.types import JSONType, UUIDType
 
@@ -51,7 +52,14 @@ class RecordMetadata(db.Model, Timestamp):
     )
     """Record identifier."""
 
-    json = db.Column(JSONType, default=lambda: dict(), nullable=True)
+    json = db.Column(
+        JSONType().with_variant(
+            postgresql.JSON(none_as_null=True),
+            'postgresql',
+        ),
+        default=lambda: dict(),
+        nullable=True
+    )
     """Store metadata in JSON format.
 
     When you create new ``Record`` the ``json`` field value should

@@ -32,6 +32,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.local import LocalProxy
 
 from .errors import MissingModelError
+from .models import RecordMetadata
 from .signals import after_record_delete, after_record_insert, \
     after_record_revert, after_record_update, before_record_delete, \
     before_record_insert, before_record_revert, before_record_update
@@ -150,6 +151,16 @@ class Record(RecordBase):
             if not with_deleted and obj.json is None:
                 raise NoResultFound()
             return cls(obj.json, model=obj)
+
+    @classmethod
+    def get_records(cls, ids, with_deleted=False):
+        """Get multiple record instances."""
+        with db.session.no_autoflush:
+            query = RecordMetadata.query.filter(RecordMetadata.id.in_(ids))
+            if not with_deleted:
+                query = query.filter(RecordMetadata.json != None)  # noqa
+
+            return [cls(obj.json, model=obj) for obj in query.all()]
 
     def patch(self, patch):
         """Patch record metadata."""
