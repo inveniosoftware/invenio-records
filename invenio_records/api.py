@@ -143,13 +143,11 @@ class Record(RecordBase):
 
         Raises database exception if record does not exists.
         """
-        from .models import RecordMetadata
         with db.session.no_autoflush:
-            obj = RecordMetadata.query.filter_by(id=id).one()
-            # PostgreSQL JSON type stores None as a JSON value "null", while
-            # MySQL and SQLite stores None as a database null value.
-            if not with_deleted and obj.json is None:
-                raise NoResultFound()
+            query = RecordMetadata.query.filter_by(id=id)
+            if not with_deleted:
+                query = query.filter(RecordMetadata.json != None)  # noqa
+            obj = query.one()
             return cls(obj.json, model=obj)
 
     @classmethod
