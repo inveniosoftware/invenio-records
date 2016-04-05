@@ -305,3 +305,10 @@ def test_record_replace_refs(app, db):
         },
     }
     assert out_json == expected_json
+
+
+def test_replace_refs_deepcpoy(app):
+    """Test problem with replace_refs and deepcopy."""
+    with app.app_context():
+        assert copy.deepcopy(Record({'recid': 1}).replace_refs()) \
+            == {'recid': 1}
