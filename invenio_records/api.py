@@ -24,11 +24,12 @@
 
 """Record API."""
 
+from __future__ import absolute_import, print_function
+
 from flask import current_app
 from invenio_db import db
 from jsonpatch import apply_patch
 from sqlalchemy.orm.attributes import flag_modified
-from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.local import LocalProxy
 
 from .errors import MissingModelError
@@ -42,35 +43,6 @@ _records_state = LocalProxy(lambda: current_app.extensions['invenio-records'])
 
 class RecordBase(dict):
     """Base class for Record and RecordBase."""
-
-    @property
-    def __key_aliases__(self):
-        """Return key aliases."""
-        return current_app.config.get('RECORDS_KEY_ALIASES', {})
-
-    def __getitem__(self, key):
-        """Try to get aliased item on ``KeyError``."""
-        try:
-            return super(RecordBase, self).__getitem__(key)
-        except KeyError:
-            if key in self.__key_aliases__:
-                if callable(self.__key_aliases__[key]):
-                    return self.__key_aliases__[key](self, key)
-                else:
-                    return super(RecordBase, self).__getitem__(
-                        self.__key_aliases__[key]
-                    )
-            raise
-
-    def __setitem__(self, key, value):
-        """Try to set first the aliased item if exists."""
-        if key in self.__key_aliases__:
-            if callable(self.__key_aliases__[key]):
-                raise TypeError('Complex aliases can not be set')
-            return super(RecordBase, self).__setitem__(
-                self.__key_aliases__[key], value
-            )
-        return super(RecordBase, self).__setitem__(key, value)
 
     def __init__(self, data, model=None):
         """Initialize instance with dictionary data and SQLAlchemy model.

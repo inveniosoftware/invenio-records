@@ -33,13 +33,5 @@ RECORDS_PROCESSORS = {
 }
 """Processors used to create records."""
 
-RECORDS_KEY_ALIASES = {
-    'recid': 'control_number',
-    '8560_f': 'electronic_location_and_access.electronic_name',
-    '980': 'collections',
-    '980__a': 'collections.primary',
-    '980__b': 'collections.secondary',
-}
-
 RECORDS_VALIDATION_TYPES = {}
 """Pass additional types when validating record against schema."""
