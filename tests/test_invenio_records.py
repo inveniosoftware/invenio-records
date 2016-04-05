@@ -162,7 +162,7 @@ def test_db():
         db.drop_all()
 
 
-def test_cli(app):
+def test_cli(app, db):
     """Test CLI."""
     runner = CliRunner()
     script_info = ScriptInfo(create_app=lambda info: app)

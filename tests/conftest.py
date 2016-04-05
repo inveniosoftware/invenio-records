@@ -35,19 +35,19 @@ import pytest
 from flask import Flask
 from flask_celeryext import FlaskCeleryExt
 from flask_cli import FlaskCLI
-from invenio_db import InvenioDB, db
+from invenio_db import db as db_
+from invenio_db import InvenioDB
 from invenio_pidstore import InvenioPIDStore
-from sqlalchemy_utils.functions import create_database, database_exists
 
 from invenio_records import InvenioRecords
 
 
-@pytest.fixture()
+@pytest.yield_fixture()
 def app(request):
     """Flask application fixture."""
     instance_path = tempfile.mkdtemp()
-    app = Flask(__name__, instance_path=instance_path)
-    app.config.update(
+    app_ = Flask(__name__, instance_path=instance_path)
+    app_.config.update(
         CELERY_ALWAYS_EAGER=True,
         CELERY_CACHE_BACKEND="memory",
         CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
@@ -55,23 +55,25 @@ def app(request):
         SECRET_KEY="CHANGE_ME",
         SECURITY_PASSWORD_SALT="CHANGE_ME_ALSO",
         SQLALCHEMY_DATABASE_URI=os.environ.get(
-            'SQLALCHEMY_DATABASE_URI', 'sqlite:///test.db'),
+            'SQLALCHEMY_DATABASE_URI', 'sqlite://'),
+        SQLALCHEMY_TRACK_MODIFICATIONS=True,
         TESTING=True,
     )
-    FlaskCLI(app)
-    FlaskCeleryExt(app)
-    InvenioDB(app)
-    InvenioRecords(app)
-    InvenioPIDStore(app)
+    FlaskCLI(app_)
+    FlaskCeleryExt(app_)
+    InvenioDB(app_)
+    InvenioRecords(app_)
+    InvenioPIDStore(app_)
 
-    with app.app_context():
-        db.create_all()
+    with app_.app_context():
+        yield app_
 
-    def teardown():
-        with app.app_context():
-            db.drop_all()
-        shutil.rmtree(instance_path)
+    shutil.rmtree(instance_path)
 
-    request.addfinalizer(teardown)
 
-    return app
+@pytest.yield_fixture()
+def db(app):
+    """Database fixture."""
+    db_.create_all()
+    yield db_
+    db_.drop_all()

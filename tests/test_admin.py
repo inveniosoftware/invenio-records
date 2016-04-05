@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -30,7 +30,6 @@ import uuid
 
 from flask import url_for
 from flask_admin import Admin, menu
-from invenio_db import db
 from mock import patch
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -38,7 +37,7 @@ from invenio_records.admin import record_adminview
 from invenio_records.api import Record
 
 
-def test_admin(app):
+def test_admin(app, db):
     """Test flask-admin interace."""
     admin = Admin(app, name="Test")
 
@@ -61,10 +60,9 @@ def test_admin(app):
     assert isinstance(submenu_items['Record Metadata'], menu.MenuView)
 
     # Create a test record.
-    with app.app_context():
-        rec_uuid = str(uuid.uuid4())
-        Record.create({'title': 'test'}, id_=rec_uuid)
-        db.session.commit()
+    rec_uuid = str(uuid.uuid4())
+    Record.create({'title': 'test'}, id_=rec_uuid)
+    db.session.commit()
 
     with app.test_request_context():
         index_view_url = url_for('recordmetadata.index_view')
