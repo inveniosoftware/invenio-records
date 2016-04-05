@@ -24,14 +24,5 @@
 
 """Package configuration."""
 
-RECORDS_BREADCRUMB_TITLE_KEY = 'title_statement.title'
-"""Key used to extract the breadcrumb title from the record."""
-
-RECORDS_PROCESSORS = {
-    'json': 'json.load',
-    'marcxml': 'invenio_records.cli:_convert_marcxml',
-}
-"""Processors used to create records."""
-
 RECORDS_VALIDATION_TYPES = {}
 """Pass additional types when validating record against schema."""
