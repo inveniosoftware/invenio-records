@@ -38,6 +38,7 @@ from flask_cli import FlaskCLI
 from invenio_db import db as db_
 from invenio_db import InvenioDB
 from invenio_pidstore import InvenioPIDStore
+from sqlalchemy_utils.functions import create_database, database_exists
 
 from invenio_records import InvenioRecords
 
@@ -55,7 +56,7 @@ def app(request):
         SECRET_KEY="CHANGE_ME",
         SECURITY_PASSWORD_SALT="CHANGE_ME_ALSO",
         SQLALCHEMY_DATABASE_URI=os.environ.get(
-            'SQLALCHEMY_DATABASE_URI', 'sqlite://'),
+            'SQLALCHEMY_DATABASE_URI', 'sqlite:///test.db'),
         SQLALCHEMY_TRACK_MODIFICATIONS=True,
         TESTING=True,
     )
@@ -74,6 +75,9 @@ def app(request):
 @pytest.yield_fixture()
 def db(app):
     """Database fixture."""
+    if not database_exists(str(db_.engine.url)):
+        create_database(str(db_.engine.url))
     db_.create_all()
     yield db_
+    db_.session.remove()
     db_.drop_all()
