@@ -116,6 +116,9 @@ setup(
         'invenio_base.apps': [
             'invenio_records = invenio_records:InvenioRecords',
         ],
+        'invenio_base.api_apps': [
+            'invenio_records = invenio_records:InvenioRecords',
+        ],
         'invenio_celery.tasks': [
             'invenio_records = invenio_records.tasks.api',
         ],
