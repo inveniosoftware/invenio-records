@@ -312,3 +312,55 @@ def test_replace_refs_deepcpoy(app):
     with app.app_context():
         assert copy.deepcopy(Record({'recid': 1}).replace_refs()) \
             == {'recid': 1}
+
+
+def test_clear():
+    """Test clear record."""
+    # with `_` field
+    record = Record({'a': 'b', '_c': 'd'})
+    record.clear()
+    assert len(record) == 1
+    assert record['_c'] == 'd'
+
+    # empty record
+    record = Record({})
+    record.clear()
+    assert len(record) == 0
+
+
+def test_update():
+    """Test update record."""
+    record = Record({'a': 'b', '_c': 'd'})
+
+    # test update
+    record.update({'a': 'e', '_c': 'f'})
+    assert len(record) == 2
+    assert record['a'] == 'e'
+    assert record['_c'] == 'd'
+
+    # test single update of `_` field
+    record['_c'] = 'g'
+    assert record['_c'] == 'g'
+
+    # update a not previously existing fields
+    record.update({'a': 'h', '_i': 'l', 'm': 'n'})
+    assert len(record) == 3
+    assert record['a'] == 'h'
+    assert '_i' not in record
+    assert record['m'] == 'n'
+
+    # set a new `_` field
+    record['_o'] = 'p'
+    assert len(record) == 4
+    assert record['_o'] == 'p'
+
+    # update using kwargs
+    record.update(q='r', _s='t', _c='u')
+    assert len(record) == 5
+    assert record['q'] == 'r'
+    assert '_s' not in record
+    assert record['_c'] == 'g'
+
+    # error if use more than 1 args
+    with pytest.raises(TypeError):
+        record.update({'a': 'b'}, {'c': 'd'})

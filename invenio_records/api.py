@@ -91,6 +91,26 @@ class RecordBase(dict):
 class Record(RecordBase):
     """Define API for metadata creation and manipulation."""
 
+    def clear(self):
+        """Clear all except the field that start with `_`."""
+        for key in list(self.iterkeys()):
+            if not key.startswith('_'):
+                del self[key]
+
+    def update(self, *args, **kwargs):
+        """Update all except fields that start with `_`."""
+        if len(args) > 1:
+            raise TypeError("update expected at most 1 arguments, got 2")
+
+        if len(args) == 1:
+            for (key, value) in args[0].items():
+                if not key.startswith('_'):
+                    self[key] = value
+
+        for (key, value) in kwargs.items():
+            if not key.startswith('_'):
+                self[key] = value
+
     @classmethod
     def create(cls, data, id_=None):
         """Create a record instance and store it in database."""
