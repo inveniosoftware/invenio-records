@@ -75,7 +75,7 @@ class RecordBase(dict):
 
     def validate(self):
         """Validate record according to schema defined in ``$schema`` key."""
-        if '$schema' in self:
+        if '$schema' in self and self['$schema'] is not None:
             return _records_state.validate(self, self['$schema'])
         return True
 
