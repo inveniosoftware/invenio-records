@@ -307,8 +307,17 @@ def test_record_replace_refs(app, db):
     assert out_json == expected_json
 
 
-def test_replace_refs_deepcpoy(app):
+def test_replace_refs_deepcopy(app):
     """Test problem with replace_refs and deepcopy."""
     with app.app_context():
         assert copy.deepcopy(Record({'recid': 1}).replace_refs()) \
             == {'recid': 1}
+
+
+def test_record_dump(app, db):
+    """Test record dump method."""
+    with app.app_context():
+        record = Record.create({'foo': {'bar': 'Bazz', }, })
+        record_dump = record.dumps()
+        record_dump['foo']['bar'] = 'Spam'
+        assert record_dump['foo']['bar'] != record['foo']['bar']

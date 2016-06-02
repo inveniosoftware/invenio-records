@@ -26,6 +26,8 @@
 
 from __future__ import absolute_import, print_function
 
+from copy import deepcopy
+
 from flask import current_app
 from invenio_db import db
 from jsonpatch import apply_patch
@@ -85,7 +87,7 @@ class RecordBase(dict):
 
     def dumps(self, **kwargs):
         """Return pure Python dictionary with record metadata."""
-        return dict(self)
+        return deepcopy(dict(self))
 
 
 class Record(RecordBase):
