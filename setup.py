@@ -41,7 +41,6 @@ tests_require = [
     'pytest-cache>=1.0',
     'pytest-cov>=1.8.0',
     'pytest-pep8>=1.0.6',
-    'pytest-runner>=2.7.0',
     'pytest>=2.8.0',
 ]
 
@@ -78,6 +77,7 @@ for name, reqs in extras_require.items():
 
 setup_requires = [
     'Babel>=1.3',
+    'pytest-runner>=2.6.2',
 ]
 
 install_requires = [
