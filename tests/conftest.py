@@ -34,7 +34,6 @@ import tempfile
 import pytest
 from flask import Flask
 from flask_celeryext import FlaskCeleryExt
-from flask_cli import FlaskCLI
 from invenio_db import db as db_
 from invenio_db import InvenioDB
 from invenio_pidstore import InvenioPIDStore
@@ -60,7 +59,9 @@ def app(request):
         SQLALCHEMY_TRACK_MODIFICATIONS=True,
         TESTING=True,
     )
-    FlaskCLI(app_)
+    if not hasattr(app, 'cli'):
+        from flask_cli import FlaskCLI
+        FlaskCLI(app_)
     FlaskCeleryExt(app_)
     InvenioDB(app_)
     InvenioRecords(app_)

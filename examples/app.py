@@ -27,18 +27,19 @@
 Create database and tables::
 
    $ cd examples
+   $ export FLASK_APP=app.py
    $ mkdir -p instance
-   $ flask -a app.py db init
-   $ flask -a app.py db create
+   $ flask db init
+   $ flask db create
 
 Create test record::
 
-   $ echo '{"title": "Test title"}' | flask -a app.py records create \
+   $ echo '{"title": "Test title"}' | flask records create \
       -i deadbeef-9fe4-43d3-a08f-38c2b309afba
 
 Run the development server::
 
-   $ flask -a app.py --debug run --debugger
+   $ flask --debug run --debugger
 
 Retrieve record via web::
 
@@ -46,7 +47,7 @@ Retrieve record via web::
 
 Retrieve record via shell::
 
-   $ flask -a app.py shell
+   $ flask shell
    >>> from invenio_records.api import Record
    >>> Record.get_record('deadbeef-9fe4-43d3-a08f-38c2b309afba')
 """
@@ -86,7 +87,9 @@ db_uri = os.environ.get('SQLALCHEMY_DATABASE_URI')
 if db_uri is not None:
     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 
-FlaskCLI(app)
+if not hasattr(app, 'cli'):
+    from flask_cli import FlaskCLI
+    FlaskCLI(app)
 InvenioDB(app)
 InvenioRecords(app)
 

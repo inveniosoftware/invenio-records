@@ -296,3 +296,23 @@ def test_cli(app, db):
             assert 'Test1' == record['title']
             assert 'Test' == record.revisions[1]['title']
             assert 'Test1' == record.revisions[0]['title']
+
+        # Delete records.
+        result = runner.invoke(
+            cli.records,
+            ['delete', '-i', recid1],
+            obj=script_info
+        )
+        assert result.exit_code == 0
+        with app.app_context():
+            assert RM.query.get(recid1).json is None
+
+        result = runner.invoke(
+            cli.records,
+            ['delete', '-i', recid2, '--force'],
+            obj=script_info
+        )
+        assert result.exit_code == 0
+        with app.app_context():
+            assert RM.query.get(recid2) is None
+            assert RM.query.get(recid) is not None

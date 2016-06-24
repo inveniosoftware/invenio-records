@@ -33,7 +33,6 @@ import uuid
 import click
 import pkg_resources
 from flask import current_app
-from flask_cli import with_appcontext
 from invenio_db import db
 from sqlalchemy import exc
 
@@ -48,6 +47,11 @@ try:
     from itertools import zip_longest
 except ImportError:
     from itertools import izip_longest as zip_longest
+
+try:
+    from flask.cli import with_appcontext
+except ImportError:  # pragma: no cover
+    from flask_cli import with_appcontext
 
 if HAS_PIDSTORE:
     def process_minter(value):
@@ -151,3 +155,17 @@ def patch(patch, ids):
         for id_ in ids:
             Record.get_record(id_).patch(patch_content).commit()
         db.session.commit()
+
+
+@records.command()
+@click.option('-i', '--id', 'ids', multiple=True)
+@click.option('--force', is_flag=True, default=False)
+@with_appcontext
+def delete(ids, force):
+    """Delete bibliographic record(s)."""
+    from .api import Record
+    from .models import RecordMetadata
+    for id_ in ids:
+        record = Record.get_record(id_)
+        record.delete(force=force)
+    db.session.commit()
