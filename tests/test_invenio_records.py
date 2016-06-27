@@ -33,13 +33,17 @@ import uuid
 import pytest
 from click.testing import CliRunner
 from flask import Flask
-from flask_cli import FlaskCLI, ScriptInfo
 from invenio_db import InvenioDB, db
 from jsonschema.exceptions import ValidationError
 from sqlalchemy.orm.exc import NoResultFound
 
 from invenio_records import InvenioRecords, Record, cli
 from invenio_records.errors import MissingModelError
+
+try:
+    from flask.cli import ScriptInfo
+except ImportError:
+    from flask_cli import ScriptInfo
 
 
 def test_version():
@@ -51,31 +55,25 @@ def test_version():
 def test_init():
     """Test extension initialization."""
     app = Flask('testapp')
-    FlaskCLI(app)
+    if not hasattr(app, 'cli'):
+        from flask_cli import FlaskCLI
+        FlaskCLI(app)
     ext = InvenioRecords(app)
     assert 'invenio-records' in app.extensions
 
     app = Flask('testapp')
-    FlaskCLI(app)
+    if not hasattr(app, 'cli'):
+        from flask_cli import FlaskCLI
+        FlaskCLI(app)
     ext = InvenioRecords()
     assert 'invenio-records' not in app.extensions
     ext.init_app(app)
     assert 'invenio-records' in app.extensions
 
 
-def test_db():
+def test_db(app, db):
     """Test database backend."""
-    app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-        'SQLALCHEMY_DATABASE_URI', 'sqlite:///test.db'
-    )
-    FlaskCLI(app)
-    InvenioDB(app)
-    InvenioRecords(app)
-
     with app.app_context():
-        db.drop_all()
-        db.create_all()
         assert 'records_metadata' in db.metadata.tables
         assert 'records_metadata_version' in db.metadata.tables
         assert 'transaction' in db.metadata.tables
@@ -157,9 +155,6 @@ def test_db():
         app.config['RECORDS_VALIDATION_TYPES'] = {'array': (list, tuple)}
         record_uuid = Record.create(data).commit()
         db.session.commit()
-
-    with app.app_context():
-        db.drop_all()
 
 
 def test_cli(app, db):

@@ -49,26 +49,28 @@ def test_example_app():
     """Test example app."""
     # Testing database creation
     for cmd in ['mkdir -p instance',
-                'flask -a app.py db init',
-                'flask -a app.py db create']:
+                'FLASK_APP=app.py flask db init',
+                'FLASK_APP=app.py flask db drop --yes-i-know',
+                'FLASK_APP=app.py flask db create']:
         exit_status = subprocess.call(cmd, shell=True)
         assert exit_status == 0
 
     # Testing record creation
-    cmd = """echo '{"title": "Test title"}' | flask -a app.py records create \
-                -i deadbeef-9fe4-43d3-a08f-38c2b309afba"""
+    cmd = """echo '{"title": "Test title"}' | \
+        FLASK_APP=app.py flask records create \
+        -i deadbeef-9fe4-43d3-a08f-38c2b309afba"""
     output = subprocess.check_output(cmd, shell=True)
     assert 'deadbeef-9fe4-43d3-a08f-38c2b309afba' in str(output)
 
     # Testing record retrieval via shell
     cmd = """echo "from invenio_records.api import Record; \
 Record.get_record('deadbeef-9fe4-43d3-a08f-38c2b309afba')" | \
-    flask -a app.py shell"""
+    FLASK_APP=app.py flask shell"""
     output = subprocess.check_output(cmd, shell=True)
     assert 'Test title' in str(output)
 
     # Starting example web app
-    cmd = 'flask -a app.py run'
+    cmd = 'FLASK_APP=app.py flask run'
     webapp = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                               preexec_fn=os.setsid, shell=True)
     time.sleep(5)
