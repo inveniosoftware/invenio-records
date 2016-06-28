@@ -106,7 +106,7 @@ setup(
     keywords='invenio metadata',
     license='GPLv2',
     author='CERN',
-    author_email='info@invenio-software.org',
+    author_email='info@inveniosoftware.org',
     url='https://github.com/inveniosoftware/invenio-records',
     packages=packages,
     zip_safe=False,

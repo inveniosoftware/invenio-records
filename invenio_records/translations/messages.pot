@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: invenio-records 1.0.0.dev20150000\n"
-"Report-Msgid-Bugs-To: info@invenio-software.org\n"
+"Report-Msgid-Bugs-To: info@inveniosoftware.org\n"
 "POT-Creation-Date: 2015-10-19 17:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"

@@ -64,9 +64,9 @@ def test_permission_factory(app, db, action, permission_factory):
     rec_uuid = uuid.uuid4()
 
     with db.session.begin_nested():
-        user_all = User(email='all@invenio-software.org')
-        user_one = User(email='one@invenio-software.org')
-        user_none = User(email='none@invenio-software.org')
+        user_all = User(email='all@inveniosoftware.org')
+        user_one = User(email='one@inveniosoftware.org')
+        user_none = User(email='none@inveniosoftware.org')
         db.session.add(user_all)
         db.session.add(user_one)
         db.session.add(user_none)
