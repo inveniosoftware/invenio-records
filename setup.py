@@ -46,22 +46,22 @@ tests_require = [
 
 extras_require = {
     'access': [
-        'invenio-access>=1.0.0a1',
+        'invenio-access>=1.0.0a8',
     ],
     'pidstore': [
-        'invenio-pidstore>=1.0.0a7',
+        'invenio-pidstore>=1.0.0a9',
     ],
     'docs': [
         'Sphinx>=1.4.2',
     ],
     'mysql': [
-        'invenio-db[mysql,versioning]>=1.0.0a8',
+        'invenio-db[mysql,versioning]>=1.0.0a10',
     ],
     'postgresql': [
-        'invenio-db[postgresql,versioning]>=1.0.0a8',
+        'invenio-db[postgresql,versioning]>=1.0.0a10',
     ],
     'sqlite': [
-        'invenio-db[versioning]>=1.0.0a8',
+        'invenio-db[versioning]>=1.0.0a10',
     ],
     'admin': [
         'Flask-Admin>=1.3.0',
