@@ -31,7 +31,7 @@ import sys
 import time
 
 
-def setup_module():
+def setup_module(module):
     """Set up before all tests."""
     # switch to examples/app.py
     exampleappdir = os.path.join(os.path.split(sys.path[0])[0],
@@ -39,7 +39,7 @@ def setup_module():
     os.chdir(exampleappdir)
 
 
-def teardown_module():
+def teardown_module(module):
     """Tear down after all tests."""
     cmd = 'FLASK_APP=app.py flask db drop --yes-i-know'
     subprocess.call(cmd, shell=True)
