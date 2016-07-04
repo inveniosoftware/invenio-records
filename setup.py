@@ -45,9 +45,6 @@ tests_require = [
 ]
 
 extras_require = {
-    'access': [
-        'invenio-access>=1.0.0a8',
-    ],
     'pidstore': [
         'invenio-pidstore>=1.0.0a9',
     ],
@@ -127,16 +124,6 @@ setup(
         ],
         'invenio_i18n.translations': [
             'messages = invenio_records',
-        ],
-        'invenio_access.actions': [
-            'records_read_all'
-            ' = invenio_records.permissions:records_read_all',
-            'records_create_all'
-            ' = invenio_records.permissions:records_create_all',
-            'records_update_all'
-            ' = invenio_records.permissions:records_update_all',
-            'records_delete_all'
-            ' = invenio_records.permissions:records_delete_all',
         ],
         'invenio_admin.views': [
             'invenio_records = invenio_records.admin:record_adminview',
