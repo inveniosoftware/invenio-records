@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -41,7 +41,7 @@ def setup_module():
 
 def teardown_module():
     """Tear down after all tests."""
-    cmd = 'flask -a app.py db drop --yes-i-know'
+    cmd = 'FLASK_APP=app.py flask db drop --yes-i-know'
     subprocess.call(cmd, shell=True)
 
 
