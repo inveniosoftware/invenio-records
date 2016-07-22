@@ -52,7 +52,7 @@ extras_require = {
         'invenio-pidstore>=1.0.0a9',
     ],
     'docs': [
-        'Sphinx>=1.4.2',
+        'Sphinx>=1.4.4',
     ],
     'mysql': [
         'invenio-db[mysql,versioning]>=1.0.0a10',

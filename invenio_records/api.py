@@ -49,8 +49,8 @@ class RecordBase(dict):
     def __init__(self, data, model=None):
         """Initialize instance with dictionary data and SQLAlchemy model.
 
-        :param data: dict with record metadata
-        :param model: :class:`~invenio_records.models.RecordMetadata` instance
+        :param data: Dict with record metadata.
+        :param model: :class:`~invenio_records.models.RecordMetadata` instance.
         """
         self.model = model
         super(RecordBase, self).__init__(data or {})
@@ -95,7 +95,24 @@ class Record(RecordBase):
 
     @classmethod
     def create(cls, data, id_=None):
-        """Create a record instance and store it in database."""
+        """Create a record instance and store it in database.
+
+        Procedure followed:
+
+        #. The signal :data:`invenio_records.signals.before_record_insert` is
+            called with the data as function parameter.
+
+        #. The record data is validate.
+
+        #. The record is added in the database.
+
+        #. The signal :data:`invenio_records.signals.after_record_insert` is
+            called with the data as function parameter.
+
+        :param data: Dict with record metadata.
+        :param id_: Force the UUID for the record.
+        :returns: A new Record instance.
+        """
         from .models import RecordMetadata
         with db.session.begin_nested():
             record = cls(data)
@@ -112,13 +129,17 @@ class Record(RecordBase):
         return record
 
     @classmethod
-    def get_record(cls, id, with_deleted=False):
+    def get_record(cls, id_, with_deleted=False):
         """Get record instance.
 
         Raises database exception if record does not exists.
+
+        :param id_: Record ID.
+        :param with_deleted: If `True` then it includes deleted records.
+        :returns: The Record instance.
         """
         with db.session.no_autoflush:
-            query = RecordMetadata.query.filter_by(id=id)
+            query = RecordMetadata.query.filter_by(id=id_)
             if not with_deleted:
                 query = query.filter(RecordMetadata.json != None)  # noqa
             obj = query.one()
@@ -126,7 +147,12 @@ class Record(RecordBase):
 
     @classmethod
     def get_records(cls, ids, with_deleted=False):
-        """Get multiple record instances."""
+        """Get multiple record instances.
+
+        :param ids: List of record ID.
+        :param with_deleted: If `True` then it includes deleted records.
+        :returns: A list od Record instance.
+        """
         with db.session.no_autoflush:
             query = RecordMetadata.query.filter(RecordMetadata.id.in_(ids))
             if not with_deleted:
@@ -135,12 +161,31 @@ class Record(RecordBase):
             return [cls(obj.json, model=obj) for obj in query.all()]
 
     def patch(self, patch):
-        """Patch record metadata."""
+        """Patch record metadata.
+
+        :params patch: Dictionary of record metadata.
+        :returns: A new Record instance.
+        """
         data = apply_patch(dict(self), patch)
         return self.__class__(data, model=self.model)
 
     def commit(self):
-        """Store changes on current instance in database."""
+        """Store changes on current instance in database.
+
+        Procedure followed:
+
+        #. The signal :data:`invenio_records.signals.before_record_insert` is
+            called with the record as function parameter.
+
+        #. The record data is validate.
+
+        #. The record is committed to the database.
+
+        #. The signal :data:`invenio_records.signals.after_record_insert` is
+            called with the record as function parameter.
+
+        :returns: The Record instance.
+        """
         if self.model is None or self.model.json is None:
             raise MissingModelError()
 
@@ -166,7 +211,18 @@ class Record(RecordBase):
         history of an object. If `force` is True, the record is completely
         removed from the database.
 
+        Procedure followed:
+
+        #. The signal :data:`invenio_records.signals.before_record_insert` is
+            called with the record as function parameter.
+
+        #. The record is deleted or soft-deleted.
+
+        #. The signal :data:`invenio_records.signals.after_record_insert` is
+            called with the record as function parameter.
+
         :param force: Completely remove record from database.
+        :returns: The Record instance.
         """
         if self.model is None:
             raise MissingModelError()
@@ -184,7 +240,22 @@ class Record(RecordBase):
         return self
 
     def revert(self, revision_id):
-        """Revert to a specific revision."""
+        """Revert to a specific revision.
+
+        Procedure followed:
+
+        #. The signal :data:`invenio_records.signals.before_record_insert` is
+            called with the record as function parameter.
+
+        #. The record is reverted.
+
+        #. The signal :data:`invenio_records.signals.after_record_insert` is
+            called with the reverted record as function parameter.
+
+        :param revision_id: Specify with revision the record should be
+            reverted.
+        :returns: The new Record instance.
+        """
         if self.model is None:
             raise MissingModelError()
 
