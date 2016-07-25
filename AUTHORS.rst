@@ -46,6 +46,7 @@ Invenio-Records is a metadata storage module.
 - Grzegorz Szpura <grzegorz.szpura@cern.ch>
 - Guillaume Lastecoueres <PX9e@gmx.fr>
 - Henning Weiler <henning.weiler@cern.ch>
+- Jacopo Notarstefano <jacopo.notarstefano@cern.ch>
 - Jaime García <jaime.garcia.llopis@cern.ch>
 - Jan Aage Lavik <jan.age.lavik@cern.ch>
 - Jan Iwaszkiewicz <jan.iwaszkiewicz@cern.ch>

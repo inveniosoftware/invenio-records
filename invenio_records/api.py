@@ -75,10 +75,35 @@ class RecordBase(dict):
         """Get last updated timestamp."""
         return self.model.updated if self.model else None
 
-    def validate(self):
-        """Validate record according to schema defined in ``$schema`` key."""
+    def validate(self, **kwargs):
+        """Validate record according to schema defined in ``$schema`` key.
+
+        This method accepts arbitrary kwargs to pass the ``format_checker``
+        keyword argument to the underlying JSON Schema implementation.
+
+        A ``format_checker`` is an instance of class
+        :class:`jsonschema.FormatChecker` containing business logic to validate
+        arbitrary formats. For example:
+
+        >>> from jsonschema import FormatChecker
+        >>> from jsonschema.validators import validate
+        >>> checker = FormatChecker()
+        >>> checker.checks('foo')(lambda el: el.startswith('foo'))
+        <function <lambda> at ...>
+        >>> validate('foo', {'format': 'foo'}, format_checker=checker)
+
+        returns ``None``, which means that the validation was successful, while
+
+        >>> validate('bar', {'format': 'foo'}, format_checker=checker)
+        Traceback (most recent call last):
+        ...
+        ValidationError: 'bar' is not a 'foo'
+        ...
+
+        raises a :class:`jsonschema.exceptions.ValidationError`.
+        """
         if '$schema' in self and self['$schema'] is not None:
-            return _records_state.validate(self, self['$schema'])
+            return _records_state.validate(self, self['$schema'], **kwargs)
         return True
 
     def replace_refs(self):
@@ -94,8 +119,8 @@ class Record(RecordBase):
     """Define API for metadata creation and manipulation."""
 
     @classmethod
-    def create(cls, data, id_=None):
-        """Create a record instance and store it in database.
+    def create(cls, data, id_=None, **kwargs):
+        r"""Create a record instance and store it in database.
 
         Procedure followed:
 
@@ -111,7 +136,14 @@ class Record(RecordBase):
 
         :param data: Dict with record metadata.
         :param id_: Force the UUID for the record.
+        :param \**kwargs: See below.
         :returns: A new Record instance.
+
+        :Keyword Arguments:
+          * **format_checker** --
+            An instance of class :class:`jsonschema.FormatChecker`, which
+            contains validation rules for formats. See
+            :func:`~invenio_records.api.RecordBase.validate` for details.
         """
         from .models import RecordMetadata
         with db.session.begin_nested():
@@ -119,7 +151,7 @@ class Record(RecordBase):
 
             before_record_insert.send(record)
 
-            record.validate()
+            record.validate(**kwargs)
 
             record.model = RecordMetadata(id=id_, json=record)
 

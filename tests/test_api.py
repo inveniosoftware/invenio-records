@@ -33,6 +33,8 @@ from datetime import datetime, timedelta
 import pytest
 from jsonresolver import JSONResolver
 from jsonresolver.contrib.jsonref import json_loader_factory
+from jsonschema import FormatChecker
+from jsonschema.exceptions import ValidationError
 from sqlalchemy.orm.exc import NoResultFound
 
 from invenio_records import Record
@@ -321,3 +323,26 @@ def test_record_dump(app, db):
         record_dump = record.dumps()
         record_dump['foo']['bar'] = 'Spam'
         assert record_dump['foo']['bar'] != record['foo']['bar']
+
+
+def test_validate_with_format(app, db):
+    """Test that validation can accept custom format rules."""
+    with app.app_context():
+        checker = FormatChecker()
+        checker.checks('foo')(lambda el: el.startswith('foo'))
+        record = Record.create({
+            'bar': 'foo',
+            '$schema': {
+                'properties': {
+                    'bar': {'format': 'foo'}
+                }
+            }
+        })
+
+        assert record.validate(format_checker=checker) is None
+
+        record['bar'] = 'bar'
+
+        with pytest.raises(ValidationError) as excinfo:
+            record.validate(format_checker=checker)
+        assert "'bar' is not a 'foo'" in str(excinfo.value)

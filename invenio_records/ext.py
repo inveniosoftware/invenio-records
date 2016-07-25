@@ -46,15 +46,17 @@ class _RecordsState(object):
         self.ref_resolver_cls = ref_resolver_factory(self.resolver)
         self.loader_cls = json_loader_factory(self.resolver)
 
-    def validate(self, data, schema):
+    def validate(self, data, schema, **kwargs):
         """Validate data using schema with ``JSONResolver``."""
         if not isinstance(schema, dict):
             schema = {'$ref': schema}
-        return validate(data, schema,
-                        types=self.app.config.get(
-                            "RECORDS_VALIDATION_TYPES", {}
-                        ),
-                        resolver=self.ref_resolver_cls.from_schema(schema))
+        return validate(
+            data,
+            schema,
+            resolver=self.ref_resolver_cls.from_schema(schema),
+            types=self.app.config.get('RECORDS_VALIDATION_TYPES', {}),
+            **kwargs
+        )
 
     def replace_refs(self, data):
         """Replace the JSON reference objects with ``JsonRef``."""
