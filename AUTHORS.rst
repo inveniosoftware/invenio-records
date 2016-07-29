@@ -70,6 +70,7 @@ Invenio-Records is a metadata storage module.
 - Mike Sullivan <sul@slac.stanford.edu>
 - Nikolaos Kasioumis <nikolaos.kasioumis@cern.ch>
 - Olivier Serres <olivier.serres@gmail.com>
+- Orestis Melkonian <melkon.or@gmail.com>
 - Pablo Vázquez Caderno <pcaderno@cern.ch>
 - Patrick Glauner <patrick.oliver.glauner@cern.ch>
 - Paulo Cabral <paulo.cabral@cern.ch>
