@@ -76,33 +76,67 @@ class RecordBase(dict):
         return self.model.updated if self.model else None
 
     def validate(self, **kwargs):
-        """Validate record according to schema defined in ``$schema`` key.
+        r"""Validate record according to schema defined in ``$schema`` key.
 
-        This method accepts arbitrary kwargs to pass the ``format_checker``
-        keyword argument to the underlying JSON Schema implementation.
+        :Keyword Arguments:
+          * **format_checker** --
+            A ``format_checker`` is an instance of class
+            :class:`jsonschema.FormatChecker` containing business logic to
+            validate arbitrary formats. For example:
 
-        A ``format_checker`` is an instance of class
-        :class:`jsonschema.FormatChecker` containing business logic to validate
-        arbitrary formats. For example:
+            >>> from jsonschema import FormatChecker
+            >>> from jsonschema.validators import validate
+            >>> checker = FormatChecker()
+            >>> checker.checks('foo')(lambda el: el.startswith('foo'))
+            <function <lambda> at ...>
+            >>> validate('foo', {'format': 'foo'}, format_checker=checker)
 
-        >>> from jsonschema import FormatChecker
-        >>> from jsonschema.validators import validate
-        >>> checker = FormatChecker()
-        >>> checker.checks('foo')(lambda el: el.startswith('foo'))
-        <function <lambda> at ...>
-        >>> validate('foo', {'format': 'foo'}, format_checker=checker)
+            returns ``None``, which means that the validation was successful,
+            while
 
-        returns ``None``, which means that the validation was successful, while
+            >>> validate('bar', {'format': 'foo'}, format_checker=checker)
+            Traceback (most recent call last):
+            ...
+            ValidationError: 'bar' is not a 'foo'
+            ...
 
-        >>> validate('bar', {'format': 'foo'}, format_checker=checker)
-        Traceback (most recent call last):
-        ...
-        ValidationError: 'bar' is not a 'foo'
-        ...
+            raises a :class:`jsonschema.exceptions.ValidationError`.
 
-        raises a :class:`jsonschema.exceptions.ValidationError`.
+          * **validator** --
+            A :class:`jsonschema.IValidator` class used for record validation.
+            It will be used as `cls` argument when calling
+            :func:`jsonschema.validate`. For example
+
+            >>> from jsonschema.validators import extend, Draft4Validator
+            >>> NoRequiredValidator = extend(
+            ... Draft4Validator,
+            ... validators={'required': lambda v, r, i, s: None})
+            >>> schema = {
+            ... 'type': 'object',
+            ... 'properties': {
+            ...     'name': { 'type': 'string' },
+            ...     'email': { 'type': 'string' },
+            ...     'address': {'type': 'string' },
+            ...     'telephone': { 'type': 'string' }
+            ... },
+            ... 'required': ['name', 'email']
+            ... }
+            >>> from jsonschema.validators import validate
+            >>> validate({}, schema, NoRequiredValidator)
+
+            returns ``None``, which means that the validation was successful,
+            while
+
+            >>> validate({}, schema)
+            Traceback (most recent call last):
+            ...
+            ValidationError: 'name' is a required property
+            ...
+
+            raises a :class:`jsonschema.exceptions.ValidationError`.
         """
         if '$schema' in self and self['$schema'] is not None:
+            kwargs['cls'] = kwargs.pop('validator', None)
             return _records_state.validate(self, self['$schema'], **kwargs)
         return True
 
@@ -144,6 +178,11 @@ class Record(RecordBase):
             An instance of class :class:`jsonschema.FormatChecker`, which
             contains validation rules for formats. See
             :func:`~invenio_records.api.RecordBase.validate` for details.
+
+          * **validator** --
+            A :class:`jsonschema.IValidator` class that will be used to
+            validate. See :func:`~invenio_records.api.RecordBase.validate` for
+            details.
         """
         from .models import RecordMetadata
         with db.session.begin_nested():
