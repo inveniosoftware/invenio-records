@@ -59,9 +59,6 @@ def app(request):
         SQLALCHEMY_TRACK_MODIFICATIONS=True,
         TESTING=True,
     )
-    if not hasattr(app, 'cli'):
-        from flask_cli import FlaskCLI
-        FlaskCLI(app_)
     FlaskCeleryExt(app_)
     InvenioDB(app_)
     InvenioRecords(app_)

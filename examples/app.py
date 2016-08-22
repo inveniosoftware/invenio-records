@@ -59,7 +59,6 @@ import os
 import pkg_resources
 from flask import Flask, jsonify, render_template
 from flask_celeryext import create_celery_app
-from flask_cli import FlaskCLI
 from invenio_db import InvenioDB
 
 from invenio_records import InvenioRecords
@@ -87,9 +86,6 @@ db_uri = os.environ.get('SQLALCHEMY_DATABASE_URI')
 if db_uri is not None:
     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 
-if not hasattr(app, 'cli'):
-    from flask_cli import FlaskCLI
-    FlaskCLI(app)
 InvenioDB(app)
 InvenioRecords(app)
 

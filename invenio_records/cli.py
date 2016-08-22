@@ -33,6 +33,7 @@ import uuid
 import click
 import pkg_resources
 from flask import current_app
+from flask.cli import with_appcontext
 from invenio_db import db
 from sqlalchemy import exc
 
@@ -48,10 +49,6 @@ try:
 except ImportError:
     from itertools import izip_longest as zip_longest
 
-try:
-    from flask.cli import with_appcontext
-except ImportError:  # pragma: no cover
-    from flask_cli import with_appcontext
 
 if HAS_PIDSTORE:
     def process_minter(value):

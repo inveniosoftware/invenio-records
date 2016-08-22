@@ -33,17 +33,13 @@ import uuid
 import pytest
 from click.testing import CliRunner
 from flask import Flask
+from flask.cli import ScriptInfo
 from invenio_db import InvenioDB, db
 from jsonschema.exceptions import ValidationError
 from sqlalchemy.orm.exc import NoResultFound
 
 from invenio_records import InvenioRecords, Record, cli
 from invenio_records.errors import MissingModelError
-
-try:
-    from flask.cli import ScriptInfo
-except ImportError:
-    from flask_cli import ScriptInfo
 
 
 def test_version():
@@ -55,16 +51,10 @@ def test_version():
 def test_init():
     """Test extension initialization."""
     app = Flask('testapp')
-    if not hasattr(app, 'cli'):
-        from flask_cli import FlaskCLI
-        FlaskCLI(app)
     ext = InvenioRecords(app)
     assert 'invenio-records' in app.extensions
 
     app = Flask('testapp')
-    if not hasattr(app, 'cli'):
-        from flask_cli import FlaskCLI
-        FlaskCLI(app)
     ext = InvenioRecords()
     assert 'invenio-records' not in app.extensions
     ext.init_app(app)
