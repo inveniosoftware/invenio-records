@@ -28,6 +28,7 @@ Create database and tables::
 
    $ cd examples
    $ export FLASK_APP=app.py
+   $ export FLASK_DEBUG=1
    $ mkdir -p instance
    $ flask db init
    $ flask db create
@@ -39,7 +40,7 @@ Create test record::
 
 Run the development server::
 
-   $ flask --debug run --debugger
+   $ flask run
 
 Retrieve record via web::
 
