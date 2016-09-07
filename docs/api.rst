@@ -25,8 +25,6 @@
 API Docs
 ========
 
-Flask extension
----------------
 .. automodule:: invenio_records.ext
    :members:
 
@@ -41,6 +39,10 @@ Errors
 .. automodule:: invenio_records.errors
    :members:
 
+Models
+------
+.. automodule:: invenio_records.models
+   :members:
 
 Signals
 -------
