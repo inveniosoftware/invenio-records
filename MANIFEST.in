@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -22,19 +22,17 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-# Check manifest will not automatically add these two files:
-include .dockerignore
-include .editorconfig
-include .tx/config
-
-# added by check_manifest.py
 include *.py
 include *.rst
 include *.sh
 include *.txt
+include .dockerignore
+include .editorconfig
+include .tx/config
 include LICENSE
 include babel.ini
 include config
+include docs/requirements.txt
 include pytest.ini
 include tox.ini
 recursive-include docs *.bat

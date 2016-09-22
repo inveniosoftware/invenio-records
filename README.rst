@@ -46,4 +46,4 @@ Invenio-Records is a metadata storage module.
 *This is an experimental developer preview release.*
 
 * Free software: GPLv2 license
-* Documentation: https://pythonhosted.org/invenio-records/
+* Documentation: https://invenio-records.readthedocs.io/

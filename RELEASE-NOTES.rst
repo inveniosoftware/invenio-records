@@ -40,7 +40,7 @@ Installation
 Documentation
 -------------
 
-   http://pythonhosted.org/invenio-records/
+   https://invenio-records.readthedocs.io/
 
 Happy hacking and thanks for flying Invenio-Records.
 
