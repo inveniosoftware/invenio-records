@@ -1,1 +1,1 @@
--e . [docs,sqlite,tests]
+-e .[docs,sqlite,tests]
