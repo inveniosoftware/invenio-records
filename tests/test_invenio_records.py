@@ -61,6 +61,26 @@ def test_init():
     assert 'invenio-records' in app.extensions
 
 
+def test_alembic(app, db):
+    """Test alembic recipes."""
+    ext = app.extensions['invenio-db']
+
+    if db.engine.name == 'sqlite':
+        raise pytest.skip('Upgrades are not supported on SQLite.')
+
+    # FIXME uncomment when Invenio-PIDStore contains alembic recipes
+    # assert not ext.alembic.compare_metadata()
+    # db.drop_all()
+    # ext.alembic.upgrade()
+
+    # assert not ext.alembic.compare_metadata()
+    ext.alembic.stamp()
+    ext.alembic.downgrade(target='96e796392533')
+    ext.alembic.upgrade()
+
+    assert not ext.alembic.compare_metadata()
+
+
 def test_db(app, db):
     """Test database backend."""
     with app.app_context():

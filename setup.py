@@ -52,13 +52,13 @@ extras_require = {
         'Sphinx>=1.4.4',
     ],
     'mysql': [
-        'invenio-db[mysql,versioning]>=1.0.0a10',
+        'invenio-db[mysql,versioning]>=1.0.0b3',
     ],
     'postgresql': [
-        'invenio-db[postgresql,versioning]>=1.0.0a10',
+        'invenio-db[postgresql,versioning]>=1.0.0b3',
     ],
     'sqlite': [
-        'invenio-db[versioning]>=1.0.0a10',
+        'invenio-db[versioning]>=1.0.0b3',
     ],
     'admin': [
         'Flask-Admin>=1.3.0',
@@ -119,6 +119,9 @@ setup(
         ],
         'invenio_celery.tasks': [
             'invenio_records = invenio_records.tasks.api',
+        ],
+        'invenio_db.alembic': [
+            'invenio_records = invenio_records:alembic',
         ],
         'invenio_db.models': [
             'invenio_records = invenio_records.models',
