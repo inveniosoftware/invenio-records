@@ -79,7 +79,7 @@ setup_requires = [
 
 install_requires = [
     'blinker>=1.4',
-    'flask-celeryext>=0.1.0',
+    'flask-celeryext>=0.2.2',
     'Flask>=0.11.1',
     'jsonpatch>=1.11',
     'jsonresolver>=0.1.0',
