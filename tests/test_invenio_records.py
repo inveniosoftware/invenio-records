@@ -68,12 +68,11 @@ def test_alembic(app, db):
     if db.engine.name == 'sqlite':
         raise pytest.skip('Upgrades are not supported on SQLite.')
 
-    # FIXME uncomment when Invenio-PIDStore contains alembic recipes
-    # assert not ext.alembic.compare_metadata()
-    # db.drop_all()
-    # ext.alembic.upgrade()
+    assert not ext.alembic.compare_metadata()
+    db.drop_all()
+    ext.alembic.upgrade()
 
-    # assert not ext.alembic.compare_metadata()
+    assert not ext.alembic.compare_metadata()
     ext.alembic.stamp()
     ext.alembic.downgrade(target='96e796392533')
     ext.alembic.upgrade()

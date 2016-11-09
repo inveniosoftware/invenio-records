@@ -46,7 +46,7 @@ tests_require = [
 
 extras_require = {
     'pidstore': [
-        'invenio-pidstore>=1.0.0a9',
+        'invenio-pidstore>=1.0.0b1',
     ],
     'docs': [
         'Sphinx>=1.4.4',
