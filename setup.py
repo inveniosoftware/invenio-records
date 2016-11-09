@@ -111,6 +111,9 @@ setup(
     include_package_data=True,
     platforms='any',
     entry_points={
+        'flask.commands': [
+            'records = invenio_records.cli:records',
+        ],
         'invenio_base.apps': [
             'invenio_records = invenio_records:InvenioRecords',
         ],

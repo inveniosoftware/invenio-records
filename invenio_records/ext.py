@@ -33,7 +33,6 @@ from jsonresolver.contrib.jsonschema import ref_resolver_factory
 from jsonschema import validate
 
 from . import config
-from .cli import records as records_cmd
 
 
 class _RecordsState(object):
@@ -75,7 +74,6 @@ class InvenioRecords(object):
                  entry_point_group='invenio_records.jsonresolver', **kwargs):
         """Flask application initialization."""
         self.init_config(app)
-        app.cli.add_command(records_cmd)
         state = _RecordsState(app, entry_point_group=entry_point_group)
         app.extensions['invenio-records'] = state
         return state
