@@ -37,9 +37,26 @@ from flask_celeryext import FlaskCeleryExt
 from invenio_db import db as db_
 from invenio_db import InvenioDB
 from invenio_pidstore import InvenioPIDStore
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.schema import DropConstraint, DropSequence, DropTable
 from sqlalchemy_utils.functions import create_database, database_exists
 
 from invenio_records import InvenioRecords
+
+
+@compiles(DropTable, 'postgresql')
+def _compile_drop_table(element, compiler, **kwargs):
+    return compiler.visit_drop_table(element) + ' CASCADE'
+
+
+@compiles(DropConstraint, 'postgresql')
+def _compile_drop_constraint(element, compiler, **kwargs):
+    return compiler.visit_drop_constraint(element) + ' CASCADE'
+
+
+@compiles(DropSequence, 'postgresql')
+def _compile_drop_sequence(element, compiler, **kwargs):
+    return compiler.visit_drop_sequence(element) + ' CASCADE'
 
 
 @pytest.yield_fixture()
