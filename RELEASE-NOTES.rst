@@ -1,15 +1,13 @@
-===========================
- Invenio-Records v1.0.0a17
-===========================
+==========================
+ Invenio-Records v1.0.0b1
+==========================
 
-Invenio-Records v1.0.0a17 was released on July 3, 2016.
+Invenio-Records v1.0.0b1 was released on November 9, 2016.
 
 About
 -----
 
 Invenio-Records is a metadata storage module.
-
-*This is an experimental developer preview release.*
 
 What's new
 ----------
@@ -35,7 +33,7 @@ Bug fixes
 Installation
 ------------
 
-   $ pip install invenio-records==1.0.0a17
+   $ pip install invenio-records==1.0.0b1
 
 Documentation
 -------------
