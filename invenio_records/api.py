@@ -240,8 +240,8 @@ class Record(RecordBase):
         data = apply_patch(dict(self), patch)
         return self.__class__(data, model=self.model)
 
-    def commit(self):
-        """Store changes on current instance in database.
+    def commit(self, **kwargs):
+        r"""Store changes on current instance in database.
 
         Procedure followed:
 
@@ -255,7 +255,19 @@ class Record(RecordBase):
         #. The signal :data:`invenio_records.signals.after_record_insert` is
             called with the record as function parameter.
 
+        :param \**kwargs: See below.
         :returns: The Record instance.
+
+        :Keyword Arguments:
+          * **format_checker** --
+            An instance of class :class:`jsonschema.FormatChecker`, which
+            contains validation rules for formats. See
+            :func:`~invenio_records.api.RecordBase.validate` for details.
+
+          * **validator** --
+            A :class:`jsonschema.IValidator` class that will be used to
+            validate. See :func:`~invenio_records.api.RecordBase.validate` for
+            details.
         """
         if self.model is None or self.model.json is None:
             raise MissingModelError()
@@ -263,7 +275,7 @@ class Record(RecordBase):
         with db.session.begin_nested():
             before_record_update.send(self)
 
-            self.validate()
+            self.validate(**kwargs)
 
             self.model.json = dict(self)
             flag_modified(self.model, 'json')

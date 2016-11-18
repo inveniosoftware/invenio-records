@@ -330,19 +330,35 @@ def test_validate_with_format(app, db):
     with app.app_context():
         checker = FormatChecker()
         checker.checks('foo')(lambda el: el.startswith('foo'))
-        record = Record.create({
+        data = {
             'bar': 'foo',
             '$schema': {
                 'properties': {
                     'bar': {'format': 'foo'}
                 }
             }
-        })
+        }
 
+        # test record creation with valid data
+        record = Record.create(data)
+        record = Record.create(data, format_checker=checker)
+        # test direct call to validate with valid data
         assert record.validate(format_checker=checker) is None
+        # test commit with valid data
+        record.commit(format_checker=checker)
 
         record['bar'] = 'bar'
-
+        # test direct call to validate with invalid data
         with pytest.raises(ValidationError) as excinfo:
             record.validate(format_checker=checker)
+        assert "'bar' is not a 'foo'" in str(excinfo.value)
+        # test commit with invalid data
+        with pytest.raises(ValidationError) as excinfo:
+            record.commit(format_checker=checker)
+        assert "'bar' is not a 'foo'" in str(excinfo.value)
+
+        data['bar'] = 'bar'
+        # test record creation with invalid data
+        with pytest.raises(ValidationError) as excinfo:
+            record = Record.create(data, format_checker=checker)
         assert "'bar' is not a 'foo'" in str(excinfo.value)
