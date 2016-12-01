@@ -39,6 +39,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from invenio_records import Record
 from invenio_records.errors import MissingModelError
+from invenio_records.validators import PartialDraft4Validator
 
 
 def strip_ms(dt):
@@ -202,12 +203,12 @@ def test_record_update_mutable(app, db):
 
     # Create a new record with two mutables, a list and a dict
     rec = Record.create(
-            {
-                'title': 'Title',
-                'list': ['foo', ],
-                'dict': {'moo': 'boo'},
-            },
-            id_=recid)
+        {
+            'title': 'Title',
+            'list': ['foo', ],
+            'dict': {'moo': 'boo'},
+        },
+        id_=recid)
     # Make sure mutables are there before and after commit
     assert rec == {
         'title': 'Title',
@@ -340,7 +341,7 @@ def test_validate_with_format(app, db):
         }
 
         # test record creation with valid data
-        record = Record.create(data)
+        assert data == Record.create(data)
         record = Record.create(data, format_checker=checker)
         # test direct call to validate with valid data
         assert record.validate(format_checker=checker) is None
@@ -362,3 +363,46 @@ def test_validate_with_format(app, db):
         with pytest.raises(ValidationError) as excinfo:
             record = Record.create(data, format_checker=checker)
         assert "'bar' is not a 'foo'" in str(excinfo.value)
+
+
+def test_validate_partial(app, db):
+    """Test partial validation."""
+    schema = {
+        'properties': {
+            'a': {'type': 'string'},
+            'b': {'type': 'string'},
+        },
+        'required': ['b']
+    }
+    data = {
+        'a': 'hello',
+        '$schema': schema
+    }
+    with app.app_context():
+        # Test validation on create()
+
+        # normal validation should fail because 'b' is required
+        with pytest.raises(ValidationError) as exc_info:
+            Record.create(data)
+        assert "'b' is a required property" == exc_info.value.message
+        # validate with a less restrictive validator
+        record = Record.create(data, validator=PartialDraft4Validator)
+        # set wrong data types should fails in any case
+        data_incorrect = copy.deepcopy(data)
+        data_incorrect['a'] = 1
+        with pytest.raises(ValidationError) as exc_info:
+            Record.create(data_incorrect, validator=PartialDraft4Validator)
+        assert "1 is not of type 'string'" == exc_info.value.message
+
+        # Test validation on commit()
+
+        # validation not passing with normal validator
+        with pytest.raises(ValidationError) as exc_info:
+            record.commit()
+        assert "'b' is a required property" == exc_info.value.message
+        # validation passing with less restrictive validator
+        assert data == record.commit(validator=PartialDraft4Validator)
+        # set wrong data types should fails in any case
+        record['a'] = 1
+        with pytest.raises(ValidationError) as exc_info:
+            record.commit(validator=PartialDraft4Validator)

@@ -168,11 +168,6 @@ class Record(RecordBase):
         #. The signal :data:`invenio_records.signals.after_record_insert` is
             called with the data as function parameter.
 
-        :param data: Dict with record metadata.
-        :param id_: Force the UUID for the record.
-        :param \**kwargs: See below.
-        :returns: A new Record instance.
-
         :Keyword Arguments:
           * **format_checker** --
             An instance of class :class:`jsonschema.FormatChecker`, which
@@ -183,6 +178,10 @@ class Record(RecordBase):
             A :class:`jsonschema.IValidator` class that will be used to
             validate. See :func:`~invenio_records.api.RecordBase.validate` for
             details.
+
+        :param data: Dict with record metadata.
+        :param id_: Force the UUID for the record.
+        :returns: A new Record instance.
         """
         from .models import RecordMetadata
         with db.session.begin_nested():
@@ -255,9 +254,6 @@ class Record(RecordBase):
         #. The signal :data:`invenio_records.signals.after_record_insert` is
             called with the record as function parameter.
 
-        :param \**kwargs: See below.
-        :returns: The Record instance.
-
         :Keyword Arguments:
           * **format_checker** --
             An instance of class :class:`jsonschema.FormatChecker`, which
@@ -268,6 +264,8 @@ class Record(RecordBase):
             A :class:`jsonschema.IValidator` class that will be used to
             validate. See :func:`~invenio_records.api.RecordBase.validate` for
             details.
+
+        :returns: The Record instance.
         """
         if self.model is None or self.model.json is None:
             raise MissingModelError()
