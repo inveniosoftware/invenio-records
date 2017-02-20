@@ -1,8 +1,8 @@
 ==========================
- Invenio-Records v1.0.0b1
+ Invenio-Records v1.0.0b2
 ==========================
 
-Invenio-Records v1.0.0b1 was released on November 9, 2016.
+Invenio-Records v1.0.0b2 was released on August 17, 2017.
 
 About
 -----
@@ -33,7 +33,7 @@ Bug fixes
 Installation
 ------------
 
-   $ pip install invenio-records==1.0.0b1
+   $ pip install invenio-records==1.0.0b2
 
 Documentation
 -------------
@@ -45,6 +45,6 @@ Happy hacking and thanks for flying Invenio-Records.
 | Invenio Development Team
 |   Email: info@inveniosoftware.org
 |   IRC: #invenio on irc.freenode.net
-|   Twitter: http://twitter.com/inveniosoftware
+|   Twitter: https://twitter.com/inveniosoftware
 |   GitHub: https://github.com/inveniosoftware/invenio-records
 |   URL: http://inveniosoftware.org
