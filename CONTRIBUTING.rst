@@ -53,9 +53,9 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `invenio` for local development.
+Ready to contribute? Here's how to set up `invenio-records` for local development.
 
-1. Fork the `invenio` repo on GitHub.
+1. Fork the `inveniosoftware/invenio-records` repo on GitHub.
 2. Clone your fork locally:
 
    .. code-block:: console
@@ -95,7 +95,12 @@ Ready to contribute? Here's how to set up `invenio` for local development.
    .. code-block:: console
 
       $ git add .
-      $ git commit -s -m "Your detailed description of your changes."
+      $ git commit -s
+          -m "component: title without verbs"
+          -m "* NEW Adds your new feature."
+          -m "* FIX Fixes an existing issue."
+          -m "* BETTER Improves and existing feature."
+          -m "* Changes something that should not be visible in release notes."
       $ git push origin name-of-your-bugfix-or-feature
 
 7. Submit a pull request through the GitHub website.

@@ -28,7 +28,6 @@ from __future__ import absolute_import, print_function
 
 from jsonschema.validators import Draft4Validator, extend
 
-
 PartialDraft4Validator = extend(Draft4Validator, {'required': None})
 """Partial JSON Schema (draft 4) validator.
 

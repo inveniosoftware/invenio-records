@@ -36,6 +36,7 @@ include config
 include docs/requirements.txt
 include pytest.ini
 include tox.ini
+prune docs/_build
 recursive-include docs *.bat
 recursive-include docs *.py
 recursive-include docs *.rst
@@ -45,8 +46,8 @@ recursive-include examples *.py
 recursive-include invenio_records *.html
 recursive-include invenio_records *.mo
 recursive-include invenio_records *.po
-recursive-include invenio_records *.py
 recursive-include invenio_records *.pot
+recursive-include invenio_records *.py
 recursive-include invenio_records *.xml
 recursive-include tests *.py
 recursive-include tests *.xml

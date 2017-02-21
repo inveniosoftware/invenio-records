@@ -49,7 +49,7 @@ extras_require = {
         'invenio-pidstore>=1.0.0b1',
     ],
     'docs': [
-        'Sphinx>=1.4.4',
+        'Sphinx>=1.5.1',
     ],
     'mysql': [
         'invenio-db[mysql,versioning]>=1.0.0b3',
@@ -114,6 +114,9 @@ setup(
         'flask.commands': [
             'records = invenio_records.cli:records',
         ],
+        'invenio_admin.views': [
+            'invenio_records = invenio_records.admin:record_adminview',
+        ],
         'invenio_base.apps': [
             'invenio_records = invenio_records:InvenioRecords',
         ],
@@ -131,9 +134,6 @@ setup(
         ],
         'invenio_i18n.translations': [
             'messages = invenio_records',
-        ],
-        'invenio_admin.views': [
-            'invenio_records = invenio_records.admin:record_adminview',
         ],
     },
     extras_require=extras_require,
