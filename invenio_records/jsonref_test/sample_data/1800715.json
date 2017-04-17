@@ -1,0 +1,98 @@
+[
+    {
+        "album": "762638", 
+        "collection": [
+            {
+                "primary": "PHOTOARCIMAGES"
+            }
+        ], 
+        "control_number": "1800715", 
+        "date_and_time_of_latest_transaction": "20150713092059.0", 
+        "general_note": [
+            {
+                "general_note": [
+                    "Image scanned from original photo negative on 09 Dec 2014"
+                ], 
+                "materials_specified": [
+                    "Box 06_4651-5800"
+                ]
+            }
+        ], 
+        "image": [
+            {
+                "link_text": "Image 5387", 
+                "photo_url": "http://cds.cern.ch/record/1800715/files/5387.jpg"
+            }, 
+            {
+                "photo_url": "http://cds.cern.ch/record/1800715/files/5387.jpg?subformat=icon-640"
+            }, 
+            {
+                "photo_url": "http://cds.cern.ch/record/1800715/files/5387.jpg?subformat=icon-1440"
+            }, 
+            {
+                "photo_url": "http://cds.cern.ch/record/1800715/files/5387.jpg?subformat=icon-180"
+            }
+        ], 
+        "immediate_source_of_acquisition_note": [
+            {
+                "accession_number": [
+                    "5387"
+                ]
+            }
+        ], 
+        "imprint": {
+            "date": "Apr 1962", 
+            "name_of_publisher": "CERN", 
+            "place_of_publication": "Geneva"
+        }, 
+        "indicator": [
+            "PHOTO"
+        ], 
+        "internal_note": [
+            {
+                "internal_note": "Archive Collection", 
+                "subject_note": "Scanned by Contentra Technologies"
+            }
+        ], 
+        "main_entry_corporate_name": {
+            "corporate_name_or_jurisdiction_name_as_entry_element": [
+                "CERN PhotoLab"
+            ]
+        }, 
+        "physical_description": [
+            {
+                "dimensions": "10cmx12.5cm", 
+                "extent": "Photographic negative"
+            }
+        ], 
+        "publication_distribution_imprint": [
+            {
+                "date_of_publication_distribution": "1962"
+            }
+        ], 
+        "record_type": "IMAGE", 
+        "slac_note": [
+            {
+                "slac_note": "Updated 774 value on run 1429275133"
+            }
+        ], 
+        "source_of_acquisition": [
+            {
+                "stock_number": [
+                    "CERN-PHOTO-62045387"
+                ]
+            }
+        ], 
+        "title_statement": {
+            "title": [
+                "No caption"
+            ]
+        }, 
+        "visibility": [
+            {
+                "scope": "Public", 
+                "visibility": "notvisible"
+            }
+        ]
+    }
+]

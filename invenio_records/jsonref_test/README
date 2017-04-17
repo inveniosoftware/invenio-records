@@ -1,0 +1,31 @@
+Disclaimer
+==========
+
+This is just a WIP, expect some errors :(
+
+Testing with files
+==================
+
+1. cd sample_data
+   python -m SimpleHTTPServer 4001
+
+2. Look in cds_loader/resolvers.py
+a) Comment:
+	line 16
+	line 33
+b) Uncomment:
+	line 17
+	line 34
+
+3. Provide database password in line 13
+
+Testing with database:
+
+1. Invert commenting/uncommenting done in point 2 above
+
+
+Run
+===
+
+python main.py
+

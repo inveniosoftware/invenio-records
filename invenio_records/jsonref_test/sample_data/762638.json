@@ -1,0 +1,110 @@
+[
+    {
+        "collection": [
+            {
+                "primary": "PHOTOARC"
+            }
+        ], 
+        "control_number": "762638", 
+        "control_number_identifier": "SzGeCERN", 
+        "date_and_time_of_latest_transaction": "20150714104923.0", 
+        "immediate_source_of_acquisition_note": [
+            {
+                "accession_number": [
+                    "Rubrique: Date Planche:4 62 De:5364 A:5368"
+                ]
+            }, 
+            {
+                "accession_number": [
+                    "Rubrique: Date Planche:4 62 De:5371 A:5371"
+                ]
+            }, 
+            {
+                "accession_number": [
+                    "Rubrique: Date Planche:4 62 De:5387 A:5387"
+                ]
+            }
+        ], 
+        "imprint": {
+            "date": "Apr 1962"
+        }, 
+        "index_term_uncontrolled": [
+            {
+                "level_of_index_term": "Primary", 
+                "uncontrolled_term": "Architecture, administration buildings"
+            }
+        ], 
+        "internal_note": [
+            {
+                "internal_note": "Converted from filemaker"
+            }
+        ], 
+        "photos": [
+            {
+                "$ref": "cds://1800701.json"
+            }, 
+            {
+                "$ref": "cds://1800700.json"
+            }, 
+            {
+                "$ref": "cds://1800702.json"
+            }, 
+            {
+                "$ref": "cds://1800703.json"
+            }, 
+            {
+                "$ref": "cds://1800704.json"
+            }, 
+            {
+                "$ref": "cds://1800705.json"
+            }, 
+            {
+                "$ref": "cds://1800708.json"
+            }, 
+            {
+                "$ref": "cds://1800715.json"
+            }
+        ], 
+        "physical_medium": [
+            {
+                "material_base_and_configuration": "FILM"
+            }, 
+            {
+                "material_base_and_configuration": "Neg NB 4 x 5"
+            }
+        ], 
+        "place_of_photo": [
+            {
+                "place": "SITE"
+            }
+        ], 
+        "publication_distribution_imprint": [
+            {
+                "date_of_publication_distribution": "1962"
+            }
+        ], 
+        "record_type": "ALBUM", 
+        "slac_note": [
+            {
+                "slac_note": "Updated 774 values on run 1424877576"
+            }
+        ], 
+        "title_statement": {
+            "title": [
+                "Inside and outside views of the Main Building"
+            ]
+        }, 
+        "varying_form_of_title": [
+            {
+                "title_proper_short_title": [
+                    "Vues int\u00e9rieure et ext\u00e9rieure du B\u00e2timent Principal"
+                ]
+            }
+        ], 
+        "visibility": [
+            {
+                "scope": "PUBLIC"
+            }
+        ]
+    }
+]
