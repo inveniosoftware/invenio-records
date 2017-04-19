@@ -244,14 +244,14 @@ class Record(RecordBase):
 
         Procedure followed:
 
-        #. The signal :data:`invenio_records.signals.before_record_insert` is
+        #. The signal :data:`invenio_records.signals.before_record_update` is
             called with the record as function parameter.
 
         #. The record data is validate.
 
         #. The record is committed to the database.
 
-        #. The signal :data:`invenio_records.signals.after_record_insert` is
+        #. The signal :data:`invenio_records.signals.after_record_update` is
             called with the record as function parameter.
 
         :Keyword Arguments:
@@ -294,12 +294,12 @@ class Record(RecordBase):
 
         Procedure followed:
 
-        #. The signal :data:`invenio_records.signals.before_record_insert` is
+        #. The signal :data:`invenio_records.signals.before_record_delete` is
             called with the record as function parameter.
 
         #. The record is deleted or soft-deleted.
 
-        #. The signal :data:`invenio_records.signals.after_record_insert` is
+        #. The signal :data:`invenio_records.signals.after_record_delete` is
             called with the record as function parameter.
 
         :param force: Completely remove record from database.
@@ -325,12 +325,12 @@ class Record(RecordBase):
 
         Procedure followed:
 
-        #. The signal :data:`invenio_records.signals.before_record_insert` is
+        #. The signal :data:`invenio_records.signals.before_record_revert` is
             called with the record as function parameter.
 
         #. The record is reverted.
 
-        #. The signal :data:`invenio_records.signals.after_record_insert` is
+        #. The signal :data:`invenio_records.signals.after_record_revert` is
             called with the reverted record as function parameter.
 
         :param revision_id: Specify with revision the record should be
