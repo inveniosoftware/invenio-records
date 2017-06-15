@@ -87,6 +87,7 @@ install_requires = [
     'jsonresolver>=0.1.0',
     'jsonref>=0.1',
     'jsonschema>=2.5.1',
+    'SQLAlchemy>=1.1.0',
     'sqlalchemy-utils>=0.31.0',
 ]
 

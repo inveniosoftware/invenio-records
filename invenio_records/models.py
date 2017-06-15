@@ -77,9 +77,15 @@ class RecordMetadata(db.Model, Timestamp):
     """Record identifier."""
 
     json = db.Column(
-        JSONType().with_variant(
-            postgresql.JSON(none_as_null=True),
+        db.JSON().with_variant(
+            postgresql.JSONB(none_as_null=True),
             'postgresql',
+        ).with_variant(
+            JSONType(),
+            'sqlite',
+        ).with_variant(
+            JSONType(),
+            'mysql',
         ),
         default=lambda: dict(),
         nullable=True
