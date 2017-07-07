@@ -37,10 +37,20 @@ depends_on = None
 def upgrade():
     """Upgrade database."""
     if op._proxy.migration_context.dialect.name == 'postgresql':
-        op.alter_column('records_metadata', 'json', type_=sa.dialects.postgresql.JSONB, postgresql_using='json::text::jsonb')
+        op.alter_column(
+            'records_metadata',
+            'json',
+            type_=sa.dialects.postgresql.JSONB,
+            postgresql_using='json::text::jsonb'
+        )
 
 
 def downgrade():
     """Downgrade database."""
     if op._proxy.migration_context.dialect.name == 'postgresql':
-        op.alter_column('records_metadata', 'json', type_=sa.dialects.postgresql.JSON, postgresql_using='json::text::json')
+        op.alter_column(
+            'records_metadata',
+            'json',
+            type_=sa.dialects.postgresql.JSON,
+            postgresql_using='json::text::json'
+        )
