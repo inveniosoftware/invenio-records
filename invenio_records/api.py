@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015, 2016 CERN.
+# Copyright (C) 2015, 2016, 2017 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -187,7 +187,10 @@ class Record(RecordBase):
         with db.session.begin_nested():
             record = cls(data)
 
-            before_record_insert.send(record)
+            before_record_insert.send(
+                current_app._get_current_object(),
+                record=record
+            )
 
             record.validate(**kwargs)
 
@@ -195,7 +198,10 @@ class Record(RecordBase):
 
             db.session.add(record.model)
 
-        after_record_insert.send(record)
+        after_record_insert.send(
+            current_app._get_current_object(),
+            record=record
+        )
         return record
 
     @classmethod
@@ -271,7 +277,10 @@ class Record(RecordBase):
             raise MissingModelError()
 
         with db.session.begin_nested():
-            before_record_update.send(self)
+            before_record_update.send(
+                current_app._get_current_object(),
+                record=self
+            )
 
             self.validate(**kwargs)
 
@@ -280,7 +289,10 @@ class Record(RecordBase):
 
             db.session.merge(self.model)
 
-        after_record_update.send(self)
+        after_record_update.send(
+            current_app._get_current_object(),
+            record=self
+        )
         return self
 
     def delete(self, force=False):
@@ -309,7 +321,10 @@ class Record(RecordBase):
             raise MissingModelError()
 
         with db.session.begin_nested():
-            before_record_delete.send(self)
+            before_record_delete.send(
+                current_app._get_current_object(),
+                record=self
+            )
 
             if force:
                 db.session.delete(self.model)
@@ -317,7 +332,10 @@ class Record(RecordBase):
                 self.model.json = None
                 db.session.merge(self.model)
 
-        after_record_delete.send(self)
+        after_record_delete.send(
+            current_app._get_current_object(),
+            record=self
+        )
         return self
 
     def revert(self, revision_id):
@@ -343,13 +361,19 @@ class Record(RecordBase):
         revision = self.revisions[revision_id]
 
         with db.session.begin_nested():
-            before_record_revert.send(self)
+            before_record_revert.send(
+                current_app._get_current_object(),
+                record=self
+            )
 
             self.model.json = dict(revision)
 
             db.session.merge(self.model)
 
-        after_record_revert.send(self)
+        after_record_revert.send(
+            current_app._get_current_object(),
+            record=self
+        )
         return self.__class__(self.model.json, model=self.model)
 
     @property
