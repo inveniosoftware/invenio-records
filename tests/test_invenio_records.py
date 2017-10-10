@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015, 2016 CERN.
+# Copyright (C) 2015, 2016, 2017 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -310,6 +310,15 @@ def test_cli(app, db):
         assert result.exit_code == 0
         with app.app_context():
             assert RM.query.get(recid1).json is None
+
+        result = runner.invoke(
+            cli.records,
+            ['delete', '-i', recid1, '--force'],
+            obj=script_info
+        )
+        assert result.exit_code == 0
+        with app.app_context():
+            assert RM.query.get(recid1) is None
 
         result = runner.invoke(
             cli.records,
