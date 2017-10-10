@@ -75,16 +75,16 @@ def test_revision_id_created_updated_properties(app, db):
     """Test properties."""
     record = Record.create({'title': 'test'})
     assert record.revision_id == 0
-    dt_c = record.created
+    dt_c = record.created.replace(microsecond=0)
     assert dt_c
-    dt_u = record.updated
+    dt_u = record.updated.replace(microsecond=0)
     assert dt_u
     record['title'] = 'test 2'
     record.commit()
     db.session.commit()
     assert record.revision_id == 1
-    assert strip_ms(record.created) == strip_ms(dt_c)
-    assert strip_ms(record.updated) >= strip_ms(dt_u)
+    assert record.created.replace(microsecond=0) == dt_c
+    assert record.updated.replace(microsecond=0) >= dt_u
 
     assert dt_u.tzinfo is None
     utcnow = datetime.utcnow()
