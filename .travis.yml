@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2013, 2014, 2015 CERN.
+# Copyright (C) 2013, 2014, 2015, 2017 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -22,9 +22,6 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-addons:
-  postgresql: 9.3
-
 notifications:
   email: false
 
@@ -39,6 +36,17 @@ services:
   - mysql
   - postgresql
 
+# Note: dist/sudo/api is required for MySQL 5.6 which adds support for
+# fractional seconds in datetime columns.
+dist: trusty
+sudo: required
+addons:
+  postgresql: "9.4"
+  apt:
+    packages:
+      - mysql-server-5.6
+      - mysql-client-core-5.6
+      - mysql-client-5.6
 
 env:
   - REQUIREMENTS=lowest EXTRAS=all,sqlite SQLALCHEMY_DATABASE_URI="sqlite:///test.db"
