@@ -24,6 +24,26 @@
 Changes
 =======
 
+Version 1.0.0b3 (released 2017-09-16)
+-------------------------------------
+
+What's new
+~~~~~~~~~~
+
+- Introduce JSONB for postgreSQL
+
+Incompatible changes
+~~~~~~~~~~~~~~~~~~~~
+
+- Changes the signals by sending the Flask app as an object instead of proxy.
+  More infos http://flask.pocoo.org/docs/0.12/signals/#sending-signals
+
+Bug fixes
+~~~~~~~~~
+
+- Allows to fully delete a record that was already soft-deleted.
+- Fixes bibliographic demo records with invalid MARCXML.
+
 Version 1.0.0b2 (released 2017-08-17)
 -------------------------------------
 

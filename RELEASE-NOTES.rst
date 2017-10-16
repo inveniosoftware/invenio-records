@@ -1,8 +1,8 @@
 ==========================
- Invenio-Records v1.0.0b2
+ Invenio-Records v1.0.0b3
 ==========================
 
-Invenio-Records v1.0.0b2 was released on August 17, 2017.
+Invenio-Records v1.0.0b3 was released on October 16, 2017.
 
 About
 -----
@@ -12,28 +12,24 @@ Invenio-Records is a metadata storage module.
 What's new
 ----------
 
-- Initial public release after architecture change.
+- Introduce JSONB for postgreSQL
 
 Incompatible changes
 --------------------
 
-- Changes primary key of records to UUIDType instead of auto-
-  incrementing integers.
-- Removes functional interface to records.
-- Renames SQLAlchemy model from Record to RecordMetadata to avoid
-  naming confusion with API Record class.
-- Refactors code to use Invenio-DB and removes legacy code. Web
-  interface and REST API will be provided via separate packages.
+- Changes the signals by sending the Flask app as an object instead of proxy.
+  More infos http://flask.pocoo.org/docs/0.12/signals/#sending-signals
 
 Bug fixes
 ---------
 
-- Fixes typo in configuration variables.
+- Allows to fully delete a record that was already soft-deleted.
+- Fixes bibliographic demo records with invalid MARCXML.
 
 Installation
 ------------
 
-   $ pip install invenio-records==1.0.0b2
+   $ pip install invenio-records==1.0.0b3
 
 Documentation
 -------------
