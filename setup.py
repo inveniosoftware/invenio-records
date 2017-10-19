@@ -43,7 +43,7 @@ tests_require = [
     'pytest-cache>=1.0',
     'pytest-cov>=1.8.0',
     'pytest-pep8>=1.0.6',
-    'pytest>=2.8.3',
+    'pytest>=3.2.3',
 ]
 
 extras_require = {
@@ -54,13 +54,13 @@ extras_require = {
         'Sphinx>=1.5.1',
     ],
     'mysql': [
-        'invenio-db[mysql,versioning]>=1.0.0b3',
+        'invenio-db[mysql,versioning]>=1.0.0b8',
     ],
     'postgresql': [
-        'invenio-db[postgresql,versioning]>=1.0.0b3',
+        'invenio-db[postgresql,versioning]>=1.0.0b8',
     ],
     'sqlite': [
-        'invenio-db[versioning]>=1.0.0b3',
+        'invenio-db[versioning]>=1.0.0b8',
     ],
     'admin': [
         'Flask-Admin>=1.3.0',
@@ -87,8 +87,6 @@ install_requires = [
     'jsonresolver>=0.1.0',
     'jsonref>=0.1',
     'jsonschema>=2.5.1',
-    'SQLAlchemy>=1.1.0',
-    'sqlalchemy-utils>=0.31.0',
 ]
 
 packages = find_packages()

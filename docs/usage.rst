@@ -1,6 +1,6 @@
 ..
     This file is part of Invenio.
-    Copyright (C) 2015, 2016 CERN.
+    Copyright (C) 2015, 2016, 2017 CERN.
 
     Invenio is free software; you can redistribute it
     and/or modify it under the terms of the GNU General Public License as
@@ -27,14 +27,3 @@ Usage
 =====
 
 .. automodule:: invenio_records
-
-Invenio-Records is typically used as part of the Invenio digital repository
-ecosystem. Please see `Invenio <https://invenio.readthedocs.io/>`_
-documentation for more.
-
-If you'd like to use Invenio-Records in a standalone manner, here is a simple
-minimal example that is useful among others for Invenio-Records developments.
-
-.. include:: ../examples/app.py
-   :start-after: to any jurisdiction.
-   :literal:

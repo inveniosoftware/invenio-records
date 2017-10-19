@@ -24,8 +24,8 @@
 
 """Alter column from json to jsonb."""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '07fb52561c5c'

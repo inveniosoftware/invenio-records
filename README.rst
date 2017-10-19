@@ -21,9 +21,9 @@
     waive the privileges and immunities granted to it by virtue of its status
     as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-=================
+================
  Invenio-Records
-=================
+================
 
 .. image:: https://img.shields.io/travis/inveniosoftware/invenio-records.svg
         :target: https://travis-ci.org/inveniosoftware/invenio-records
@@ -41,7 +41,18 @@
         :target: https://github.com/inveniosoftware/invenio-records/blob/master/LICENSE
 
 
-Invenio-Records is a metadata storage module.
 
-* Free software: GPLv2 license
-* Documentation: https://invenio-records.readthedocs.io/
+Invenio-Records is a metadata storage module. A *record* is a JSON document with
+revision history identified by a unique `UUID`_ .
+
+.. _UUID: https://en.wikipedia.org/wiki/Universally_unique_identifier
+
+Features:
+
+ * Generic JSON document storage with revision history.
+ * JSONSchema validation of documents.
+ * Records creation, update and deletion.
+ * CLI and administration interface for CRUD operations on records.
+
+Further documentation available Documentation:
+https://invenio-records.readthedocs.io/

@@ -34,7 +34,7 @@ import pytest
 from click.testing import CliRunner
 from flask import Flask
 from flask.cli import ScriptInfo
-from invenio_db import InvenioDB, db
+from invenio_db.utils import drop_alembic_version_table
 from jsonschema.exceptions import ValidationError
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -70,6 +70,7 @@ def test_alembic(app, db):
 
     assert not ext.alembic.compare_metadata()
     db.drop_all()
+    drop_alembic_version_table()
     ext.alembic.upgrade()
 
     assert not ext.alembic.compare_metadata()
@@ -78,6 +79,7 @@ def test_alembic(app, db):
     ext.alembic.upgrade()
 
     assert not ext.alembic.compare_metadata()
+    drop_alembic_version_table()
 
 
 def test_db(app, db):

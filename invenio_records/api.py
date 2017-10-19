@@ -94,11 +94,12 @@ class RecordBase(dict):
             returns ``None``, which means that the validation was successful,
             while
 
-            >>> validate('bar', {'format': 'foo'}, format_checker=checker)
+            >>> validate('bar', {'format': 'foo'},
+            ...    format_checker=checker)  # doctest: +IGNORE_EXCEPTION_DETAIL
             Traceback (most recent call last):
-            ...
+              ...
             ValidationError: 'bar' is not a 'foo'
-            ...
+              ...
 
             raises a :class:`jsonschema.exceptions.ValidationError`.
 
@@ -109,17 +110,18 @@ class RecordBase(dict):
 
             >>> from jsonschema.validators import extend, Draft4Validator
             >>> NoRequiredValidator = extend(
-            ... Draft4Validator,
-            ... validators={'required': lambda v, r, i, s: None})
+            ...     Draft4Validator,
+            ...     validators={'required': lambda v, r, i, s: None}
+            ... )
             >>> schema = {
-            ... 'type': 'object',
-            ... 'properties': {
-            ...     'name': { 'type': 'string' },
-            ...     'email': { 'type': 'string' },
-            ...     'address': {'type': 'string' },
-            ...     'telephone': { 'type': 'string' }
-            ... },
-            ... 'required': ['name', 'email']
+            ...     'type': 'object',
+            ...     'properties': {
+            ...         'name': { 'type': 'string' },
+            ...         'email': { 'type': 'string' },
+            ...         'address': {'type': 'string' },
+            ...         'telephone': { 'type': 'string' }
+            ...     },
+            ...     'required': ['name', 'email']
             ... }
             >>> from jsonschema.validators import validate
             >>> validate({}, schema, NoRequiredValidator)
@@ -127,7 +129,7 @@ class RecordBase(dict):
             returns ``None``, which means that the validation was successful,
             while
 
-            >>> validate({}, schema)
+            >>> validate({}, schema)  # doctest: +IGNORE_EXCEPTION_DETAIL
             Traceback (most recent call last):
             ...
             ValidationError: 'name' is a required property
@@ -137,8 +139,7 @@ class RecordBase(dict):
         """
         if '$schema' in self and self['$schema'] is not None:
             kwargs['cls'] = kwargs.pop('validator', None)
-            return _records_state.validate(self, self['$schema'], **kwargs)
-        return True
+            _records_state.validate(self, self['$schema'], **kwargs)
 
     def replace_refs(self):
         """Replace the ``$ref`` keys within the JSON."""
@@ -154,34 +155,33 @@ class Record(RecordBase):
 
     @classmethod
     def create(cls, data, id_=None, **kwargs):
-        r"""Create a record instance and store it in database.
+        r"""Create a new record instance and store it in the database.
 
-        Procedure followed:
+        #. Send a signal :data:`invenio_records.signals.before_record_insert`
+           with the new record as parameter.
 
-        #. The signal :data:`invenio_records.signals.before_record_insert` is
-            called with the data as function parameter.
+        #. Validate the new record data.
 
-        #. The record data is validate.
+        #. Add the new record in the database.
 
-        #. The record is added in the database.
-
-        #. The signal :data:`invenio_records.signals.after_record_insert` is
-            called with the data as function parameter.
+        #. Send a signal :data:`invenio_records.signals.after_record_insert`
+           with the new created record as parameter.
 
         :Keyword Arguments:
           * **format_checker** --
-            An instance of class :class:`jsonschema.FormatChecker`, which
+            An instance of the class :class:`jsonschema.FormatChecker`, which
             contains validation rules for formats. See
-            :func:`~invenio_records.api.RecordBase.validate` for details.
+            :func:`~invenio_records.api.RecordBase.validate` for more details.
 
           * **validator** --
             A :class:`jsonschema.IValidator` class that will be used to
-            validate. See :func:`~invenio_records.api.RecordBase.validate` for
-            details.
+            validate the record. See
+            :func:`~invenio_records.api.RecordBase.validate` for more details.
 
-        :param data: Dict with record metadata.
-        :param id_: Force the UUID for the record.
-        :returns: A new Record instance.
+        :param data: Dict with the record metadata.
+        :param id_: Specify a UUID to use for the new record, instead of
+                    automatically generated.
+        :returns: A new :class:`Record` instance.
         """
         from .models import RecordMetadata
         with db.session.begin_nested():
@@ -206,13 +206,13 @@ class Record(RecordBase):
 
     @classmethod
     def get_record(cls, id_, with_deleted=False):
-        """Get record instance.
+        """Retrieve the record by id.
 
-        Raises database exception if record does not exists.
+        Raise a database exception if the record does not exist.
 
-        :param id_: Record ID.
+        :param id_: record ID.
         :param with_deleted: If `True` then it includes deleted records.
-        :returns: The Record instance.
+        :returns: The :class:`Record` instance.
         """
         with db.session.no_autoflush:
             query = RecordMetadata.query.filter_by(id=id_)
@@ -223,11 +223,11 @@ class Record(RecordBase):
 
     @classmethod
     def get_records(cls, ids, with_deleted=False):
-        """Get multiple record instances.
+        """Retrieve multiple records by id.
 
-        :param ids: List of record ID.
+        :param ids: List of record IDs.
         :param with_deleted: If `True` then it includes deleted records.
-        :returns: A list od Record instance.
+        :returns: A list of :class:`Record` instances.
         """
         with db.session.no_autoflush:
             query = RecordMetadata.query.filter(RecordMetadata.id.in_(ids))
@@ -240,38 +240,36 @@ class Record(RecordBase):
         """Patch record metadata.
 
         :params patch: Dictionary of record metadata.
-        :returns: A new Record instance.
+        :returns: A new :class:`Record` instance.
         """
         data = apply_patch(dict(self), patch)
         return self.__class__(data, model=self.model)
 
     def commit(self, **kwargs):
-        r"""Store changes on current instance in database.
+        r"""Store changes of the current record instance in the database.
 
-        Procedure followed:
+        #. Send a signal :data:`invenio_records.signals.before_record_update`
+           with the current record to be committed as parameter.
 
-        #. The signal :data:`invenio_records.signals.before_record_update` is
-            called with the record as function parameter.
+        #. Validate the current record data.
 
-        #. The record data is validate.
+        #. Commit the current record in the database.
 
-        #. The record is committed to the database.
-
-        #. The signal :data:`invenio_records.signals.after_record_update` is
-            called with the record as function parameter.
+        #. Send a signal :data:`invenio_records.signals.after_record_update`
+            with the committed record as parameter.
 
         :Keyword Arguments:
           * **format_checker** --
-            An instance of class :class:`jsonschema.FormatChecker`, which
+            An instance of the class :class:`jsonschema.FormatChecker`, which
             contains validation rules for formats. See
-            :func:`~invenio_records.api.RecordBase.validate` for details.
+            :func:`~invenio_records.api.RecordBase.validate` for more details.
 
           * **validator** --
             A :class:`jsonschema.IValidator` class that will be used to
-            validate. See :func:`~invenio_records.api.RecordBase.validate` for
-            details.
+            validate the record. See
+            :func:`~invenio_records.api.RecordBase.validate` for more details.
 
-        :returns: The Record instance.
+        :returns: The :class:`Record` instance.
         """
         if self.model is None or self.model.json is None:
             raise MissingModelError()
@@ -298,24 +296,23 @@ class Record(RecordBase):
     def delete(self, force=False):
         """Delete a record.
 
-        If `force` is ``False``, the record is soft-deleted, i.e. the record
-        stays in the database. This ensures e.g. that the same record
-        identifier cannot be used twice, and that you can still retrieve the
-        history of an object. If `force` is True, the record is completely
-        removed from the database.
+        If `force` is ``False``, the record is soft-deleted: record data will
+        be deleted but the record identifier and the history of the record will
+        be kept. This ensures that the same record identifier cannot be used
+        twice, and that you can still retrieve its history. If `force` is
+        ``True``, then the record is completely deleted from the database.
 
-        Procedure followed:
+        #. Send a signal :data:`invenio_records.signals.before_record_delete`
+           with the current record as parameter.
 
-        #. The signal :data:`invenio_records.signals.before_record_delete` is
-            called with the record as function parameter.
+        #. Delete or soft-delete the current record.
 
-        #. The record is deleted or soft-deleted.
+        #. Send a signal :data:`invenio_records.signals.after_record_delete`
+           with the current deleted record as parameter.
 
-        #. The signal :data:`invenio_records.signals.after_record_delete` is
-            called with the record as function parameter.
-
-        :param force: Completely remove record from database.
-        :returns: The Record instance.
+        :param force: if ``True``, completely deletes the current record from
+               the database, otherwise soft-deletes it.
+        :returns: The deleted :class:`Record` instance.
         """
         if self.model is None:
             raise MissingModelError()
@@ -339,21 +336,18 @@ class Record(RecordBase):
         return self
 
     def revert(self, revision_id):
-        """Revert to a specific revision.
+        """Revert the record to a specific revision.
 
-        Procedure followed:
+        #. Send a signal :data:`invenio_records.signals.before_record_revert`
+           with the current record as parameter.
 
-        #. The signal :data:`invenio_records.signals.before_record_revert` is
-            called with the record as function parameter.
+        #. Revert the record to the revision id passed as parameter.
 
-        #. The record is reverted.
+        #. Send a signal :data:`invenio_records.signals.after_record_revert`
+           with the reverted record as parameter.
 
-        #. The signal :data:`invenio_records.signals.after_record_revert` is
-            called with the reverted record as function parameter.
-
-        :param revision_id: Specify with revision the record should be
-            reverted.
-        :returns: The new Record instance.
+        :param revision_id: Specify the record revision id
+        :returns: The :class:`Record` instance corresponding to the revision id
         """
         if self.model is None:
             raise MissingModelError()
@@ -378,7 +372,7 @@ class Record(RecordBase):
 
     @property
     def revisions(self):
-        """Get revision iterator."""
+        """Get revisions iterator."""
         if self.model is None:
             raise MissingModelError()
 
@@ -389,7 +383,7 @@ class RecordRevision(RecordBase):
     """API for record revisions."""
 
     def __init__(self, model):
-        """Initialize revision."""
+        """Initialize instance with the SQLAlchemy model."""
         super(RecordRevision, self).__init__(model.json, model=model)
 
 
@@ -397,7 +391,7 @@ class RevisionsIterator(object):
     """Iterator for record revisions."""
 
     def __init__(self, model):
-        """Initialize iterator."""
+        """Initialize instance with the SQLAlchemy model."""
         self._it = None
         self.model = model
 

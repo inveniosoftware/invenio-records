@@ -52,21 +52,20 @@ except ImportError:
 
 if HAS_PIDSTORE:
     def process_minter(value):
-        """Load minter from PIDStore registry based on given value."""
+        """Load minter from InvenioPIDStore registry based on given value."""
         from invenio_pidstore import current_pidstore
 
         if 'invenio-pidstore' not in current_app.extensions:
             raise click.ClickException(
-                'Invenio-PIDStore has not been intialized.'
+                'Invenio-PIDStore has not been initialized.'
             )
 
         try:
             return current_pidstore.minters[value]
         except KeyError:
             raise click.BadParameter(
-                'Unknown minter {0}. Please use one of {1}.'.format(
-                    value, ', '.join(current_pidstore.minters.keys())
-                )
+                'Unknown minter: {0}. Please choose one minter between [{1}].'
+                .format(value, ', '.join(current_pidstore.minters.keys()))
             )
 
     option_pid_minter = click.option('--pid-minter', multiple=True,
@@ -76,14 +75,10 @@ else:
         """Empty option."""
         return _
 
-#
-# Record management commands
-#
-
 
 @click.group()
 def records():
-    """Record management commands."""
+    """Records management."""
 
 
 @records.command()
@@ -119,15 +114,18 @@ def create(source, ids, force, pid_minter=None):
             if force:
                 current_app.logger.warning(
                     "Trying to force insert: {0}".format(id_))
-                # IMPORTANT: We need to create new transtaction for
-                # SQLAlchemy-Continuum as we are using no autoflush
+                # IMPORTANT: We need to create new transaction for
+                # SQLAlchemy-Continuum as we are using no auto-flush
                 # in Record.get_record.
                 vm = current_app.extensions['invenio-db'].versioning_manager
                 uow = vm.unit_of_work(db.session)
                 uow.create_transaction(db.session)
-                # Use low-level database model to retreive an instance.
+                # Use low-level database model to retrieve an instance.
                 model = RecordMetadata.query.get(id_)
-                click.echo(Record(record, model=model).commit().id)
+                rec = Record(record, model=model).commit()
+                current_app.logger.info("Created new revision {0}".format(
+                    rec.revision_id))
+                click.echo(rec.id)
             else:
                 raise click.BadParameter(
                     'Record with id={0} already exists. If you want to '
@@ -150,7 +148,10 @@ def patch(patch, ids):
 
     if ids:
         for id_ in ids:
-            Record.get_record(id_).patch(patch_content).commit()
+            rec = Record.get_record(id_).patch(patch_content).commit()
+            current_app.logger.info("Created new revision {0}".format(
+                rec.revision_id))
+            click.echo(rec.id)
         db.session.commit()
 
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016, 2017 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -78,7 +78,9 @@ author = u'CERN'
 
 # Get the version string. Cannot be done with import!
 g = {}
-with open(os.path.join('..', 'invenio_records', 'version.py'), 'rt') as fp:
+with open(os.path.join(os.path.dirname(__file__), '..',
+                       'invenio_records', 'version.py'),
+          'rt') as fp:
     exec(fp.read(), g)
     version = g['__version__']
 

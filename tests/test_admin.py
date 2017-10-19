@@ -76,7 +76,7 @@ def test_admin(app, db):
         assert res.status_code == 200
 
         # Fake a problem with SQLAlchemy.
-        with patch('invenio_records.admin.Record') as db_mock:
+        with patch('invenio_records.models.RecordMetadata') as db_mock:
             db_mock.side_effect = SQLAlchemyError()
             res = client.post(
                 delete_view_url, data={'id': rec_uuid}, follow_redirects=True)

@@ -23,7 +23,7 @@
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
 
-# Transifex integration
+# TODO: Transifex integration
 #
 # 1) Create message catalog:
 #    $ python setup.py extract_messages

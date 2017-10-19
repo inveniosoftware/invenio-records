@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015, 2016 CERN.
+# Copyright (C) 2015, 2016, 2017 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -22,7 +22,10 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""Package configuration."""
+"""Default values for records configuration."""
 
 RECORDS_VALIDATION_TYPES = {}
-"""Pass additional types when validating record against schema."""
+"""Pass additional types when validating a record against a schema.
+For more details, see:
+`<https://python-jsonschema.readthedocs.io/en/latest/validate/#validating-types>`_.
+"""

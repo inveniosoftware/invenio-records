@@ -24,33 +24,46 @@
 
 """Minimal Invenio-Records application example for development.
 
-Create database and tables::
+SPHINX-START
 
+Prepare the example app:
+
+.. code-block:: console
+
+   $ pip install -e .[all,sqlite]
    $ cd examples
-   $ export FLASK_APP=app.py
-   $ export FLASK_DEBUG=1
-   $ mkdir -p instance
-   $ flask db init
-   $ flask db create
+   $ ./app-setup.sh
+   $ export FLASK_APP=app.py FLASK_DEBUG=1
+   $ flask run
 
-Create test record::
+Now, you can use `invenio-records`. Create a test record via CLI:
+
+.. code-block:: console
 
    $ echo '{"title": "Test title"}' | flask records create \
       -i deadbeef-9fe4-43d3-a08f-38c2b309afba
 
-Run the development server::
+Run the development server:
+
+.. code-block:: console
 
    $ flask run
 
-Retrieve record via web::
+Retrieve a record via web:
+
+.. code-block:: console
 
    $ curl http://127.0.0.1:5000/deadbeef-9fe4-43d3-a08f-38c2b309afba
 
-Retrieve record via shell::
+To reset the example application run:
 
-   $ flask shell
-   >>> from invenio_records.api import Record
-   >>> Record.get_record('deadbeef-9fe4-43d3-a08f-38c2b309afba')
+.. code-block:: console
+
+   $ ./app-teardown.sh
+
+See :doc:`usage` for the extensive list of commands.
+
+SPHINX-END
 """
 
 from __future__ import absolute_import, print_function
@@ -58,7 +71,7 @@ from __future__ import absolute_import, print_function
 import os
 
 import pkg_resources
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify
 from flask_celeryext import create_celery_app
 from invenio_db import InvenioDB
 

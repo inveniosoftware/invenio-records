@@ -34,7 +34,7 @@ from .models import RecordMetadata
 
 
 class RecordMetadataModelView(ModelView):
-    """Records model view."""
+    """Records admin model view."""
 
     filter_converter = FilterConverter()
     can_create = False

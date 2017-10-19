@@ -23,7 +23,9 @@
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
 notifications:
-  email: false
+  email: # sent to the committer and the author
+    on_success: never # default: always
+    on_failure: always # default: always
 
 sudo: false
 
@@ -62,12 +64,9 @@ env:
 python:
   - "2.7"
   - "3.5"
-  - "pypy"
 
 matrix:
   fast_finish: true
-  allow_failures:
-    - python: pypy
 
 before_install:
   - "travis_retry pip install --upgrade pip setuptools py"

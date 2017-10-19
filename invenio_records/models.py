@@ -35,7 +35,7 @@ from sqlalchemy_utils.types import JSONType, UUIDType
 class Timestamp(object):
     """Timestamp model mix-in with fractional seconds support.
 
-    SQLAlchemy-Utils timestamp model, does not have support for fractional
+    SQLAlchemy-Utils timestamp model does not have support for fractional
     seconds.
     """
 
@@ -53,15 +53,15 @@ class Timestamp(object):
 
 @db.event.listens_for(Timestamp, 'before_update', propagate=True)
 def timestamp_before_update(mapper, connection, target):
-    """Listen for updating ."""
+    """Update `updated` property with current time on `before_update` event."""
     target.updated = datetime.utcnow()
 
 
 class RecordMetadata(db.Model, Timestamp):
-    """Represent a record metadata inside the SQL database.
+    """Represent a record metadata.
 
-    Additionally it contains two columns ``created`` and ``updated``
-    with automatically managed timestamps.
+    The RecordMetadata object contains a ``created`` and  a ``updated``
+    properties that are automatically updated.
     """
 
     # Enables SQLAlchemy-Continuum versioning
@@ -92,13 +92,13 @@ class RecordMetadata(db.Model, Timestamp):
     )
     """Store metadata in JSON format.
 
-    When you create new ``Record`` the ``json`` field value should
-    never be ``NULL``.  Default value is an empty dict.  ``NULL``
-    value means that the record metadata has been deleted.
+    When you create a new ``Record`` the ``json`` field value should never be
+    ``NULL``. Default value is an empty dict. ``NULL`` value means that the
+    record metadata has been deleted.
     """
 
     version_id = db.Column(db.Integer, nullable=False)
-    """It is used by SQLAlchemy for optimistic concurrency control."""
+    """Used by SQLAlchemy for optimistic concurrency control."""
 
     __mapper_args__ = {
         'version_id_col': version_id

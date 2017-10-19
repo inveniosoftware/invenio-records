@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015, 2016 CERN.
+# Copyright (C) 2015, 2016, 2017 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -22,9 +22,11 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""Celery tasks for Inveni-Records."""
+"""Celery tasks for Invenio-Records."""
 
 from __future__ import absolute_import
+
+import warnings
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -35,10 +37,13 @@ from ..api import Record
 
 logger = get_task_logger(__name__)
 
+warnings.warn(
+    "Invenio-Records Celery tasks module will be removed.", DeprecationWarning)
+
 
 @shared_task
 def create_record(data=None, id_=None, force=False):
-    """Create record from given data."""
+    """Create a record using a Celery task."""
     from invenio_db import db
     try:
         return str(Record.create(data, id_=id_).id)

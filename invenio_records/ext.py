@@ -22,7 +22,7 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""Flask extension for Invenio-Records."""
+"""Invenio module for metadata storage."""
 
 from __future__ import absolute_import, print_function
 
@@ -72,14 +72,22 @@ class InvenioRecords(object):
 
     def init_app(self, app,
                  entry_point_group='invenio_records.jsonresolver', **kwargs):
-        """Flask application initialization."""
+        """Flask application initialization.
+
+        :param app: The Flask application.
+        :param entry_point_group: The entrypoint for jsonresolver extensions.
+            (Default: ``'invenio_records.jsonresolver'``)
+        """
         self.init_config(app)
         state = _RecordsState(app, entry_point_group=entry_point_group)
         app.extensions['invenio-records'] = state
         return state
 
     def init_config(self, app):
-        """Initialize configuration."""
+        """Initialize configuration.
+
+        :param app: The Flask application.
+        """
         app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', True)
         for k in dir(config):
             if k.startswith('RECORDS_'):

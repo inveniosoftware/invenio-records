@@ -6,7 +6,7 @@ possible, for example to use SQLite database backend::
 
   pip install invenio-records[sqlite]
 
-The other installation options include:
+The other installation [options] include:
 
   ``access``
       for access control capabilities;

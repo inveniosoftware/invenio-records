@@ -1,6 +1,6 @@
 ..
     This file is part of Invenio.
-    Copyright (C) 2015, 2016 CERN.
+    Copyright (C) 2015, 2016, 2017 CERN.
 
     Invenio is free software; you can redistribute it
     and/or modify it under the terms of the GNU General Public License as
@@ -28,10 +28,27 @@ API Docs
 .. automodule:: invenio_records.ext
    :members:
 
-
 Record API
 ----------
 .. automodule:: invenio_records.api
+   :members:
+
+CLI
+---
+.. automodule:: invenio_records.cli
+   :members:
+
+.. autodata:: invenio_records.cli.records
+
+.. autodata:: invenio_records.cli.create
+
+.. autodata:: invenio_records.cli.patch
+
+.. autodata:: invenio_records.cli.delete
+
+Configuration
+-------------
+.. automodule:: invenio_records.config
    :members:
 
 Errors
@@ -47,9 +64,4 @@ Models
 Signals
 -------
 .. automodule:: invenio_records.signals
-   :members:
-
-Configuration
--------------
-.. automodule:: invenio_records.config
    :members:
