@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2017, 2018 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -60,7 +60,7 @@ mint PIDs in a record using the CLI.
 Further documentation available Documentation:
 https://invenio-records.readthedocs.io/
 
-.. _InvenioPIDStore: https://python-jsonschema.readthedocs.io/
+.. _InvenioPIDStore: https://invenio-pidstore.readthedocs.io/
 
 Initialization
 --------------
@@ -372,7 +372,7 @@ Minting PIDs
 ------------
 
 If the module `InvenioPIDStore`_ is installed and loaded, the CLI option
-``--pid-minter`` allows the possibility of minting PID in the record.
+``--pid-minter`` allows minting PIDs in records.
 
 To use ``InvenioPIDStore``, initialize your app with:
 
