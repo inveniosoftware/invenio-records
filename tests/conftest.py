@@ -34,8 +34,8 @@ import tempfile
 import pytest
 from flask import Flask
 from flask_celeryext import FlaskCeleryExt
-from invenio_db import db as db_
 from invenio_db import InvenioDB
+from invenio_db import db as db_
 from invenio_pidstore import InvenioPIDStore
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.schema import DropConstraint, DropSequence, DropTable
