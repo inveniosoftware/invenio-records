@@ -125,10 +125,12 @@ def test_db(app, db):
     # Check invalid schema values
     with app.app_context():
         data = {
-            '$schema': 'http://json-schema.org/geo#',
+            '$schema': 'http://json-schema.org/learn/examples/'
+                       'geographical-location.schema.json',
             'latitude': 42,
             'longitude': 42,
         }
+
         record_with_schema = Record.create(data).commit()
         db.session.commit()
 
