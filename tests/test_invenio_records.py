@@ -227,7 +227,7 @@ def test_cli(app, db):
             ['create', 'record.json', '-i', recid1, '--id', recid2],
             obj=script_info
         )
-        assert result.exit_code == -1
+        assert result.exit_code == 1
 
         result = runner.invoke(
             cli.records,
@@ -252,7 +252,7 @@ def test_cli(app, db):
             ['create', 'records.json', '-i', recid1],
             obj=script_info
         )
-        assert result.exit_code == -1
+        assert result.exit_code == 1
 
         result = runner.invoke(
             cli.records,
