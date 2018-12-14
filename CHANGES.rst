@@ -7,6 +7,11 @@
 
 Changes
 =======
+Version 1.0.1 (released 2018-12-14)
+
+- Fix CliRunner exceptions
+- Fix json schema url
+- MIT license and shield badge
 
 Version 1.0.0 (released 2018-03-23)
 
