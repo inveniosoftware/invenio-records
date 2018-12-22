@@ -19,10 +19,10 @@ history = open('CHANGES.rst').read()
 tests_require = [
     'check-manifest>=0.25',
     'coverage>=4.0',
-    'Flask-Menu>=0.4.0',
+    'Flask-Menu>=0.5.0',
     'invenio-admin>=1.0.0',
     'isort>=4.3.0',
-    'mock>=1.0.0',
+    'mock>=1.3.0',
     'pydocstyle>=1.0.0',
     'pytest-cov>=1.8.0',
     'pytest-pep8>=1.0.6',
@@ -34,7 +34,7 @@ extras_require = {
         'invenio-pidstore>=1.0.0',
     ],
     'docs': [
-        'Sphinx>=1.5.1',
+        'Sphinx>=1.7.2',
     ],
     'mysql': [
         'invenio-db[mysql,versioning]>=1.0.0',
@@ -65,8 +65,8 @@ setup_requires = [
 install_requires = [
     'blinker>=1.4',
     'flask-celeryext>=0.2.2',
-    'Flask>=0.11.1',
-    'jsonpatch>=1.11',
+    'Flask>=1.0',
+    'jsonpatch>=1.15',
     'jsonresolver>=0.1.0',
     'jsonref>=0.1',
     'jsonschema>=2.5.1',

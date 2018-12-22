@@ -137,6 +137,8 @@ class RecordBase(dict):
 class Record(RecordBase):
     """Define API for metadata creation and manipulation."""
 
+    model_cls = RecordMetadata
+
     @classmethod
     def create(cls, data, id_=None, **kwargs):
         r"""Create a new record instance and store it in the database.
@@ -167,7 +169,6 @@ class Record(RecordBase):
                     automatically generated.
         :returns: A new :class:`Record` instance.
         """
-        from .models import RecordMetadata
         with db.session.begin_nested():
             record = cls(data)
 
@@ -178,7 +179,7 @@ class Record(RecordBase):
 
             record.validate(**kwargs)
 
-            record.model = RecordMetadata(id=id_, json=record)
+            record.model = cls.model_cls(id=id_, json=record)
 
             db.session.add(record.model)
 
@@ -199,9 +200,9 @@ class Record(RecordBase):
         :returns: The :class:`Record` instance.
         """
         with db.session.no_autoflush:
-            query = RecordMetadata.query.filter_by(id=id_)
+            query = cls.model_cls.query.filter_by(id=id_)
             if not with_deleted:
-                query = query.filter(RecordMetadata.json != None)  # noqa
+                query = query.filter(cls.model_cls.json != None)  # noqa
             obj = query.one()
             return cls(obj.json, model=obj)
 
@@ -214,9 +215,9 @@ class Record(RecordBase):
         :returns: A list of :class:`Record` instances.
         """
         with db.session.no_autoflush:
-            query = RecordMetadata.query.filter(RecordMetadata.id.in_(ids))
+            query = cls.model_cls.query.filter(cls.model_cls.id.in_(ids))
             if not with_deleted:
-                query = query.filter(RecordMetadata.json != None)  # noqa
+                query = query.filter(cls.model_cls.json != None)  # noqa
 
             return [cls(obj.json, model=obj) for obj in query.all()]
 

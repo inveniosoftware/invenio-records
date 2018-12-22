@@ -70,7 +70,7 @@ else:
 
 @click.group()
 def records():
-    """Records management."""
+    """Record management."""
 
 
 @records.command()

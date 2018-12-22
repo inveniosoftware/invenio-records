@@ -154,6 +154,39 @@ def test_db(app, db):
         db.session.commit()
 
 
+def test_class_model(app, custom_db, CustomMetadata):
+    """Test custom class model."""
+    db = custom_db
+
+    class CustomRecord(Record):
+        model_cls = CustomMetadata
+
+    assert 'custom_metadata' in db.metadata.tables.keys()
+
+    recid = uuid.UUID('262d2748-ba41-456f-a844-4d043a419a6f')
+
+    # Create a new record with two mutables, a list and a dict
+    rec = CustomRecord.create(
+        {
+            'title': 'Title',
+            'list': ['foo', ],
+            'dict': {'moo': 'boo'},
+        },
+        id_=recid)
+
+    db.session.commit()
+    db.session.expunge_all()
+    # record should be in the table
+    rec = CustomRecord.get_record(recid)
+    assert rec == {
+        'title': 'Title',
+        'list': ['foo', ],
+        'dict': {'moo': 'boo'}
+    }
+    # the record should not be in the default table
+    pytest.raises(NoResultFound, Record.get_record, recid)
+
+
 def test_cli(app, db):
     """Test CLI."""
     runner = CliRunner()
