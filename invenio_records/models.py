@@ -41,8 +41,8 @@ def timestamp_before_update(mapper, connection, target):
     target.updated = datetime.utcnow()
 
 
-class RecordMetadata(db.Model, Timestamp):
-    """Represent a record metadata.
+class RecordMetadataBase(Timestamp):
+    """Represent a base class for record metadata.
 
     The RecordMetadata object contains a ``created`` and  a ``updated``
     properties that are automatically updated.
@@ -50,8 +50,6 @@ class RecordMetadata(db.Model, Timestamp):
 
     # Enables SQLAlchemy-Continuum versioning
     __versioned__ = {}
-
-    __tablename__ = 'records_metadata'
 
     id = db.Column(
         UUIDType,
@@ -87,6 +85,12 @@ class RecordMetadata(db.Model, Timestamp):
     __mapper_args__ = {
         'version_id_col': version_id
     }
+
+
+class RecordMetadata(db.Model, RecordMetadataBase):
+    """Represent a record metadata."""
+
+    __tablename__ = 'records_metadata'
 
 
 __all__ = (
