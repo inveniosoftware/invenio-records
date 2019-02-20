@@ -13,6 +13,7 @@ from __future__ import absolute_import, print_function
 import json
 import sys
 import uuid
+import warnings
 
 import click
 import pkg_resources
@@ -20,6 +21,13 @@ from flask import current_app
 from flask.cli import with_appcontext
 from invenio_db import db
 from sqlalchemy import exc
+
+
+def records_deprecation_warning():
+    """Add deprecation warning for records cli."""
+    warnings.warn('The Invenio-Records cli module is deprecated.',
+                  PendingDeprecationWarning)
+
 
 try:
     pkg_resources.get_distribution('invenio_pidstore')
@@ -73,6 +81,8 @@ def records():
 @with_appcontext
 def create(source, ids, force, pid_minter=None):
     """Create new bibliographic record(s)."""
+    records_deprecation_warning()
+
     # Make sure that all imports are done with application context.
     from .api import Record
     from .models import RecordMetadata
@@ -126,6 +136,8 @@ def create(source, ids, force, pid_minter=None):
 @with_appcontext
 def patch(patch, ids):
     """Patch existing bibliographic record."""
+    records_deprecation_warning()
+
     from .api import Record
 
     patch_content = patch.read()
@@ -145,6 +157,8 @@ def patch(patch, ids):
 @with_appcontext
 def delete(ids, force):
     """Delete bibliographic record(s)."""
+    records_deprecation_warning()
+
     from .api import Record
     for id_ in ids:
         record = Record.get_record(id_, with_deleted=force)
