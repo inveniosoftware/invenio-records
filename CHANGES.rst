@@ -7,6 +7,11 @@
 
 Changes
 =======
+
+Version 1.2.0 (released 2019-05-08)
+
+- Allow to store RecordMetadata in a custom db table.
+
 Version 1.1.0 (released 2019-02-22)
 
 - Removed deprecated Celery task.
