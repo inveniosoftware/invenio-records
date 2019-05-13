@@ -65,11 +65,12 @@ setup_requires = [
 install_requires = [
     'blinker>=1.4',
     'flask-celeryext>=0.2.2',
-    'Flask>=1.0',
+    'flask>=0.11.1',
     'jsonpatch>=1.15',
     'jsonresolver>=0.1.0',
     'jsonref>=0.1',
     'jsonschema>=2.5.1',
+    'werkzeug>=0.14.1',
 ]
 
 packages = find_packages()
