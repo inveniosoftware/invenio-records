@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.2.1 (released 2019-05-14)
+
+- Relax Flask dependency to v0.11.1.
+
 Version 1.2.0 (released 2019-05-08)
 
 - Allow to store RecordMetadata in a custom db table.
