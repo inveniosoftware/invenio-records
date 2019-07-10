@@ -7,6 +7,10 @@
 
 Changes
 =======
+Version 1.1.1 (released 2019-07-11)
+
+- Fix XSS vulnerability in admin interface.
+
 Version 1.1.0 (released 2019-02-22)
 
 - Removed deprecated Celery task.
