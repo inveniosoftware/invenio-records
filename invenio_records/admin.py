@@ -39,8 +39,8 @@ class RecordMetadataModelView(ModelView):
     )
     column_formatters = dict(
         version_id=lambda v, c, m, p: m.version_id-1,
-        json=lambda v, c, m, p: Markup("<pre>{0}</pre>".format(
-            json.dumps(m.json, indent=2, sort_keys=True)))
+        json=lambda v, c, m, p: Markup("<pre>{0}</pre>").format(
+            json.dumps(m.json, indent=2, sort_keys=True))
     )
     column_filters = ('created', 'updated', )
     column_default_sort = ('updated', True)
