@@ -7,6 +7,10 @@
 
 Changes
 =======
+Version 1.0.2 (released 2019-07-11)
+
+- Fix XSS vulnerability in admin interface.
+
 Version 1.0.1 (released 2018-12-14)
 
 - Fix CliRunner exceptions
