@@ -45,7 +45,7 @@ def test_admin(app, db):
 
     # Create a test record.
     rec_uuid = str(uuid.uuid4())
-    Record.create({'title': 'test'}, id_=rec_uuid)
+    Record.create({'title': 'test<script>alert(1);</script>'}, id_=rec_uuid)
     db.session.commit()
 
     with app.test_request_context():
@@ -58,6 +58,14 @@ def test_admin(app, db):
         # List index view and check record is there.
         res = client.get(index_view_url)
         assert res.status_code == 200
+
+        # Check for XSS in JSON output
+        res = client.get(detail_view_url)
+        assert res.status_code == 200
+        data = res.get_data(as_text=True)
+        assert '<pre>{' in data
+        assert '}</pre>' in data
+        assert '<script>alert(1);</script>' not in data
 
         # Fake a problem with SQLAlchemy.
         with patch('invenio_records.models.RecordMetadata') as db_mock:
