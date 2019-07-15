@@ -18,15 +18,15 @@ history = open('CHANGES.rst').read()
 
 tests_require = [
     'check-manifest>=0.25',
-    'coverage>=4.0',
+    'coverage>=4.5.3',
     'Flask-Menu>=0.4.0',
     'invenio-admin>=1.0.0',
     'isort>=4.3.0',
     'mock>=1.0.0',
-    'pydocstyle>=1.0.0',
-    'pytest-cov>=1.8.0',
+    'pydocstyle>=3.0.0',
+    'pytest-cov>=2.7.1',
     'pytest-pep8>=1.0.6',
-    'pytest>=3.2.3,!=3.3.0',
+    'pytest>=4.6.4,<5.0.0',
 ]
 
 extras_require = {
