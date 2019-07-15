@@ -31,6 +31,7 @@ this part of the documentation is for you.
    :maxdepth: 2
 
    api
+   concurrency
 
 Additional Notes
 ----------------
