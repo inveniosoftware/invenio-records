@@ -23,6 +23,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from invenio_records import Record
 from invenio_records.errors import MissingModelError
+from invenio_records.models import RecordMetadata
 from invenio_records.validators import PartialDraft4Validator
 
 

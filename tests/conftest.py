@@ -43,7 +43,7 @@ def _compile_drop_sequence(element, compiler, **kwargs):
     return compiler.visit_drop_sequence(element) + ' CASCADE'
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def app(request):
     """Flask application fixture."""
     instance_path = tempfile.mkdtemp()
@@ -71,9 +71,33 @@ def app(request):
     shutil.rmtree(instance_path)
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def db(app):
     """Database fixture."""
+    if not database_exists(str(db_.engine.url)):
+        create_database(str(db_.engine.url))
+    db_.create_all()
+    yield db_
+    db_.session.remove()
+    db_.drop_all()
+
+
+@pytest.fixture()
+def CustomMetadata(app):
+    """Class for custom metadata."""
+    from invenio_records.models import RecordMetadataBase
+
+    class CustomMetadata(db_.Model, RecordMetadataBase):
+        """Custom Record Metadata Model."""
+
+        __tablename__ = 'custom_metadata'
+    return CustomMetadata
+
+
+@pytest.fixture()
+def custom_db(app, CustomMetadata):
+    """Database fixture."""
+    InvenioDB(app)
     if not database_exists(str(db_.engine.url)):
         create_database(str(db_.engine.url))
     db_.create_all()
