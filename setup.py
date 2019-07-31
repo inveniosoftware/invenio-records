@@ -96,9 +96,6 @@ setup(
     include_package_data=True,
     platforms='any',
     entry_points={
-        'flask.commands': [
-            'records = invenio_records.cli:records',
-        ],
         'invenio_admin.views': [
             'invenio_records = invenio_records.admin:record_adminview',
         ],

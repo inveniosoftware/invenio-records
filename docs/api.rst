@@ -16,19 +16,6 @@ Record API
 .. automodule:: invenio_records.api
    :members:
 
-CLI
----
-.. automodule:: invenio_records.cli
-   :members:
-
-.. autodata:: invenio_records.cli.records
-
-.. autodata:: invenio_records.cli.create
-
-.. autodata:: invenio_records.cli.patch
-
-.. autodata:: invenio_records.cli.delete
-
 Configuration
 -------------
 .. automodule:: invenio_records.config

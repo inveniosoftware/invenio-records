@@ -18,7 +18,6 @@ Invenio-Records.
 
    installation
    usage
-   examplesapp
 
 
 API Reference
