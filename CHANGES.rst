@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.3.0 (released 2019-08-01)
+
+- Removes deprecated CLI.
+
 Version 1.2.2 (released 2019-07-11)
 
 - Fix XSS vulnerability in admin interface.
