@@ -12,7 +12,7 @@
 .. image:: https://img.shields.io/github/license/inveniosoftware/invenio-records.svg
         :target: https://github.com/inveniosoftware/invenio-records/blob/master/LICENSE
 
-.. image:: https://img.shields.io/travis/inveniosoftware/invenio-records.svg
+.. image:: https://travis-ci.org/inveniosoftware/invenio-records.svg?branch=master
         :target: https://travis-ci.org/inveniosoftware/invenio-records
 
 .. image:: https://img.shields.io/coveralls/inveniosoftware/invenio-records.svg
