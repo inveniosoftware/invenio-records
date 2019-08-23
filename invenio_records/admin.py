@@ -17,6 +17,7 @@ from invenio_admin.filters import FilterConverter
 from invenio_db import db
 from markupsafe import Markup
 from sqlalchemy.exc import SQLAlchemyError
+from invenio_pidstore.models import PersistentIdentifier
 
 from .api import Record
 from .models import RecordMetadata
@@ -30,8 +31,9 @@ class RecordMetadataModelView(ModelView):
     can_edit = False
     can_delete = True
     can_view_details = True
-    column_list = ('id', 'version_id', 'updated', 'created',)
-    column_details_list = ('id', 'version_id', 'updated', 'created', 'json')
+    column_list = ('id', 'status','version_id', 'updated', 'created',)
+    column_details_list = ('id', 'status', 'version_id', 'updated', 'created', 'json')
+    column_sortable_list = ('status', 'version_id', 'updated', 'created')
     column_labels = dict(
         id=_('UUID'),
         version_id=_('Revision'),
