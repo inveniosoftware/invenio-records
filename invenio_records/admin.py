@@ -10,7 +10,8 @@
 
 import json
 
-from flask import flash
+from flask import flash, redirect, url_for
+from flask_admin import expose
 from flask_admin.contrib.sqla import ModelView
 from flask_babelex import gettext as _
 from invenio_admin.filters import FilterConverter
@@ -18,6 +19,8 @@ from invenio_db import db
 from markupsafe import Markup
 from sqlalchemy.exc import SQLAlchemyError
 from invenio_pidstore.models import PersistentIdentifier
+from weko_records_ui.utils import soft_delete as soft_delete_imp
+from weko_records_ui.utils import restore as restore_imp
 
 from .api import Record
 from .models import RecordMetadata
@@ -25,6 +28,22 @@ from .models import RecordMetadata
 
 class RecordMetadataModelView(ModelView):
     """Records admin model view."""
+
+    @expose('/soft_delete/<string:id>')
+    def soft_delete(self, id):
+        pid = PersistentIdentifier.query.filter_by(
+            pid_type='recid', object_uuid=id).first()
+        soft_delete_imp(pid.pid_value)
+        return redirect(url_for('recordmetadata.details_view') + '?id=' + id)
+
+
+    @expose('/restore/<string:id>')
+    def restore(self, id):
+        pid = PersistentIdentifier.query.filter_by(
+            pid_type='recid', object_uuid=id).first()
+        restore_imp(pid.pid_value)
+        return redirect(url_for('recordmetadata.details_view') + '?id=' + id)
+
 
     filter_converter = FilterConverter()
     can_create = False
@@ -47,6 +66,7 @@ class RecordMetadataModelView(ModelView):
     column_filters = ('created', 'updated', )
     column_default_sort = ('updated', True)
     page_size = 25
+    details_template = 'invenio_records/details.html'
 
     def delete_model(self, model):
         """Delete a record."""

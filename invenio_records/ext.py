@@ -17,7 +17,7 @@ from jsonresolver.contrib.jsonschema import ref_resolver_factory
 from jsonschema import validate
 
 from . import config
-
+from .views import blueprint
 
 class _RecordsState(object):
     """State for record JSON resolver."""
@@ -25,6 +25,7 @@ class _RecordsState(object):
     def __init__(self, app, entry_point_group=None):
         """Initialize state."""
         self.app = app
+        self.app.register_blueprint(blueprint)
         self.resolver = JSONResolver(entry_point_group=entry_point_group)
         self.ref_resolver_cls = ref_resolver_factory(self.resolver)
         self.loader_cls = json_loader_factory(self.resolver)
