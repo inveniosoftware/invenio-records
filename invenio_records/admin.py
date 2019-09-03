@@ -18,7 +18,6 @@ from invenio_admin.filters import FilterConverter
 from invenio_db import db
 from markupsafe import Markup
 from sqlalchemy.exc import SQLAlchemyError
-from invenio_pidstore.models import PersistentIdentifier
 from weko_records_ui.utils import soft_delete as soft_delete_imp
 from weko_records_ui.utils import restore as restore_imp
 
@@ -31,17 +30,13 @@ class RecordMetadataModelView(ModelView):
 
     @expose('/soft_delete/<string:id>')
     def soft_delete(self, id):
-        pid = PersistentIdentifier.query.filter_by(
-            pid_type='recid', object_uuid=id).first()
-        soft_delete_imp(pid.pid_value)
+        soft_delete_imp(id)
         return redirect(url_for('recordmetadata.details_view') + '?id=' + id)
 
 
     @expose('/restore/<string:id>')
     def restore(self, id):
-        pid = PersistentIdentifier.query.filter_by(
-            pid_type='recid', object_uuid=id).first()
-        restore_imp(pid.pid_value)
+        restore_imp(id)
         return redirect(url_for('recordmetadata.details_view') + '?id=' + id)
 
 
