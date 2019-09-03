@@ -64,7 +64,6 @@ setup_requires = [
 
 install_requires = [
     'blinker>=1.4',
-    'flask-celeryext>=0.2.2',
     'flask>=0.11.1',
     'jsonpatch>=1.15',
     'jsonresolver>=0.1.0',
@@ -104,9 +103,6 @@ setup(
         ],
         'invenio_base.api_apps': [
             'invenio_records = invenio_records:InvenioRecords',
-        ],
-        'invenio_celery.tasks': [
-            'invenio_records = invenio_records.tasks.api',
         ],
         'invenio_db.alembic': [
             'invenio_records = invenio_records:alembic',
