@@ -52,7 +52,7 @@ class RecordMetadataBase(Timestamp):
     __versioned__ = {}
 
     id = db.Column(
-        UUIDType,
+        UUIDType(binary=False),
         primary_key=True,
         default=uuid.uuid4,
     )
