@@ -33,7 +33,7 @@ Features:
  * Generic JSON document storage with revision history.
  * JSONSchema validation of documents.
  * Records creation, update and deletion.
- * CLI and administration interface for CRUD operations on records.
+ * Administration interface for CRUD operations on records.
 
 Further documentation available Documentation:
 https://invenio-records.readthedocs.io/
