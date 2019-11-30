@@ -38,8 +38,6 @@ Records creation and update can be validated if the schema is provided.
 Further documentation available Documentation:
 https://invenio-records.readthedocs.io/
 
-.. _InvenioPIDStore: https://invenio-pidstore.readthedocs.io/
-
 Initialization
 --------------
 

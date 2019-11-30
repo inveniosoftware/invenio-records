@@ -20,7 +20,6 @@ from flask import Flask
 from flask_celeryext import FlaskCeleryExt
 from invenio_db import InvenioDB
 from invenio_db import db as db_
-from invenio_pidstore import InvenioPIDStore
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.schema import DropConstraint, DropSequence, DropTable
 from sqlalchemy_utils.functions import create_database, database_exists
@@ -63,7 +62,6 @@ def app(request):
     FlaskCeleryExt(app_)
     InvenioDB(app_)
     InvenioRecords(app_)
-    InvenioPIDStore(app_)
 
     with app_.app_context():
         yield app_
