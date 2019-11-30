@@ -30,9 +30,6 @@ tests_require = [
 ]
 
 extras_require = {
-    'pidstore': [
-        'invenio-pidstore>=1.0.0',
-    ],
     'docs': [
         'Sphinx>=1.7.2',
     ],
@@ -64,6 +61,7 @@ setup_requires = [
 
 install_requires = [
     'blinker>=1.4',
+    'Flask-BabelEx>=0.9.3',
     'flask-celeryext>=0.2.2',
     'flask>=0.11.1',
     'jsonpatch>=1.15',
