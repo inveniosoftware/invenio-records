@@ -46,8 +46,7 @@ env:
   - REQUIREMENTS=devel EXTRAS=all,postgresql SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres@localhost:5432/invenio"
 
 python:
-  - "2.7"
-  - "3.5"
+  - "3.6"
 
 matrix:
   fast_finish: true
@@ -81,7 +80,7 @@ deploy:
   password:
     secure: "KkwjVEqV1AkXMAgA9rm4C0KGqOjWqVu0a1EHJhvS4SQMRnxqmP/aSC8P8TBbTZHu2un10NyRmKUb4ZMQxCxa9SzubER1DH/V86esHNY4gBCWTfDOD6OQmugLb0WmpqY/U4LIz2dLd2r028kCoTtaxh24yl9oLNRbRvH7XsWbBxQ93D21acP47AGP8dx6aX6gCmNEL2ba+A62k4eN5U8L1IY9WKCfWCuSClhwO46RN3WrAsv7bs9JGZzPLUveF/IMZQpLCXyY0y0ISPXBhyWwMOcURe1IED3je/Gv3THM6ZRqL4NPNQqft6iZ7NIvHj4/dVX/EZt3ATx7Qm8PCuBq4HfFXiNzqX5xX4ys8mPt6w4S9GDSqRzGILEVAgmnXC0JW8J+1nxH2Ka4nghLU5KaaVMR+yqRDYwje0Kov6XmAlunwzfBQMMUXhlrGBjKdQ6ej7ALpIDvunUtGUvTVB2Jn7qHmH0mcMs5Nb18sJ9H155+0h/Ex6QX+ZeG57oM3IkkfSuERHY2PJC0uaxbkjm8YwwbK6Q9Mo4WLjKQcUr/YnA7H1AzrinO/2dz5u7hWyKdSUwMllC6m8Dy2qEYT7W10dbL+DGSGOCt9Mzy9++UCgR4bSslekOr35CrNkJNgc/70bVHg7iI85tbYYVxXEp/1IMI+jV2eQx4cD3BxXEqhEY="
   distributions: "compile_catalog sdist bdist_wheel"
+  skip_existing: true
   on:
     tags: true
-    python: "3.5"
     condition: $REQUIREMENTS = release

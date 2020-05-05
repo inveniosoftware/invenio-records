@@ -8,9 +8,14 @@
 Changes
 =======
 
+Version 1.3.1 (released to-be-determined)
+
+- Removed support for Python 2
+- Upgraded Python 3.5 to 3.6
+
 Version 1.3.0 (released 2019-08-01)
 
-- Removes deprecated CLI.
+- Removed deprecated CLI.
 
 Version 1.2.2 (released 2019-07-11)
 
