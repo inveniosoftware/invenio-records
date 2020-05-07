@@ -8,10 +8,11 @@
 Changes
 =======
 
-Version 1.3.1 (released to-be-determined)
+Version 1.3.1 (released 2020-05-07)
 
-- Removed support for Python 2
-- Upgraded Python 3.5 to 3.6
+- Deprecated Python versions lower than 3.6.0. Now supporting 3.6.0 and 3.7.0.
+- Removed dependency on Invenio-PIDStore and releated documentation. Functionality
+  was removed in v1.3.0.
 
 Version 1.3.0 (released 2019-08-01)
 
