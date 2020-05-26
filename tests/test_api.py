@@ -182,6 +182,46 @@ def test_revisions(app, db):
     assert 5 not in record.revisions
 
 
+def test_retrieve_proper_revision(app, db):
+    """Check accessing revision with gaps
+
+    Test checks if it's possible to access proper revision
+    when revision numbers have 'gaps'
+    """
+    record = Record.create({'title': 'test 1'})
+    db.session.commit()
+    record['title'] = "test 2"
+    record.commit()
+    record['title'] = "test 3"
+    record.commit()
+    db.session.commit()
+    record['title'] = "test 4"
+    record.commit()
+    db.session.commit()
+    record['title'] = "test 5"
+    record.commit()
+    db.session.commit()
+
+    assert len(record.revisions) == 4
+    revs = list(record.revisions)
+    assert revs[0]['title'] == "test 1"
+    assert revs[0].revision_id == 0
+    assert revs[1]['title'] == "test 3"
+    assert revs[1].revision_id == 2
+    assert revs[2]['title'] == "test 4"
+    assert revs[2].revision_id == 3
+    assert revs[3]['title'] == "test 5"
+    assert revs[3].revision_id == 4
+
+    # Access revision by revision_id
+    rev_2 = record.revisions[2]
+    assert rev_2['title'] == "test 3"
+    assert rev_2.revision_id == 2
+
+    # Access revision by negative list index
+    assert rev_2 == record.revisions[-3]
+
+
 def test_record_update_mutable(app, db):
     """Test updating mutables in a record."""
     recid = uuid.UUID('262d2748-ba41-456f-a844-4d043a419a6f')
