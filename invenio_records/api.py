@@ -16,6 +16,7 @@ from flask import current_app
 from invenio_db import db
 from jsonpatch import apply_patch
 from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.local import LocalProxy
 
 from .errors import MissingModelError
@@ -398,8 +399,20 @@ class RevisionsIterator(object):
         return RecordRevision(next(self._it))
 
     def __getitem__(self, revision_id):
-        """Get a specific revision."""
-        return RecordRevision(self.model.versions[revision_id])
+        """Get a specific revision.
+
+        Revision id is always smaller by 1 from version_id.
+        """
+        if revision_id < 0:
+            return RecordRevision(self.model.versions[revision_id])
+        try:
+            return RecordRevision(
+                self.model.versions.filter_by(
+                    version_id=revision_id + 1
+                ).one()
+            )
+        except NoResultFound:
+            raise IndexError
 
     def __contains__(self, revision_id):
         """Test if revision exists."""
