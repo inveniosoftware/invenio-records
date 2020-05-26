@@ -420,3 +420,8 @@ class RevisionsIterator(object):
             return True
         except IndexError:
             return False
+
+    def __reversed__(self):
+        """Allows to use reversed operator."""
+        for version_index in range(self.model.versions.count()):
+            yield RecordRevision(self.model.versions[-(version_index+1)])

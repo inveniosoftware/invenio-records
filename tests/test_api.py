@@ -430,3 +430,22 @@ def test_validate_partial(app, db):
         record['a'] = 1
         with pytest.raises(ValidationError) as exc_info:
             record.commit(validator=PartialDraft4Validator)
+
+
+def test_reversed_works_for_revisions(app, db):
+    record = Record.create({'title': 'test 1'})
+    db.session.commit()
+
+    record['title'] = "test 2"
+    record.commit()
+    record['title'] = "Test 3"
+    db.session.commit()
+
+    record['title'] = "test 4"
+    record.commit()
+    db.session.commit()
+
+    reversed_revisions = list(reversed(record.revisions))
+    reversed_revisions[0].revision_id == 3
+    reversed_revisions[1].revision_id == 1
+    reversed_revisions[2].revision_id == 0
