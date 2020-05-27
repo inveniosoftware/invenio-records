@@ -7,6 +7,15 @@
 
 Changes
 =======
+
+Version 1.1.2 (released 2020-05-27)
+
+- Fixes a bug causing incorrect revisions to be fetched. If ``record.commit()``
+  was called multiple times prior to a ``db.session.commit()``, there would be
+  gaps in the version ids persisted in the database. This meant that if you
+  used ``record.revisions[revision_id]`` to access a revision, it was not
+  guaranteed to return that specific revision id. See #221
+
 Version 1.1.1 (released 2019-07-11)
 
 - Fix XSS vulnerability in admin interface.
