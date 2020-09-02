@@ -48,7 +48,7 @@ def app(request):
     instance_path = tempfile.mkdtemp()
     app_ = Flask(__name__, instance_path=instance_path)
     app_.config.update(
-        CELERY_ALWAYS_EAGER=True,
+        CELERY_TASK_ALWAYS_EAGER=True,
         CELERY_CACHE_BACKEND="memory",
         CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
         CELERY_RESULT_BACKEND="cache",
