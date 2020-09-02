@@ -17,33 +17,25 @@ history = open('CHANGES.rst').read()
 
 
 tests_require = [
-    'check-manifest>=0.25',
-    'coverage>=4.5.3',
-    'Flask-Menu>=0.5.0',
-    'invenio-admin>=1.0.0',
-    'isort>=4.3.0',
-    'mock>=1.3.0',
-    'pydocstyle>=3.0.0',
-    'pytest-cov>=2.7.1',
-    'pytest-pep8>=1.0.6',
-    'pytest>=4.6.4,<5.0.0',
+    'mock>=3.0.5',
+    'pytest-invenio>=1.3.3',
 ]
 
 extras_require = {
     'docs': [
-        'Sphinx>=1.7.2',
+        'Sphinx>=2.4',
     ],
     'mysql': [
-        'invenio-db[mysql,versioning]>=1.0.0',
+        'invenio-db[mysql,versioning]>=1.0.5',
     ],
     'postgresql': [
-        'invenio-db[postgresql,versioning]>=1.0.0',
+        'invenio-db[postgresql,versioning]>=1.0.5',
     ],
     'sqlite': [
-        'invenio-db[versioning]>=1.0.0',
+        'invenio-db[versioning]>=1.0.5',
     ],
     'admin': [
-        'Flask-Admin>=1.3.0',
+        'invenio-admin>=1.2.1',
     ],
     'tests': tests_require,
 }
@@ -55,20 +47,17 @@ for name, reqs in extras_require.items():
     extras_require['all'].extend(reqs)
 
 setup_requires = [
-    'Babel>=1.3',
-    'pytest-runner>=2.6.2',
+    'Babel>=2.8',
 ]
 
 install_requires = [
-    'blinker>=1.4',
-    'Flask-BabelEx>=0.9.3',
-    'flask-celeryext>=0.2.2',
-    'flask>=0.11.1',
-    'jsonpatch>=1.15',
-    'jsonresolver>=0.1.0',
-    'jsonref>=0.1',
-    'jsonschema>=2.5.1',
-    'werkzeug>=0.14.1',
+    'invenio-base>=1.2.0',
+    'invenio-celery>=1.2.0',
+    'invenio-i18n>=1.2.0',
+    'jsonpatch>=1.26',
+    'jsonref>=0.2',
+    'jsonresolver>=0.3.1',
+    'jsonschema>=3.0.0',
 ]
 
 packages = find_packages()
