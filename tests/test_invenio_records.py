@@ -43,9 +43,9 @@ def test_init():
     assert 'invenio-records' in app.extensions
 
 
-def test_alembic(app, db):
+def test_alembic(testapp, db):
     """Test alembic recipes."""
-    ext = app.extensions['invenio-db']
+    ext = testapp.extensions['invenio-db']
 
     if db.engine.name == 'sqlite':
         raise pytest.skip('Upgrades are not supported on SQLite.')
@@ -64,9 +64,9 @@ def test_alembic(app, db):
     drop_alembic_version_table()
 
 
-def test_db(app, db):
+def test_db(testapp, db):
     """Test database backend."""
-    with app.app_context():
+    with testapp.app_context():
         assert 'records_metadata' in db.metadata.tables
         assert 'records_metadata_version' in db.metadata.tables
         assert 'transaction' in db.metadata.tables
@@ -84,7 +84,7 @@ def test_db(app, db):
     from invenio_records.models import RecordMetadata as RM
 
     # Create a record
-    with app.app_context():
+    with testapp.app_context():
         assert RM.query.count() == 0
 
         record_uuid = Record.create(data).id
@@ -94,7 +94,7 @@ def test_db(app, db):
         db.session.commit()
 
     # Retrieve created record
-    with app.app_context():
+    with testapp.app_context():
         record = Record.get_record(record_uuid)
         assert record.dumps() == data
         with pytest.raises(NoResultFound):
@@ -107,7 +107,7 @@ def test_db(app, db):
         record.commit()
         db.session.commit()
 
-    with app.app_context():
+    with testapp.app_context():
         record2 = Record.get_record(record_uuid)
         assert record2.model.version_id == 2
         assert record2['field']
@@ -115,13 +115,13 @@ def test_db(app, db):
         db.session.commit()
 
     # Cannot commit record without model (i.e. Record.create_record)
-    with app.app_context():
+    with testapp.app_context():
         record3 = Record({'title': 'Not possible'})
         with pytest.raises(MissingModelError):
             record3.commit()
 
     # Check invalid schema values
-    with app.app_context():
+    with testapp.app_context():
         data = {
             '$schema': 'http://json-schema.org/learn/examples/'
                        'geographical-location.schema.json',
@@ -137,22 +137,22 @@ def test_db(app, db):
             record_with_schema.commit()
 
     # Allow types overriding on schema validation
-    with app.app_context():
+    with testapp.app_context():
         data = {
             'title': 'Test',
             'hello': tuple(['foo', 'bar']),
             '$schema': schema
         }
-        app.config['RECORDS_VALIDATION_TYPES'] = {}
+        testapp.config['RECORDS_VALIDATION_TYPES'] = {}
         with pytest.raises(ValidationError):
             Record.create(data).commit()
 
-        app.config['RECORDS_VALIDATION_TYPES'] = {'array': (list, tuple)}
+        testapp.config['RECORDS_VALIDATION_TYPES'] = {'array': (list, tuple)}
         record_uuid = Record.create(data).commit()
         db.session.commit()
 
 
-def test_class_model(app, custom_db, CustomMetadata):
+def test_class_model(testapp, custom_db, CustomMetadata):
     """Test custom class model."""
     db = custom_db
 

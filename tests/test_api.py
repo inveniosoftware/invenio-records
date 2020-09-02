@@ -32,7 +32,7 @@ def strip_ms(dt):
     return dt - timedelta(microseconds=dt.microsecond)
 
 
-def test_get_records(app, db):
+def test_get_records(testapp, db):
     """Test bulk record fetching."""
     # Create test records
     test_records = [
@@ -56,7 +56,7 @@ def test_get_records(app, db):
     assert len(Record.get_records(test_ids, with_deleted=True)) == 3
 
 
-def test_revision_id_created_updated_properties(app, db):
+def test_revision_id_created_updated_properties(testapp, db):
     """Test properties."""
     record = Record.create({'title': 'test'})
     assert record.revision_id == 0
@@ -77,8 +77,9 @@ def test_revision_id_created_updated_properties(app, db):
     assert dt_u < utcnow + timedelta(seconds=10)
 
 
-def test_delete(app, db):
+def test_delete(testapp, database):
     """Test delete a record."""
+    db = database
     # Create a record, revise it and delete it.
     record = Record.create({'title': 'test 1'})
     db.session.commit()
@@ -119,8 +120,9 @@ def test_delete(app, db):
         with_deleted=True)
 
 
-def test_revisions(app, db):
+def test_revisions(testapp, database):
     """Test revisions."""
+    db = database
     # Create a record and make modifications to it.
     record = Record.create({'title': 'test 1'})
     rec_uuid = record.id
@@ -182,12 +184,13 @@ def test_revisions(app, db):
     assert 5 not in record.revisions
 
 
-def test_retrieve_proper_revision(app, db):
+def test_retrieve_proper_revision(testapp, database):
     """Check accessing revision with gaps
 
     Test checks if it's possible to access proper revision
     when revision numbers have 'gaps'
     """
+    db = database
     record = Record.create({'title': 'test 1'})
     db.session.commit()
     record['title'] = "test 2"
@@ -222,8 +225,9 @@ def test_retrieve_proper_revision(app, db):
     assert rev_2 == record.revisions[-3]
 
 
-def test_record_update_mutable(app, db):
+def test_record_update_mutable(testapp, database):
     """Test updating mutables in a record."""
+    db = database
     recid = uuid.UUID('262d2748-ba41-456f-a844-4d043a419a6f')
 
     # Create a new record with two mutables, a list and a dict
@@ -288,7 +292,7 @@ def test_record_update_mutable(app, db):
     }
 
 
-def test_missing_model(app, db):
+def test_missing_model(testapp, db):
     """Test revisions."""
     record = Record({})
     assert record.id is None
@@ -307,13 +311,13 @@ def test_missing_model(app, db):
     pytest.raises(MissingModelError, record.revert, -1)
 
 
-def test_record_replace_refs(app, db):
+def test_record_replace_refs(testapp, db):
     """Test the replacement of JSON references using JSONResolver."""
     record = Record.create({
         'one': {'$ref': 'http://nest.ed/A'},
         'three': {'$ref': 'http://nest.ed/ABC'}
     })
-    app.extensions['invenio-records'].loader_cls = json_loader_factory(
+    testapp.extensions['invenio-records'].loader_cls = json_loader_factory(
         JSONResolver(plugins=['demo.json_resolver']))
     out_json = record.replace_refs()
     expected_json = {
@@ -335,25 +339,25 @@ def test_record_replace_refs(app, db):
     assert out_json == expected_json
 
 
-def test_replace_refs_deepcopy(app):
+def test_replace_refs_deepcopy(testapp):
     """Test problem with replace_refs and deepcopy."""
-    with app.app_context():
+    with testapp.app_context():
         assert copy.deepcopy(Record({'recid': 1}).replace_refs()) \
             == {'recid': 1}
 
 
-def test_record_dump(app, db):
+def test_record_dump(testapp, db):
     """Test record dump method."""
-    with app.app_context():
+    with testapp.app_context():
         record = Record.create({'foo': {'bar': 'Bazz', }, })
         record_dump = record.dumps()
         record_dump['foo']['bar'] = 'Spam'
         assert record_dump['foo']['bar'] != record['foo']['bar']
 
 
-def test_validate_with_format(app, db):
+def test_validate_with_format(testapp, db):
     """Test that validation can accept custom format rules."""
-    with app.app_context():
+    with testapp.app_context():
         checker = FormatChecker()
         checker.checks('foo')(lambda el: el.startswith('foo'))
         data = {
@@ -390,7 +394,7 @@ def test_validate_with_format(app, db):
         assert "'bar' is not a 'foo'" in str(excinfo.value)
 
 
-def test_validate_partial(app, db):
+def test_validate_partial(testapp, db):
     """Test partial validation."""
     schema = {
         'properties': {
@@ -403,7 +407,7 @@ def test_validate_partial(app, db):
         'a': 'hello',
         '$schema': schema
     }
-    with app.app_context():
+    with testapp.app_context():
         # Test validation on create()
 
         # normal validation should fail because 'b' is required
@@ -433,7 +437,8 @@ def test_validate_partial(app, db):
             record.commit(validator=PartialDraft4Validator)
 
 
-def test_reversed_works_for_revisions(app, db):
+def test_reversed_works_for_revisions(testapp, database):
+    db = database
     record = Record.create({'title': 'test 1'})
     db.session.commit()
 
