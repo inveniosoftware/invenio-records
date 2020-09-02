@@ -21,9 +21,9 @@ from invenio_records.admin import record_adminview
 from invenio_records.api import Record
 
 
-def test_admin(app, db):
+def test_admin(testapp, db):
     """Test flask-admin interace."""
-    admin = Admin(app, name="Test")
+    admin = Admin(testapp, name="Test")
 
     assert 'model' in record_adminview
     assert 'modelview' in record_adminview
@@ -48,13 +48,13 @@ def test_admin(app, db):
     Record.create({'title': 'test<script>alert(1);</script>'}, id_=rec_uuid)
     db.session.commit()
 
-    with app.test_request_context():
+    with testapp.test_request_context():
         index_view_url = url_for('recordmetadata.index_view')
         delete_view_url = url_for('recordmetadata.delete_view')
         detail_view_url = url_for(
             'recordmetadata.details_view', id=rec_uuid)
 
-    with app.test_client() as client:
+    with testapp.test_client() as client:
         # List index view and check record is there.
         res = client.get(index_view_url)
         assert res.status_code == 200
