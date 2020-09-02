@@ -8,8 +8,6 @@
 
 """Errors for Invenio-Records module."""
 
-from __future__ import absolute_import, print_function
-
 
 class RecordsError(Exception):
     """Base class for errors in Invenio-Records module."""

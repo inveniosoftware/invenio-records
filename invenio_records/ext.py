@@ -8,7 +8,6 @@
 
 """Invenio module for metadata storage."""
 
-from __future__ import absolute_import, print_function
 
 from jsonref import JsonRef
 from jsonresolver import JSONResolver
