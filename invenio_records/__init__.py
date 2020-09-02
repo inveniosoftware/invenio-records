@@ -327,7 +327,6 @@ record has been correctly modified:
 See :doc:`api` for extensive API documentation.
 """
 
-from __future__ import absolute_import, print_function
 
 from .api import Record
 from .ext import InvenioRecords
