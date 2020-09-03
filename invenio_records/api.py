@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015-2018 CERN.
+# Copyright (C) 2015-2020 CERN.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -16,6 +16,7 @@ from invenio_db import db
 from jsonpatch import apply_patch
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy_continuum.utils import parent_class
 from werkzeug.local import LocalProxy
 
 from .errors import MissingModelError
@@ -28,7 +29,13 @@ _records_state = LocalProxy(lambda: current_app.extensions['invenio-records'])
 
 
 class RecordBase(dict):
-    """Base class for Record and RecordBase."""
+    """Base class for Record and RecordRevision to share common features."""
+
+    model_cls = RecordMetadata
+    """SQLAlchemy model class defining which table stores the records."""
+
+    format_checker = None
+    """Class-level attribute to specify a default JSONSchema format checker."""
 
     def __init__(self, data, model=None):
         """Initialize instance with dictionary data and SQLAlchemy model.
@@ -121,9 +128,30 @@ class RecordBase(dict):
 
             raises a :class:`jsonschema.exceptions.ValidationError`.
         """
+        # For backward compatibility we do not change the method signature
+        # (i.e. return a ``None`` value on successful validation).
+        # The actual implementation of the validation method is implemented
+        # below in _validate() which is also the one used internally to avoid
+        # double encoding of the dict to JSON.
+        self._validate(**kwargs)
+
+    def _validate(self, **kwargs):
+        """Implementation of the JSONSchema validation."""
+        # Use the encoder to transform Python dictionary into JSON document
+        # prior to validation.
+        json = self.model_cls.encode(dict(self))
+
         if '$schema' in self and self['$schema'] is not None:
+            # Prepare args
+            if self.format_checker:
+                kwargs.setdefault("format_checker", self.format_checker)
             kwargs['cls'] = kwargs.pop('validator', None)
-            _records_state.validate(self, self['$schema'], **kwargs)
+
+            # Validate (an error will raise an exception)
+            _records_state.validate(json, self['$schema'], **kwargs)
+
+        # Return encoded data, so we don't have to double encode.
+        return json
 
     def replace_refs(self):
         """Replace the ``$ref`` keys within the JSON."""
@@ -136,8 +164,6 @@ class RecordBase(dict):
 
 class Record(RecordBase):
     """Define API for metadata creation and manipulation."""
-
-    model_cls = RecordMetadata
 
     send_signals = True
     """Class-level attribute to control if signals should be sent."""
@@ -181,9 +207,11 @@ class Record(RecordBase):
                     record=record
                 )
 
-            record.validate(**kwargs)
+            # Validate also encodes the data
+            json = record._validate(**kwargs)
 
-            record.model = cls.model_cls(id=id_, json=record)
+            # Thus, we pass the encoded JSON directly to the model.
+            record.model = cls.model_cls(id=id_, json=json)
 
             db.session.add(record.model)
 
@@ -192,6 +220,7 @@ class Record(RecordBase):
                 current_app._get_current_object(),
                 record=record
             )
+
         return record
 
     @classmethod
@@ -207,9 +236,9 @@ class Record(RecordBase):
         with db.session.no_autoflush:
             query = cls.model_cls.query.filter_by(id=id_)
             if not with_deleted:
-                query = query.filter(cls.model_cls.json != None)  # noqa
+                query = query.filter(cls.model_cls.is_deleted != True)  # noqa
             obj = query.one()
-            return cls(obj.json, model=obj)
+            return cls(obj.data, model=obj)
 
     @classmethod
     def get_records(cls, ids, with_deleted=False):
@@ -222,9 +251,9 @@ class Record(RecordBase):
         with db.session.no_autoflush:
             query = cls.model_cls.query.filter(cls.model_cls.id.in_(ids))
             if not with_deleted:
-                query = query.filter(cls.model_cls.json != None)  # noqa
+                query = query.filter(cls.model_cls.is_deleted != True)  # noqa
 
-            return [cls(obj.json, model=obj) for obj in query.all()]
+            return [cls(obj.data, model=obj) for obj in query.all()]
 
     def patch(self, patch):
         """Patch record metadata.
@@ -261,7 +290,7 @@ class Record(RecordBase):
 
         :returns: The :class:`Record` instance.
         """
-        if self.model is None or self.model.json is None:
+        if self.model is None or self.model.is_deleted:
             raise MissingModelError()
 
         with db.session.begin_nested():
@@ -271,9 +300,11 @@ class Record(RecordBase):
                     record=self
                 )
 
-            self.validate(**kwargs)
+            # Validate also encodes the data
+            json = self._validate(**kwargs)
 
-            self.model.json = dict(self)
+            # Thus, we pass the encoded JSON directly to the model.
+            self.model.json = json
             flag_modified(self.model, 'json')
 
             db.session.merge(self.model)
@@ -319,7 +350,7 @@ class Record(RecordBase):
             if force:
                 db.session.delete(self.model)
             else:
-                self.model.json = None
+                self.model.is_deleted = True
                 db.session.merge(self.model)
 
         if self.send_signals:
@@ -350,21 +381,29 @@ class Record(RecordBase):
 
         with db.session.begin_nested():
             if self.send_signals:
+                # TODO: arguments to this signal does not make sense.
+                # Ought to be both record and revision.
                 before_record_revert.send(
                     current_app._get_current_object(),
                     record=self
                 )
 
-            self.model.json = dict(revision)
+            # Here we explicitly set the json column in order to not
+            # encode/decode the json data via the ``data`` property.
+            self.model.json = revision.model.json
+            flag_modified(self.model.json, 'json')
 
             db.session.merge(self.model)
 
         if self.send_signals:
+            # TODO: arguments to this signal does not make sense.
+            # Ought to be the class being returned just below and should
+            # include the revision.
             after_record_revert.send(
                 current_app._get_current_object(),
                 record=self
             )
-        return self.__class__(self.model.json, model=self.model)
+        return self.__class__(self.model.data, model=self.model)
 
     @property
     def revisions(self):
@@ -380,7 +419,13 @@ class RecordRevision(RecordBase):
 
     def __init__(self, model):
         """Initialize instance with the SQLAlchemy model."""
-        super(RecordRevision, self).__init__(model.json, model=model)
+        super(RecordRevision, self).__init__(
+            # The version model class does not have the properties of the
+            # parent model class, and thus ``model.data`` won't work (which is
+            # a Python property on RecordMetadataBase).
+            parent_class(model.__class__).decode(model.json),
+            model=model
+        )
 
 
 class RevisionsIterator(object):
@@ -400,10 +445,6 @@ class RevisionsIterator(object):
         self._it = iter(self.model.versions)
         return self
 
-    def next(self):
-        """Python 2.7 compatibility."""
-        return self.__next__()  # pragma: no cover
-
     def __next__(self):
         """Get next revision item."""
         return RecordRevision(next(self._it))
@@ -411,7 +452,15 @@ class RevisionsIterator(object):
     def __getitem__(self, revision_id):
         """Get a specific revision.
 
-        Revision id is always smaller by 1 from version_id.
+        Revision id is always smaller by 1 from version_id. This was initially
+        to ensure that record revisions was zero-indexed similar to arrays
+        (e.g. you could do ``record.revisions[0]``). Due to SQLAlchemy
+        increasing the version counter via Python instead of the SQL
+        insert/update query it's possible to have an "array with holes" and
+        thus having it zero-indexed does not make much sense (thus it's like
+        this for historical reasons and has not been changed because it's
+        diffcult to change - e.g. implies all indexed records in existing
+        instances having to be updated.)
         """
         if revision_id < 0:
             return RecordRevision(self.model.versions[revision_id])
