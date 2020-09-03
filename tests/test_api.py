@@ -354,6 +354,26 @@ def test_record_dump(testapp, db):
         assert record_dump['foo']['bar'] != record['foo']['bar']
 
 
+def test_default_format_checker(testapp):
+    """Test a default format checker."""
+    checker = FormatChecker()
+    checker.checks('foo')(lambda el: el.startswith('foo'))
+    data = {
+        # The key 'bar' will fail validation if the format checker is used.
+        'bar': 'bar',
+        '$schema': {
+            'properties': {
+                'bar': {'format': 'foo'}
+            }
+        }
+    }
+
+    class CustomRecord(Record):
+        format_checker = checker
+
+    assert pytest.raises(ValidationError, CustomRecord(data).validate)
+
+
 def test_validate_with_format(testapp, db):
     """Test that validation can accept custom format rules."""
     with testapp.app_context():
