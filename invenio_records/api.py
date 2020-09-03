@@ -157,9 +157,29 @@ class RecordBase(dict):
         """Replace the ``$ref`` keys within the JSON."""
         return _records_state.replace_refs(self)
 
-    def dumps(self, **kwargs):
-        """Return pure Python dictionary with record metadata."""
+    def dumps(self, cls=None):
+        """Make a dump of the record (defaults to a deep copy of the dict).
+
+        This method produces a version of a record that can be persisted on
+        storage such as the database, Elasticsearch or other mediums depending
+        on the dumper class used.
+
+        :param cls: Dumper class to use when dumping the record.
+        :returns: A ``dict``.
+        """
+        if cls:
+            return cls.dump(self)
         return deepcopy(dict(self))
+
+    @classmethod
+    def loads(record_cls, data, cls=None):
+        """Load a record dump.
+
+        :param cls: Loader class to use when loading the record.
+        :returns: A new :class:`Record` instance.
+        """
+        # The method is named with in plural to align with dumps.
+        return cls.load(data, record_cls)
 
 
 class Record(RecordBase):
