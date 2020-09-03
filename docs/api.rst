@@ -35,3 +35,8 @@ Signals
 -------
 .. automodule:: invenio_records.signals
    :members:
+
+Dumpers/Loaders
+---------------
+.. automodule:: invenio_records.dumpers
+   :members:
