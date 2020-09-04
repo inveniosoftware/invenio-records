@@ -19,6 +19,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy_continuum.utils import parent_class
 from werkzeug.local import LocalProxy
 
+from .dumpers import Dumper
 from .errors import MissingModelError
 from .models import RecordMetadata
 from .signals import after_record_delete, after_record_insert, \
@@ -37,6 +38,19 @@ class RecordBase(dict):
     format_checker = None
     """Class-level attribute to specify a default JSONSchema format checker."""
 
+    dumper = Dumper()
+    """Class-level attribute to specify the default data dumper/loader.
+
+    For backward compatibility the dumper used here just produces a deep copy
+    of the record.
+    """
+
+    _extensions = []
+    """Record extensions registry.
+
+    Allows extensions (like system fields) to be registered on the record.
+    """
+
     def __init__(self, data, model=None):
         """Initialize instance with dictionary data and SQLAlchemy model.
 
@@ -44,6 +58,8 @@ class RecordBase(dict):
         :param model: :class:`~invenio_records.models.RecordMetadata` instance.
         """
         self.model = model
+        for e in self._extensions:
+            e.pre_init(self, data, model=model)
         super(RecordBase, self).__init__(data or {})
 
     @property
@@ -157,29 +173,43 @@ class RecordBase(dict):
         """Replace the ``$ref`` keys within the JSON."""
         return _records_state.replace_refs(self)
 
-    def dumps(self, cls=None):
+    def dumps(self, dumper=None):
         """Make a dump of the record (defaults to a deep copy of the dict).
 
         This method produces a version of a record that can be persisted on
         storage such as the database, Elasticsearch or other mediums depending
         on the dumper class used.
 
-        :param cls: Dumper class to use when dumping the record.
+        :param dumper: Dumper to use when dumping the record.
         :returns: A ``dict``.
         """
-        if cls:
-            return cls.dump(self)
-        return deepcopy(dict(self))
+        dumper = dumper or self.dumper
+
+        # Run pre dump extensions
+        for e in self._extensions:
+            e.pre_dump(self, dumper=dumper)
+
+        # Execute the dump - for backwards compatibility we use the default
+        # dumper which returns a deepcopy.
+        return dumper.dump(self)
 
     @classmethod
-    def loads(record_cls, data, cls=None):
+    def loads(cls, data, loader=None):
         """Load a record dump.
 
-        :param cls: Loader class to use when loading the record.
+        :param loader: Loader class to use when loading the record.
         :returns: A new :class:`Record` instance.
         """
-        # The method is named with in plural to align with dumps.
-        return cls.load(data, record_cls)
+        # The method is named with in plural to align with dumps (which is
+        # named with s even if it should probably have been called "dump"
+        # instead.
+        record = loader.load(data, cls)
+
+        # Run post load extensions
+        for e in cls._extensions:
+            e.post_load(record, loader=loader)
+
+        return record
 
 
 class Record(RecordBase):
@@ -240,6 +270,10 @@ class Record(RecordBase):
                 current_app._get_current_object(),
                 record=record
             )
+
+        # Run post create extensions
+        for e in cls._extensions:
+            e.post_create(record)
 
         return record
 
@@ -320,6 +354,10 @@ class Record(RecordBase):
                     record=self
                 )
 
+            # Run pre commit extensions
+            for e in self._extensions:
+                e.pre_commit(self, **kwargs)
+
             # Validate also encodes the data
             json = self._validate(**kwargs)
 
@@ -334,6 +372,7 @@ class Record(RecordBase):
                 current_app._get_current_object(),
                 record=self
             )
+
         return self
 
     def delete(self, force=False):
@@ -367,6 +406,10 @@ class Record(RecordBase):
                     record=self
                 )
 
+            # Run pre delete extensions
+            for e in self._extensions:
+                e.pre_delete(self, force=force)
+
             if force:
                 db.session.delete(self.model)
             else:
@@ -378,6 +421,11 @@ class Record(RecordBase):
                 current_app._get_current_object(),
                 record=self
             )
+
+        # Run post delete extensions
+        for e in self._extensions:
+            e.post_delete(self, force=force)
+
         return self
 
     def revert(self, revision_id):
@@ -408,6 +456,9 @@ class Record(RecordBase):
                     record=self
                 )
 
+            for e in self._extensions:
+                e.pre_revert(self, revision)
+
             # Here we explicitly set the json column in order to not
             # encode/decode the json data via the ``data`` property.
             self.model.json = revision.model.json
@@ -423,7 +474,13 @@ class Record(RecordBase):
                 current_app._get_current_object(),
                 record=self
             )
-        return self.__class__(self.model.data, model=self.model)
+
+        record = self.__class__(self.model.data, model=self.model)
+
+        for e in self._extensions:
+            e.post_revert(record, revision)
+
+        return record
 
     @property
     def revisions(self):
