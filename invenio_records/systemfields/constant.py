@@ -8,6 +8,7 @@
 
 """Constant system field."""
 
+from ..dictutils import dict_lookup
 from .base import SystemField
 
 
@@ -17,8 +18,8 @@ class ConstantField(SystemField):
     def __init__(self, key, value):
         """Initialize the field.
 
-        :param key: The key to set in the dictionary (only top-level keys
-                    supported currently).
+        :param key: The key to set in the dictionary (dot notation supported
+                    for nested lookup).
         :param value: The value to set for the key.
         """
         self.key = key
@@ -26,7 +27,10 @@ class ConstantField(SystemField):
 
     def pre_init(self, record, data, model=None):
         """Sets the key in the record during record instantiation."""
-        if self.key not in data:
+        try:
+            dict_lookup(data, self.key)
+        except KeyError:
+            # Key is not present, so add it.
             data[self.key] = self.value
 
     def __get__(self, instance, class_):
@@ -35,6 +39,7 @@ class ConstantField(SystemField):
         if instance is None:
             return self
         # Instance access
-        if self.key in instance:
-            return instance[self.key]
-        return None
+        try:
+            return dict_lookup(instance, self.key)
+        except KeyError:
+            return None

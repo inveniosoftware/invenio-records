@@ -19,6 +19,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy_continuum.utils import parent_class
 from werkzeug.local import LocalProxy
 
+from .dictutils import clear_none, dict_lookup
 from .dumpers import Dumper
 from .errors import MissingModelError
 from .models import RecordMetadata
@@ -172,6 +173,13 @@ class RecordBase(dict):
     def replace_refs(self):
         """Replace the ``$ref`` keys within the JSON."""
         return _records_state.replace_refs(self)
+
+    def clear_none(self, key=None):
+        """Helper method to clear None, empty dict and list values.
+
+        Modifications are done in place.
+        """
+        clear_none(dict_lookup(self, key) if key else self)
 
     def dumps(self, dumper=None):
         """Make a dump of the record (defaults to a deep copy of the dict).

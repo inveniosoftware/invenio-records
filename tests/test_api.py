@@ -474,3 +474,10 @@ def test_reversed_works_for_revisions(testapp, database):
     reversed_revisions[0].revision_id == 3
     reversed_revisions[1].revision_id == 1
     reversed_revisions[2].revision_id == 0
+
+
+def test_clear_none(testapp, db):
+    """Test clear_none."""
+    record = Record({'a': None})
+    record.clear_none()
+    assert record == {}

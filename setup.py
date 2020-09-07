@@ -52,7 +52,7 @@ setup_requires = [
 
 install_requires = [
     'arrow>=0.16.0',
-    'invenio-base>=1.2.0',
+    'invenio-base>=1.2.2',
     'invenio-celery>=1.2.0',
     'invenio-i18n>=1.2.0',
     'jsonpatch>=1.26',
