@@ -46,6 +46,9 @@ class RecordBase(dict):
     of the record.
     """
 
+    enable_jsonref = True
+    """Class-level attribute to control if JSONRef replacement is supported."""
+
     _extensions = []
     """Record extensions registry.
 
@@ -172,7 +175,10 @@ class RecordBase(dict):
 
     def replace_refs(self):
         """Replace the ``$ref`` keys within the JSON."""
-        return _records_state.replace_refs(self)
+        if self.enable_jsonref:
+            return _records_state.replace_refs(self)
+        else:
+            return self
 
     def clear_none(self, key=None):
         """Helper method to clear None, empty dict and list values.
