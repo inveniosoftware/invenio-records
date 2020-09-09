@@ -63,7 +63,7 @@ class SystemField(ExtensionMixin):
 
     def __init__(self, key=None):
         """Initialise the field."""
-        self.key = key
+        self._key = key
         # The attribute is set by __set_name__ which is called by the metaclass
         # during construction.
         self._attr_name = None
@@ -76,6 +76,14 @@ class SystemField(ExtensionMixin):
                   attribute name.
         """
         return self._attr_name
+
+    @property
+    def key(self):
+        """Property to access the dict key name.
+
+        Uses the attribute name if the key is not defined.
+        """
+        return self._key or self._attr_name
 
     #
     # Data descriptor definition

@@ -293,6 +293,14 @@ def test_systemfield_initialization(testapp):
     assert record['arg_value'] == 'testval'
 
 
+def test_default_key(testapp):
+    """Test default key name."""
+    class TestRecord(Record, SystemFieldsMixin):
+        afield = ConstantField(value='test')
+
+    assert TestRecord({})['afield'] == 'test'
+
+
 #
 # DictField
 #
@@ -314,6 +322,14 @@ def test_dict_field_simple():
     assert Record1(
         {'metadata': {'title': 2}, 'a': 'b'},
         metadata={'title': 1}) == {'metadata': {'title': 1}, 'a': 'b'}
+
+
+def test_dictfield_default_key(testapp):
+    """Test default key name."""
+    class TestRecord(Record, SystemFieldsMixin):
+        afield = DictField()
+
+    assert TestRecord({}, afield={'test': 1})['afield'] == {'test': 1}
 
 
 def test_dict_field_complex_key():

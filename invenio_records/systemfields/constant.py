@@ -15,15 +15,15 @@ from .base import SystemField
 class ConstantField(SystemField):
     """Constant fields add a constant value to a key in the record."""
 
-    def __init__(self, key, value):
+    def __init__(self, key=None, value=''):
         """Initialize the field.
 
         :param key: The key to set in the dictionary (dot notation supported
                     for nested lookup).
         :param value: The value to set for the key.
         """
-        self.key = key
         self.value = value
+        super().__init__(key=key)
 
     def pre_init(self, record, data, model=None, **kwargs):
         """Sets the key in the record during record instantiation."""
