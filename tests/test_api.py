@@ -318,7 +318,14 @@ def test_record_replace_refs(testapp, db):
     })
     testapp.extensions['invenio-records'].loader_cls = json_loader_factory(
         JSONResolver(plugins=['demo.json_resolver']))
+
+    record.enable_jsonref = False
+    assert record.replace_refs() == record
+
+    record.enable_jsonref = True
     out_json = record.replace_refs()
+    assert out_json != record
+
     expected_json = {
         'one': {
             'letter': 'A',

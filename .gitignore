@@ -67,3 +67,4 @@ examples/instance/
 
 # Test DB
 tests/test.db
+.vscode

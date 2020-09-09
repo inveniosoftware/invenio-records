@@ -14,13 +14,18 @@ from datetime import date, datetime
 import pytest
 
 from invenio_records.api import Record
-from invenio_records.systemfields import ConstantField, SystemFieldsMeta, \
-    SystemFieldsMixin
+from invenio_records.dumpers import ElasticsearchDumper
+from invenio_records.systemfields import ConstantField, SystemField, \
+    SystemFieldsMeta, SystemFieldsMixin
 
 
-def test_constant_field(testapp):
-    """Test the constant field."""
-    testschema = {
+#
+# Fixtures
+#
+@pytest.fixture()
+def testschema():
+    """The JSONSchema used for tests."""
+    return {
         "type": "object",
         "properties": {
             "title": {"type": "string"},
@@ -28,26 +33,92 @@ def test_constant_field(testapp):
         "required": ["title"]
     }
 
-    # Make two Record classes so we can test inheritance of system fields.
+
+@pytest.fixture()
+def SystemRecord():
+    """System record is a base class."""
     class SystemRecord(Record, SystemFieldsMixin):
+        # Only defined in SystemRecord:
         test = ConstantField("test", "test")
+        # Defined in both SystemRecord and MyRecord:
+        base = ConstantField("base", "systemrecord")
+    return SystemRecord
 
+
+@pytest.fixture()
+def MyRecord(SystemRecord, testschema):
+    """My record class inheriting from SystemRecord."""
     class MyRecord(SystemRecord):
+        # Defined in only MyRecord
         schema = ConstantField("$schema", testschema)
+        # Defined in both SystemRecord and MyRecord
+        base = ConstantField("base", "myrecord")
+    return MyRecord
 
-    record = MyRecord.create({'title': 'test'})
 
+@pytest.fixture()
+def record(MyRecord, db):
+    """Create a record instance of MyRecord."""
+    return MyRecord.create({'title': 'test'})
+
+
+@pytest.fixture()
+def sysrecord(SystemRecord, db):
+    """Create a record instance of SystemRecord."""
+    return SystemRecord.create({'title': 'test'})
+
+
+@pytest.fixture()
+def ExtensionRecord():
+    """Create an ExtensionRecord class to test extensions being called."""
+    class ExtensionField(SystemField):
+        called = []
+
+        def pre_init(self, record, data, model=None, **kwargs):
+            self.called.append('pre_init')
+
+        def post_init(self, record, data, model=None, field_data=None):
+            self.called.append('post_init')
+
+        def pre_dump(self, record, dumper=None):
+            self.called.append('pre_dump')
+
+        def post_load(self, record, loader=None):
+            self.called.append('post_load')
+
+        def post_create(self, record):
+            self.called.append('post_create')
+
+        def pre_commit(self, record):
+            self.called.append('pre_commit')
+
+        def pre_delete(self, record, force=False):
+            self.called.append('pre_delete')
+
+        def post_delete(self, record, force=False):
+            self.called.append('post_delete')
+
+        def pre_revert(self, record, revision):
+            self.called.append('pre_revert')
+
+        def post_revert(self, new_record, revision):
+            self.called.append('post_revert')
+
+    class ExtensionRecord(Record, SystemFieldsMixin):
+        dumper = ElasticsearchDumper()
+        ext = ExtensionField()
+
+    return ExtensionRecord
+
+
+#
+# Tests
+#
+def test_constant_field(testapp, record, MyRecord, testschema):
+    """Test the constant field."""
     # Test that constant field value was set, and is accessible
     assert record['$schema'] == testschema
     assert record.schema == testschema
-
-    # Test that inherited constant field is also set.
-    assert record['test'] == 'test'
-    assert record.test == 'test'
-
-    # Test that class access is returning the field
-    assert isinstance(MyRecord.schema, ConstantField)
-    assert isinstance(MyRecord.test, ConstantField)
 
     # Test that constant fields cannot have values assigned.
     try:
@@ -62,6 +133,35 @@ def test_constant_field(testapp):
 
     # Now test, that accessing the field returns None.
     assert record.schema is None
+
+
+def test_field_overwriting(testapp, record, sysrecord):
+    """Test that field overwriting."""
+    # field 'base' is defined in both classes, thus MyRecord overwrites
+    # SystemRecord.
+    assert record.base == 'myrecord'
+    assert sysrecord.base == 'systemrecord'
+
+
+def test_field_inheritance(testapp, record, sysrecord):
+    """Test that field inheritance."""
+    # field 'test' is defined only in base class, but available on both.
+    assert record.test == 'test'
+    assert sysrecord.test == 'test'
+
+
+def test_field_class_access(testapp, MyRecord):
+    """Test that class access is returning the field."""
+    assert isinstance(MyRecord.schema, ConstantField)
+    assert isinstance(MyRecord.test, ConstantField)
+    assert isinstance(MyRecord.base, ConstantField)
+
+
+def test_attrname_injection(testapp, MyRecord):
+    """Test that class access is returning the field."""
+    assert MyRecord.schema.attr_name == 'schema'
+    assert MyRecord.test.attr_name == 'test'
+    assert MyRecord.base.attr_name == 'base'
 
 
 def test_systemfields_mro(testapp):
@@ -101,3 +201,90 @@ def test_systemfields_mro(testapp):
     assert F({}).test == "a"
     # G inherits from C (which inherits from A) and B.
     assert G({}).test == "b"
+
+
+def test_extension_pre_init(testapp, db, ExtensionRecord):
+    """Test pre init hook."""
+    rec = ExtensionRecord({})
+    assert ExtensionRecord.ext.called == ['pre_init', 'post_init']
+
+
+def test_extension_post_create(testapp, db, ExtensionRecord):
+    """Test post create hook."""
+    rec = ExtensionRecord.create({})
+    assert ExtensionRecord.ext.called == [
+        'pre_init', 'post_init', 'post_create']
+
+
+def test_extension_pre_dump(testapp, db, ExtensionRecord):
+    """Test pre dump hook."""
+    rec = ExtensionRecord({}).dumps()
+    assert ExtensionRecord.ext.called == [
+        'pre_init', 'post_init', 'pre_dump']
+
+
+def test_extension_post_load(testapp, db, ExtensionRecord):
+    """Test post load hook."""
+    dump = ExtensionRecord({}).dumps()
+    rec = ExtensionRecord.loads(dump)
+    assert ExtensionRecord.ext.called == [
+        'pre_init', 'post_init', 'pre_dump', 'pre_init', 'post_init',
+        'post_load']
+
+
+def test_extension_pre_commit(testapp, db, ExtensionRecord):
+    """Test post load hook."""
+    rec = ExtensionRecord.create({})
+    rec.commit()
+    assert ExtensionRecord.ext.called == [
+        'pre_init', 'post_init', 'post_create', 'pre_commit']
+
+
+def test_extension_delete(testapp, db, ExtensionRecord):
+    """Test pre/post delete hook."""
+    rec = ExtensionRecord.create({})
+    db.session.commit()
+    rec.delete()
+    assert ExtensionRecord.ext.called == [
+        'pre_init', 'post_init', 'post_create', 'pre_delete', 'post_delete']
+
+
+def test_extension_revert(testapp, database, ExtensionRecord):
+    """Test pre/post revert hook."""
+    db = database
+    rec = ExtensionRecord.create({})
+    db.session.commit()
+    rec.commit()
+    db.session.commit()
+    assert rec.revision_id == 1
+    rec.revert(0)
+    assert ExtensionRecord.ext.called == [
+         'pre_init', 'post_init', 'post_create', 'pre_commit', 'pre_revert',
+         'pre_init', 'post_init', 'post_revert'
+    ]
+
+
+def test_base_systemfield_base(testapp):
+    """Test default implementation of system field."""
+    class TestRecord(Record, SystemFieldsMixin):
+        field = SystemField()
+
+    # Test to please the test coverage gods
+    assert pytest.raises(AttributeError, getattr, TestRecord({}), 'field')
+
+
+def test_systemfield_initialization(testapp):
+    """Test default implementation of system field."""
+    class TestField(SystemField):
+        def __set__(self, instance, value):
+            instance['arg_value'] = value
+
+    class TestRecord(Record, SystemFieldsMixin):
+        afield = TestField()
+
+    # Init method
+    assert TestRecord({}, afield='testval')['arg_value'] == 'testval'
+
+    # Create method
+    record = TestRecord.create({}, afield='testval')
+    assert record['arg_value'] == 'testval'
