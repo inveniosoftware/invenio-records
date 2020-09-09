@@ -25,7 +25,7 @@ class ConstantField(SystemField):
         self.key = key
         self.value = value
 
-    def pre_init(self, record, data, model=None):
+    def pre_init(self, record, data, model=None, **kwargs):
         """Sets the key in the record during record instantiation."""
         try:
             dict_lookup(data, self.key)

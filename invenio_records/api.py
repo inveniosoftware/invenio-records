@@ -39,6 +39,9 @@ class RecordBase(dict):
     format_checker = None
     """Class-level attribute to specify a default JSONSchema format checker."""
 
+    validator = None
+    """Class-level attribute to specify a JSONSchema validator class."""
+
     dumper = Dumper()
     """Class-level attribute to specify the default data dumper/loader.
 
@@ -55,7 +58,7 @@ class RecordBase(dict):
     Allows extensions (like system fields) to be registered on the record.
     """
 
-    def __init__(self, data, model=None):
+    def __init__(self, data, model=None, **kwargs):
         """Initialize instance with dictionary data and SQLAlchemy model.
 
         :param data: Dict with record metadata.
@@ -63,8 +66,10 @@ class RecordBase(dict):
         """
         self.model = model
         for e in self._extensions:
-            e.pre_init(self, data, model=model)
+            e.pre_init(self, data, model=model, **kwargs)
         super(RecordBase, self).__init__(data or {})
+        for e in self._extensions:
+            e.post_init(self, data, model=model, **kwargs)
 
     @property
     def id(self):
@@ -86,7 +91,7 @@ class RecordBase(dict):
         """Get last updated timestamp."""
         return self.model.updated if self.model else None
 
-    def validate(self, **kwargs):
+    def validate(self, format_checker=None, validator=None, **kwargs):
         r"""Validate record according to schema defined in ``$schema`` key.
 
         :Keyword Arguments:
@@ -148,27 +153,35 @@ class RecordBase(dict):
 
             raises a :class:`jsonschema.exceptions.ValidationError`.
         """
-        # For backward compatibility we do not change the method signature
+        # 1) For backward compatibility we do not change the method signature
         # (i.e. return a ``None`` value on successful validation).
         # The actual implementation of the validation method is implemented
         # below in _validate() which is also the one used internally to avoid
         # double encoding of the dict to JSON.
-        self._validate(**kwargs)
+        # 2) We ignore **kwargs (but keep it for backward compatibility) as
+        # the jsonschema.IValidator only takes the two keyword arguments
+        # formater_checker and cls (i.e. validator).
+        self._validate(format_checker=format_checker, validator=validator)
 
-    def _validate(self, **kwargs):
+    def _validate(self, format_checker=None, validator=None, use_model=False):
         """Implementation of the JSONSchema validation."""
         # Use the encoder to transform Python dictionary into JSON document
-        # prior to validation.
-        json = self.model_cls.encode(dict(self))
+        # prior to validation unless we explicitly ask to use the already
+        # encoded JSON in the model.
+        if use_model:
+            json = self.model.json
+        else:
+            json = self.model_cls.encode(dict(self))
 
         if '$schema' in self and self['$schema'] is not None:
-            # Prepare args
-            if self.format_checker:
-                kwargs.setdefault("format_checker", self.format_checker)
-            kwargs['cls'] = kwargs.pop('validator', None)
-
             # Validate (an error will raise an exception)
-            _records_state.validate(json, self['$schema'], **kwargs)
+            _records_state.validate(
+                json,
+                self['$schema'],
+                # Use defaults of class if not specified by user.
+                format_checker=format_checker or self.format_checker,
+                cls=validator or self.validator
+            )
 
         # Return encoded data, so we don't have to double encode.
         return json
@@ -217,6 +230,7 @@ class RecordBase(dict):
         # The method is named with in plural to align with dumps (which is
         # named with s even if it should probably have been called "dump"
         # instead.
+        loader = loader or cls.dumper
         record = loader.load(data, cls)
 
         # Run post load extensions
@@ -263,7 +277,16 @@ class Record(RecordBase):
         :returns: A new :class:`Record` instance.
         """
         with db.session.begin_nested():
-            record = cls(data)
+            # For backward compatibility we pop them here.
+            format_checker = kwargs.pop('format_checker', None)
+            validator = kwargs.pop('validator', None)
+
+            # Create the record and the model
+            record = cls(
+                data,
+                model=cls.model_cls(id=id_, data=data),
+                **kwargs
+            )
 
             if cls.send_signals:
                 before_record_insert.send(
@@ -272,10 +295,11 @@ class Record(RecordBase):
                 )
 
             # Validate also encodes the data
-            json = record._validate(**kwargs)
-
-            # Thus, we pass the encoded JSON directly to the model.
-            record.model = cls.model_cls(id=id_, json=json)
+            record._validate(
+                format_checker=format_checker,
+                validator=validator,
+                use_model=True  # use model (already encoded) and didn't change
+            )
 
             db.session.add(record.model)
 
@@ -332,7 +356,7 @@ class Record(RecordBase):
         data = apply_patch(dict(self), patch)
         return self.__class__(data, model=self.model)
 
-    def commit(self, **kwargs):
+    def commit(self, format_checker=None, validator=None, **kwargs):
         r"""Store changes of the current record instance in the database.
 
         #. Send a signal :data:`invenio_records.signals.before_record_update`
@@ -373,9 +397,11 @@ class Record(RecordBase):
                 e.pre_commit(self, **kwargs)
 
             # Validate also encodes the data
-            json = self._validate(**kwargs)
+            json = self._validate(
+                format_checker=format_checker, validator=validator)
 
-            # Thus, we pass the encoded JSON directly to the model.
+            # Thus, we pass the encoded JSON directly to the model to avoid
+            # double encoding.
             self.model.json = json
             flag_modified(self.model, 'json')
 
@@ -476,7 +502,7 @@ class Record(RecordBase):
             # Here we explicitly set the json column in order to not
             # encode/decode the json data via the ``data`` property.
             self.model.json = revision.model.json
-            flag_modified(self.model.json, 'json')
+            flag_modified(self.model, 'json')
 
             db.session.merge(self.model)
 

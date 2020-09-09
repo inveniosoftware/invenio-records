@@ -60,6 +60,21 @@ class SystemField(ExtensionMixin):
     API.
     """
 
+    def __init__(self):
+        """Initialise the field."""
+        # The attribute is set by __set_name__ which is called by the metaclass
+        # during construction.
+        self._attr_name = None
+
+    @property
+    def attr_name(self):
+        """Property to access the assigned class attribute name.
+
+        :returns: ``None`` if field is not assigned, otherwise the class
+                  attribute name.
+        """
+        return self._attr_name
+
     #
     # Data descriptor definition
     #
@@ -110,6 +125,28 @@ class SystemField(ExtensionMixin):
         """
         raise AttributeError()
 
+    def __set_name__(self, owner, name):
+        """Inject the class attribute name into the field.
+
+        This ensures that a field has access to the attribute name used on the
+        class. In the following example, the attribute name ``schema`` would be
+        set in the ``ConstantField`` object instance.
+
+        .. code-block:: python
+
+            class MyRecord(Record, SystemFieldsMixin):
+                schema = ConstantField(...)
+        """
+        self._attr_name = name
+
+    def post_init(self, record, data, model=None, field_data=None):
+        """Core implementation of post_init to support argument loading."""
+        try:
+            self.__set__(record, field_data)
+        except AttributeError:
+            # Set value is not supported.
+            pass
+
 
 class SystemFieldsExt(RecordExtension):
     """Record extension for system fields.
@@ -127,8 +164,16 @@ class SystemFieldsExt(RecordExtension):
             getattr(field, method)(*args, **kwargs)
 
     def pre_init(self, *args, **kwargs):
-        """Called when a new record instance is initialized."""
+        """Called before a record is dumped."""
         self._run('pre_init', *args, **kwargs)
+
+    def post_init(self, record, data, model=None, **kwargs):
+        """Called when a new record instance is initialized."""
+        # Special treatment for post_init (also has special implementation
+        # in in SystemField)
+        for attr_name, field in self.declared_fields.items():
+            field_data = kwargs.get(field.attr_name)
+            field.post_init(record, data, model=model, field_data=field_data)
 
     def pre_dump(self, *args, **kwargs):
         """Called before a record is dumped."""

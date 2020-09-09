@@ -123,13 +123,11 @@ class ElasticsearchDumper(Dumper):
         # Next, extract model fields
         fields_data = {}
         for field, (key, cast) in self._model_fields.items():
-            print(field)
             fields_data[field] = self._load_model_field(key, cast, data)
 
         # Initialize model if an id was provided.
         if fields_data.get('id') is not None:
             fields_data['data'] = data
-            print(fields_data)
             model = record_cls.model_cls(**fields_data)
         else:
             model = None

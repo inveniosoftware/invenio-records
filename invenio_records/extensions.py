@@ -15,7 +15,7 @@ For instance, the system fields feature is built as an extension.
 class ExtensionMixin:
     """Defines the methods needed by an extension."""
 
-    def pre_init(self, record, data, model=None):
+    def pre_init(self, record, data, model=None, **kwargs):
         """Called when a new record instance is initialized.
 
         Called when a new record is instantiated (i.e. during all
@@ -26,10 +26,13 @@ class ExtensionMixin:
         :param model: The model class used for initialization.
         """
 
+    def post_init(self, record, data, model=None, **kwargs):
+        """Called after a record is initialized."""
+
     def pre_dump(self, record, dumper=None):
         """Called before a record is dumped."""
 
-    def post_load(self, record):
+    def post_load(self, record, loader=None):
         """Called after a record is loaded."""
 
     def post_create(self, record):
