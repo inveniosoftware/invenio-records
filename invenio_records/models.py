@@ -59,9 +59,6 @@ class RecordMetadataBase(Timestamp):
     objects into Python datetime objects.
     """
 
-    # Enables SQLAlchemy-Continuum versioning
-    __versioned__ = {}
-
     id = db.Column(
         UUIDType,
         primary_key=True,
@@ -158,6 +155,9 @@ class RecordMetadata(db.Model, RecordMetadataBase):
     """Represent a record metadata."""
 
     __tablename__ = 'records_metadata'
+
+    # Enables SQLAlchemy-Continuum versioning
+    __versioned__ = {}
 
 
 __all__ = (

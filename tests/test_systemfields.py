@@ -293,6 +293,9 @@ def test_systemfield_initialization(testapp):
     assert record['arg_value'] == 'testval'
 
 
+#
+# DictField
+#
 def test_dict_field_simple():
     """Simple tests for the DictField."""
     class Record1(Record, SystemFieldsMixin):
