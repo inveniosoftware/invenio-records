@@ -10,6 +10,7 @@
 
 import inspect
 
+from ..dictutils import dict_lookup, parse_lookup_key
 from ..extensions import ExtensionMixin, RecordExtension, RecordMeta
 
 
@@ -60,8 +61,9 @@ class SystemField(ExtensionMixin):
     API.
     """
 
-    def __init__(self):
+    def __init__(self, key=None):
         """Initialise the field."""
+        self.key = key
         # The attribute is set by __set_name__ which is called by the metaclass
         # during construction.
         self._attr_name = None
@@ -141,11 +143,49 @@ class SystemField(ExtensionMixin):
 
     def post_init(self, record, data, model=None, field_data=None):
         """Core implementation of post_init to support argument loading."""
-        try:
+        if field_data is not None:
             self.__set__(record, field_data)
-        except AttributeError:
-            # Set value is not supported.
-            pass
+
+    def get_dictkey(self, instance):
+        """Helper to use a lookup key to get a nested object.
+
+        Assume the key have been set in ``self.key``
+        """
+        try:
+            return dict_lookup(instance, self.key)
+        except KeyError:
+            return None
+
+    def set_dictkey(self, instance, value, create_if_missing=False):
+        """Helper to set value using a lookup key on a nested object."""
+        keys = parse_lookup_key(self.key)
+        try:
+            parent = dict_lookup(instance, keys, parent=True)
+        except KeyError as e:
+            if not create_if_missing:
+                raise
+            parent = instance
+            for k in keys[:-1]:
+                if k not in parent:
+                    parent[k] = {}
+                else:
+                    if not isinstance(parent[k], dict):
+                        raise KeyError(
+                            "Expected a dict at subkey '{}'. "
+                            "Found '{}'.".format(
+                                k,
+                                parent[k].__class__.__name__)
+                        )
+                parent = parent[k]
+
+        if not isinstance(parent, dict):
+            raise KeyError(
+                "Expected a dict at subkey '{}'. Found '{}'.".format(
+                    keys[-2],
+                    parent.__class__.__name__)
+            )
+
+        parent[keys[-1]] = value
 
 
 class SystemFieldsExt(RecordExtension):
