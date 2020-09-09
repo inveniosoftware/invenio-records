@@ -72,10 +72,12 @@ records and related objects.
 from .base import SystemField, SystemFieldsMeta, SystemFieldsMixin
 from .constant import ConstantField
 from .dict import DictField
+from .model import ModelField
 
 __all__ = (
     'ConstantField',
     'DictField',
+    'ModelField',
     'SystemField',
     'SystemFieldsMeta',
     'SystemFieldsMixin',

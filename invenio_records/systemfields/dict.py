@@ -25,6 +25,8 @@ class DictField(SystemField):
         :param key: Key to set (dot notation supported).
         :param clear_none: Boolean to control if empty/None values should be
                            removed.
+        :param create_if_missing: If a subkey is missing it will be created if
+                                  this option is set to true.
         """
         self.clear_none = clear_none
         self.create_if_missing = create_if_missing
