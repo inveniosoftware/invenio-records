@@ -19,7 +19,7 @@ class DictField(SystemField):
     Provides a shortcut for getting/setting a specific key on a record.
     """
 
-    def __init__(self, key, clear_none=False, create_if_missing=True):
+    def __init__(self, key=None, clear_none=False, create_if_missing=True):
         """Initialise the dict field.
 
         :param key: Key to set (dot notation supported).
