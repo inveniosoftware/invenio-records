@@ -51,6 +51,22 @@ def clear_none_list(ls):
         del ls[i]
 
 
+def parse_lookup_key(lookup_key):
+    """Parse a lookup key."""
+    if not lookup_key:
+        raise KeyError("No lookup key specified")
+
+    # Parse the list of keys
+    if isinstance(lookup_key, str):
+        keys = lookup_key.split('.')
+    elif isinstance(lookup_key, list):
+        keys = lookup_key
+    else:
+        raise TypeError('lookup must be string or list')
+
+    return keys
+
+
 def dict_lookup(source, lookup_key, parent=False):
     """Make a lookup into a dict based on a dot notation.
 
@@ -72,16 +88,7 @@ def dict_lookup(source, lookup_key, parent=False):
     :param lookup_key: A string using dot notation, or a list of keys.
     """
     # Copied from dictdiffer (CERN contributed part) and slightly modified.
-    if not lookup_key:
-        raise KeyError("No lookup key specified")
-
-    # Parse the list of keys
-    if isinstance(lookup_key, str):
-        keys = lookup_key.split('.')
-    elif isinstance(lookup_key, list):
-        keys = lookup_key
-    else:
-        raise TypeError('lookup must be string or list')
+    keys = parse_lookup_key(lookup_key)
 
     if parent:
         keys = keys[:-1]
@@ -93,6 +100,6 @@ def dict_lookup(source, lookup_key, parent=False):
             if isinstance(value, list):
                 key = int(key)
             value = value[key]
-        except (TypeError, IndexError) as exc:
+        except (TypeError, IndexError, ValueError) as exc:
             raise KeyError(lookup_key) from exc
     return value

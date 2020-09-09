@@ -15,8 +15,8 @@ import pytest
 
 from invenio_records.api import Record
 from invenio_records.dumpers import ElasticsearchDumper
-from invenio_records.systemfields import ConstantField, SystemField, \
-    SystemFieldsMeta, SystemFieldsMixin
+from invenio_records.systemfields import ConstantField, DictField, \
+    SystemField, SystemFieldsMeta, SystemFieldsMixin
 
 
 #
@@ -271,6 +271,9 @@ def test_base_systemfield_base(testapp):
 
     # Test to please the test coverage gods
     assert pytest.raises(AttributeError, getattr, TestRecord({}), 'field')
+    # A core system field doesn't support assignment, so you can't pass args
+    # in constructor as well
+    assert pytest.raises(AttributeError, TestRecord, {}, field={})
 
 
 def test_systemfield_initialization(testapp):
@@ -288,3 +291,69 @@ def test_systemfield_initialization(testapp):
     # Create method
     record = TestRecord.create({}, afield='testval')
     assert record['arg_value'] == 'testval'
+
+
+def test_dict_field_simple():
+    """Simple tests for the DictField."""
+    class Record1(Record, SystemFieldsMixin):
+        metadata = DictField('metadata')
+
+    assert isinstance(Record1.metadata, DictField)
+
+    # Creation
+    assert Record1({}, metadata={'title': 1}) == {'metadata': {'title': 1}}
+    # Access key exists
+    assert Record1({'metadata': {'title': 1}}).metadata == {'title': 1}
+    # Access key doesn't exists
+    assert Record1({}).metadata is None
+
+    # Double tap - metadata wins over default data.
+    assert Record1(
+        {'metadata': {'title': 2}, 'a': 'b'},
+        metadata={'title': 1}) == {'metadata': {'title': 1}, 'a': 'b'}
+
+
+def test_dict_field_complex_key():
+    """More complex tests for the DictField."""
+    class Record1(Record, SystemFieldsMixin):
+        metadata = DictField('metadata.a.b')
+
+    # Creation
+    record = Record1({}, metadata={'title': 1})
+    assert record == {'metadata': {'a': {'b': {'title': 1}}}}
+    # Access key exists
+    assert record.metadata == {'title': 1}
+    # Access key doesn't exists
+    assert Record1({}).metadata is None
+
+    # Cannot handle lists
+    pytest.raises(KeyError, Record1, {'metadata': []}, metadata={'title': 1})
+    pytest.raises(
+        KeyError, Record1, {'metadata': {'a': []}}, metadata={'title': 1})
+
+
+def test_dict_field_create_if_missing():
+    """More complex tests for the DictField."""
+    class Record1(Record, SystemFieldsMixin):
+        metadata = DictField('metadata.a.b', create_if_missing=False)
+
+    # If subkey doesn't exists, it fails with create_if_missing=False
+    pytest.raises(KeyError, Record1, {}, metadata={'title': 1})
+    pytest.raises(KeyError, Record1, {'metadata': []}, metadata={'title': 1})
+    # Subkey exists, all good:
+    assert Record1({'metadata': {'a': {}}}, metadata={'title': 1})
+
+
+def test_dict_field_clear_none():
+    """Test dict field with clearing none/empty values."""
+    class Record1(Record, SystemFieldsMixin):
+        metadata = DictField('metadata', clear_none=True)
+
+    record = Record1(
+        {'a': None},
+        metadata={'a': None, 'title': 1, 'b': {'c': None}}
+    )
+    assert record == {'a': None, 'metadata': {'title': 1}}
+
+    record = Record1({}, metadata={'a': None})
+    assert record == {'metadata': {}}
