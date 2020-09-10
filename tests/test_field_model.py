@@ -30,10 +30,8 @@ def test_model_field(testapp, database):
         __tablename__ = 'record1_metadata'
         # __versioned__ = None
 
-        expires_at = db.Column(
-            db.DateTime(),
-            nullable=False
-        )
+        expires_at = db.Column(db.DateTime())
+
     Record1Metadata.__table__.create(db.engine)
 
     class Record1(Record, SystemFieldsMixin):
@@ -88,3 +86,10 @@ def test_model_field(testapp, database):
     dump = record.dumps()
     loaded_record = record.loads(dump)
     assert loaded_record.expires_at == record.expires_at
+
+    # Test dumping with None
+    record = Record1.create({})
+    dump = record.dumps()
+    print(dump)
+    loaded_record = record.loads(dump)
+    assert loaded_record.expires_at is None
