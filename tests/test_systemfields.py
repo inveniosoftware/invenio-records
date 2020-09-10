@@ -135,6 +135,17 @@ def test_constant_field(testapp, record, MyRecord, testschema):
     assert record.schema is None
 
 
+def test_constant_field_deletion(testapp, db, record, MyRecord, testschema):
+    """Test the constant field."""
+    # Test that constant field value was set, and is accessible
+    db.session.commit()
+    record.delete()
+    db.session.commit()
+
+    record = MyRecord.get_record(record.id, with_deleted=True)
+    assert record.schema is None
+
+
 def test_field_overwriting(testapp, record, sysrecord):
     """Test that field overwriting."""
     # field 'base' is defined in both classes, thus MyRecord overwrites
@@ -376,3 +387,20 @@ def test_dict_field_clear_none():
 
     record = Record1({}, metadata={'a': None})
     assert record == {'metadata': {}}
+
+
+def test_dict_field_deleted(testapp, database):
+    """Test dict field with clearing none/empty values."""
+    db = database
+
+    class Record1(Record, SystemFieldsMixin):
+        metadata = DictField()
+
+    record = Record1.create({}, metadata={'title': 1})
+    db.session.commit()
+    record.delete()
+    db.session.commit()
+
+    # Loading a deleted record
+    record = Record1.get_record(record.id, with_deleted=True)
+    assert record.metadata is None

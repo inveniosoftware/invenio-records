@@ -145,5 +145,4 @@ def test_esdumper_sa_datatypes(testapp, database):
     assert ElasticsearchDumper._sa_type(Model, 'text_variant') == str
     assert ElasticsearchDumper._sa_type(Model, 'text') == str
     assert ElasticsearchDumper._sa_type(Model, 'updated') == datetime
-
     assert ElasticsearchDumper._sa_type(Model, 'invalid') is None
