@@ -9,11 +9,14 @@
 """Test the dumpers API."""
 
 from datetime import date, datetime
+from uuid import UUID
 
 import pytest
+from sqlalchemy.dialects import mysql
 
 from invenio_records.api import Record
 from invenio_records.dumpers import ElasticsearchDumper, ElasticsearchDumperExt
+from invenio_records.models import RecordMetadataBase
 
 
 @pytest.fixture()
@@ -118,3 +121,29 @@ def test_esdumper_with_extensions(testapp, db, example_data):
     # Load it
     new_record = Record.loads(dump, loader=dumper)
     assert 'count' not in new_record
+
+
+def test_esdumper_sa_datatypes(testapp, database):
+    """Test to determine the data type of an SQLAlchemy field."""
+    db = database
+
+    class Model(db.Model, RecordMetadataBase):
+        string = db.Column(db.String(255))
+        text = db.Column(db.Text)
+        biginteger = db.Column(db.BigInteger)
+        integer = db.Column(db.Integer)
+        boolean = db.Column(db.Boolean(name='boolean'))
+        text_variant = db.Column(db.Text().with_variant(
+            mysql.VARCHAR(255), 'mysql'))
+
+    assert ElasticsearchDumper._sa_type(Model, 'biginteger') == int
+    assert ElasticsearchDumper._sa_type(Model, 'boolean') == bool
+    assert ElasticsearchDumper._sa_type(Model, 'created') == datetime
+    assert ElasticsearchDumper._sa_type(Model, 'id') == UUID
+    assert ElasticsearchDumper._sa_type(Model, 'integer') == int
+    assert ElasticsearchDumper._sa_type(Model, 'json') == dict
+    assert ElasticsearchDumper._sa_type(Model, 'text_variant') == str
+    assert ElasticsearchDumper._sa_type(Model, 'text') == str
+    assert ElasticsearchDumper._sa_type(Model, 'updated') == datetime
+
+    assert ElasticsearchDumper._sa_type(Model, 'invalid') is None
