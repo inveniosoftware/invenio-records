@@ -94,6 +94,8 @@ class ElasticsearchDumper(Dumper):
         :param dump_type: Data type use for serialization (supported: str, int,
             bool, float, datetime, date, uuid).
         """
+        if value is None:
+            return value
         if dump_type in (datetime, ):
             return pytz.utc.localize(value).isoformat()
         elif dump_type in (UUID, ):
@@ -110,6 +112,8 @@ class ElasticsearchDumper(Dumper):
         :param dump_type: Data type use for deserialization (supported: str,
             int, bool, float, datetime, date, uuid).
         """
+        if value is None:
+            return value
         if dump_type in (datetime, ):
             return arrow.get(value).datetime.replace(tzinfo=None)
         elif dump_type in (UUID, ):
