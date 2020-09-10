@@ -17,7 +17,12 @@ from uuid import UUID
 
 import arrow
 import pytz
+from sqlalchemy.sql.sqltypes import JSON, Boolean, DateTime, Integer, String, \
+    Text
+from sqlalchemy.sql.type_api import Variant
+from sqlalchemy_utils.types.uuid import UUIDType
 
+from ..systemfields.model import ModelField
 from .base import Dumper
 
 
@@ -48,35 +53,132 @@ class ElasticsearchDumper(Dumper):
         }
         self._model_fields.update(model_fields or {})
 
-    def _dump_model_field(self, field, key, cast, data, record):
-        """Helper method to dump model fields."""
-        if record.model:
-            val = getattr(record.model, field, None)
-        else:
-            val = None
-        if val is not None and cast:
-            if cast in (str, int, bool):
-                data[key] = cast(val)
-            elif cast in (datetime, date):
-                data[key] = pytz.utc.localize(val).isoformat()
-            elif cast in (UUID, ):
-                data[key] = str(val)
-        else:
-            data[key] = val
+    @staticmethod
+    def _sa_type(model_cls, model_field_name):
+        """Introspection of SQLAlchemy column data type.
 
-    def _load_model_field(self, key, cast, data):
-        """Helper method to load model fields from dump."""
-        val = data.pop(key)
-        if val is not None and cast:
-            if cast in (datetime, date):
-                val = arrow.get(val)
-                if cast == date:
-                    val = val.date
-                else:
-                    val = val.datetime.replace(tzinfo=None)
-            elif cast in (UUID,):
-                val = cast(val)
-        return val
+        :param model_cls: The SQLALchemy model.
+        :param model_field_name: The name of the field on the SQLAlchemy model.
+        """
+        try:
+            sa_type = \
+                model_cls.__table__.columns[model_field_name].type
+            sa_type_class = sa_type.__class__
+
+            # Deal with variant class
+            if issubclass(sa_type_class, Variant):
+                sa_type = sa_type.impl
+                sa_type_class = sa_type.__class__
+
+            if issubclass(sa_type_class, DateTime):
+                return datetime
+            elif issubclass(sa_type_class, Boolean):
+                return bool
+            elif issubclass(sa_type_class, Integer):
+                return int
+            elif issubclass(sa_type_class, UUIDType):
+                return UUID
+            elif issubclass(sa_type_class, String):
+                return str
+            elif issubclass(sa_type_class, JSON):
+                return dict
+            return None
+        except (KeyError, AttributeError):
+            return None
+
+    @staticmethod
+    def _serialize(value, dump_type):
+        """Serialize a value according to it's data type.
+
+        :param value: Value to serialize.
+        :param dump_type: Data type use for serialization (supported: str, int,
+            bool, float, datetime, date, uuid).
+        """
+        if dump_type in (datetime, ):
+            return pytz.utc.localize(value).isoformat()
+        elif dump_type in (UUID, ):
+            return str(value)
+        elif dump_type is not None:
+            return dump_type(value)
+        return value
+
+    @staticmethod
+    def _deserialize(value, dump_type):
+        """Deserialize a value according to it's data type.
+
+        :param value: Value to deserialize.
+        :param dump_type: Data type use for deserialization (supported: str,
+            int, bool, float, datetime, date, uuid).
+        """
+        if dump_type in (datetime, ):
+            return arrow.get(value).datetime.replace(tzinfo=None)
+        elif dump_type in (UUID, ):
+            return dump_type(value)
+        elif dump_type is not None:
+            return dump_type(value)
+        return value
+
+    def _dump_model_field(self, record, model_field_name, dump, dump_key,
+                          dump_type):
+        """Helper method to dump model fields.
+
+        :param record: The record being dumped.
+        :param model_field_name: The name of the SQLAlchemy model field on the
+            record's model.
+        :param dump: The dictionary of the current dump.
+        :param dump_key: The key to use in the dump.
+        :param dump_type: The data type used for serialization.
+        """
+        # If model is not defined, we dump None into the field value.
+        if record.model is None:
+            dump[dump_key] = None
+            return
+
+        # Retrieve value of the field on the model.
+        val = getattr(record.model, model_field_name)
+
+        # Determine data type if not set.
+        if dump_type is None:
+            dump_type = self._sa_type(record.model_cls, model_field_name)
+
+        # Serialize (according to data type) and set value in output on the
+        # specified key.
+        dump[dump_key] = self._serialize(val, dump_type)
+
+    def _load_model_field(self, record_cls, model_field_name, dump, dump_key,
+                          dump_type):
+        """Helper method to load model fields from dump.
+
+        :param record_cls: The record class being used for loading.
+        :param model_field_name: The name of the SQLAlchemy model field on the
+            record's model.
+        :param dump: The dictionary of the dump.
+        :param dump_key: The key to use in the dump.
+        :param dump_type: The data type used for deserialization.
+        """
+        # Retrieve the value
+        val = dump.pop(dump_key)
+
+        # Return None values immediately.
+        if val is None:
+            return val
+
+        # Determine dump data type if not provided
+        if dump_type is None:
+            sa_field = getattr(record_cls.model_cls, model_field_name)
+            dump_type = self._sa_type(record_cls.model_cls, model_field_name)
+
+        # Deserialize the value
+        return self._deserialize(val, dump_type)
+
+    @staticmethod
+    def _iter_modelfields(record_cls):
+        """Internal helper method to extract all model fields."""
+        for attr_name in dir(record_cls):
+            systemfield = getattr(record_cls, attr_name)
+            if isinstance(systemfield, ModelField):
+                if systemfield.dump:
+                    yield systemfield
 
     def dump(self, record):
         """Dump a record.
@@ -90,19 +192,36 @@ class ElasticsearchDumper(Dumper):
         - ``updated`` - Modification timestamp in UTC.
         """
         # Copy data first, otherwise we modify the record.
-        data = super().dump(record)
+        dump_data = super().dump(record)
 
-        # Dump model fields.
-        for field, (key, cast) in self._model_fields.items():
-            self._dump_model_field(field, key, cast, data, record)
+        # Dump model fields explicitly requested
+        it = self._model_fields.items()
+        for model_field_name, (dump_key, dump_type) in it:
+            self._dump_model_field(
+                record,
+                model_field_name,
+                dump_data,
+                dump_key,
+                dump_type,
+            )
+
+        # Dump model fields defined as system fields.
+        for systemfield in self._iter_modelfields(record.__class__):
+            self._dump_model_field(
+                record,
+                systemfield.model_field_name,
+                dump_data,
+                systemfield.dump_key,
+                systemfield.dump_type,
+            )
 
         # Allow extensions to integrate as well.
         for e in self._extensions:
-            e.dump(record, data)
+            e.dump(record, dump_data)
 
-        return data
+        return dump_data
 
-    def load(self, data, record_cls):
+    def load(self, dump_data, record_cls):
         """Load a record from an Elasticsearch document source.
 
         The method reverses the changes made during the dump. If a model was
@@ -118,18 +237,26 @@ class ElasticsearchDumper(Dumper):
         """
         # First allow extensions to modify the data.
         for e in self._extensions:
-            e.load(data, record_cls)
+            e.load(dump_data, record_cls)
 
-        # Next, extract model fields
-        fields_data = {}
-        for field, (key, cast) in self._model_fields.items():
-            fields_data[field] = self._load_model_field(key, cast, data)
+        # Load explicitly defined model fields.
+        model_data = {}
+        it = self._model_fields.items()
+        for model_field_name, (dump_key, dump_type) in it:
+            model_data[model_field_name] = self._load_model_field(
+                record_cls, model_field_name, dump_data, dump_key, dump_type)
+
+        # Load model fields defined as system fields
+        for systemfield in self._iter_modelfields(record_cls):
+            model_data[systemfield.model_field_name] = self._load_model_field(
+                record_cls, model_field_name, dump_data, systemfield.dump_key,
+                systemfield.dump_type)
 
         # Initialize model if an id was provided.
-        if fields_data.get('id') is not None:
-            fields_data['data'] = data
-            model = record_cls.model_cls(**fields_data)
+        if model_data.get('id') is not None:
+            model_data['data'] = dump_data
+            model = record_cls.model_cls(**model_data)
         else:
             model = None
 
-        return record_cls(data, model=model)
+        return record_cls(dump_data, model=model)

@@ -17,6 +17,7 @@ from datetime import datetime
 import pytest
 
 from invenio_records.api import Record
+from invenio_records.dumpers import ElasticsearchDumper
 from invenio_records.models import RecordMetadataBase
 from invenio_records.systemfields import ModelField, SystemFieldsMixin
 
@@ -37,9 +38,10 @@ def test_model_field(testapp, database):
 
     class Record1(Record, SystemFieldsMixin):
         model_cls = Record1Metadata
+        dumper = ElasticsearchDumper()
         # Don't do this at home (two system fields on the same model field):
         expires_at = ModelField()
-        expires = ModelField('expires_at')
+        expires = ModelField('expires_at', dump=False)
 
     dt = datetime(2020, 9, 3, 0, 0)
     dt2 = datetime(2020, 9, 4, 0, 0)
@@ -80,3 +82,9 @@ def test_model_field(testapp, database):
     pytest.raises(AttributeError, Record1, {}, expires_at=dt2)
     # Creation without model and without arg is ok.
     assert Record1({}) == {}
+
+    # Test dumping and loading
+    record = Record1.create({}, expires_at=dt)
+    dump = record.dumps()
+    loaded_record = record.loads(dump)
+    assert loaded_record.expires_at == record.expires_at
