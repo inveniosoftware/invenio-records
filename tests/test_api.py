@@ -488,3 +488,28 @@ def test_clear_none(testapp, db):
     record = Record({'a': None})
     record.clear_none()
     assert record == {}
+
+
+def test_undelete_no_get(testapp, db):
+    """Test undelete a record."""
+    record = Record.create({'title': 'test'})
+    db.session.commit()
+    record.delete()
+    db.session.commit()
+    record.undelete()
+    record.commit()
+    db.session.commit()
+    assert record == {'title': 'test'}
+
+
+def test_undelete_with_get(testapp, db):
+    """Test undelete a record."""
+    record = Record.create({'title': 'test'})
+    db.session.commit()
+    record.delete()
+    db.session.commit()
+    record = Record.get_record(record.id, with_deleted=True)
+    record.undelete()
+    record.commit()
+    db.session.commit()
+    assert record == {}
