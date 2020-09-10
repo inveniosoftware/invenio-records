@@ -27,6 +27,9 @@ class ConstantField(SystemField):
 
     def pre_init(self, record, data, model=None, **kwargs):
         """Sets the key in the record during record instantiation."""
+        if data is None:
+            # A deleted record.
+            return
         try:
             dict_lookup(data, self.key)
         except KeyError:
