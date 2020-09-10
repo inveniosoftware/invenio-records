@@ -468,6 +468,15 @@ class Record(RecordBase):
 
         return self
 
+    def undelete(self):
+        """Undelete a soft-deleted record."""
+        if self.model is None:
+            raise MissingModelError()
+
+        self.model.is_deleted = False
+
+        return self
+
     def revert(self, revision_id):
         """Revert the record to a specific revision.
 

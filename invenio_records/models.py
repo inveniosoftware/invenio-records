@@ -115,6 +115,8 @@ class RecordMetadataBase(Timestamp):
         """
         if value is True:
             self.json = None
+        else:
+            self.json = {}
 
     @property
     def data(self):
