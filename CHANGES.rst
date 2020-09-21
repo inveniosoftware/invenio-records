@@ -8,6 +8,11 @@
 Changes
 =======
 
+Version 1.4.0a3 (released 2020-09-22)
+
+- Removes the @ prefix that was used to separate metadata fields from other
+  fields.
+
 Version 1.4.0a2 (released 2020-09-21)
 
 - Adds a SystemFieldContext which allows knowing the record class when
