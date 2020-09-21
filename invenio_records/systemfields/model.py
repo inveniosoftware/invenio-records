@@ -66,14 +66,14 @@ class ModelField(SystemField):
     #
     # Data descriptor
     #
-    def __get__(self, instance, class_):
+    def __get__(self, record, owner=None):
         """Accessing the attribute."""
         # Class access
-        if instance is None:
+        if record is None:
             return self
         # Instance access
         try:
-            return getattr(instance.model, self.model_field_name)
+            return getattr(record.model, self.model_field_name)
         except AttributeError:
             return None
 

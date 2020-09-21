@@ -36,13 +36,13 @@ class ConstantField(SystemField):
             # Key is not present, so add it.
             data[self.key] = self.value
 
-    def __get__(self, instance, class_):
+    def __get__(self, record, owner=None):
         """Accessing the attribute."""
         # Class access
-        if instance is None:
+        if record is None:
             return self
         # Instance access
         try:
-            return dict_lookup(instance, self.key)
+            return dict_lookup(record, self.key)
         except KeyError:
             return None

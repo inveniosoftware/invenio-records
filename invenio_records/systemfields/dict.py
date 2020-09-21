@@ -10,7 +10,7 @@
 """Persistent identifier system field for record."""
 
 from invenio_records.dictutils import clear_none, dict_lookup
-from invenio_records.systemfields import SystemField
+from .base import SystemField
 
 
 class DictField(SystemField):
@@ -32,15 +32,15 @@ class DictField(SystemField):
         self.create_if_missing = create_if_missing
         super().__init__(key=key)
 
-    def __get__(self, instance, class_):
+    def __get__(self, record, owner=None):
         """Getting the attribute value."""
-        if instance is None:
+        if record is None:
             return self
-        return self.get_dictkey(instance)
+        return self.get_dictkey(record)
 
-    def __set__(self, instance, value):
+    def __set__(self, record, value):
         """Setting a new value."""
         if self.clear_none:
             clear_none(value)
         self.set_dictkey(
-            instance, value, create_if_missing=self.create_if_missing)
+            record, value, create_if_missing=self.create_if_missing)

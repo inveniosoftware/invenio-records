@@ -48,6 +48,33 @@ def _get_inherited_fields(class_, field_class):
     return fields
 
 
+class SystemFieldContext:
+    """Base class for a system field context
+
+    A system field context is created once you access a field's attribute on
+    a class. As the system field may be defined on a super class, this context
+    allows us to know from which class the field was accessed.
+
+    Normally you should subclass this class, and implement methods the methods
+    on it that requires you to know the record class.
+    """
+
+    def __init__(self, field, record_cls):
+        """Initialise the field context."""
+        self._field = field
+        self._record_cls = record_cls
+
+    @property
+    def field(self):
+        """Access the field to prevent it from being overwritten."""
+        return self._field
+
+    @property
+    def record_cls(self):
+        """Record class to prevent it from being overwritten."""
+        return self._record_cls
+
+
 class SystemField(ExtensionMixin):
     """Base class for all system fields.
 
@@ -88,14 +115,16 @@ class SystemField(ExtensionMixin):
     #
     # Data descriptor definition
     #
-    def __get__(self, instance, class_):
+    def __get__(self, record, owner=None):
         r"""Accessing the object attribute.
 
         A subclass that overwrites this method, should handle two cases:
 
         1. Class access - If ``instance`` is None, the field is accessed
-           through the class (e.g. Record.myfield). In this case the field
-           itself should be returned.
+           through the class (e.g. Record.myfield). In this case a field or
+           context should be returned. The purpose of the field context, is
+           to allow a field to know from which class it was accessed (as the
+           field may be created on a super class).
         2. Instance access -  If ``instance`` is not None, the field is
            accessed through an instance of the class (e.g. record``.myfield``).
 
@@ -103,30 +132,30 @@ class SystemField(ExtensionMixin):
 
         .. code-block:: python
 
-            def __get__(self, instance, class_):
-                if instance is None:
-                    return self  # returns the field itself.
-                if 'mykey' in instance:
-                    return instance['mykey']
+            def __get__(self, record, owner=None):
+                if record is None:
+                    return self
+                    return SystemFieldContext(self, owner)
+                if 'mykey' in record:
+                    return record['mykey']
                 return None
 
-        :param instance: The instance through which the field is being accessed
-                         or ``None`` if the field is accessed through the
-                         class.
-        :param class_: The ``class_`` which owns the field. In most cases you
-                       should use this variable.
+        :param record: The instance through which the field is being accessed
+                       or ``None`` if the field is accessed through the
+                       class.
+        :param owner: The class which owns the field.
         """
         # Class access
         # - by default a system field accessed through a class (e.g.
-        #   Record.myattr will return the field itself).
-        if instance is None:
+        #   Record.myattr will return a field or field context).
+        if record is None:
             return self
         # Instance access
         # - by default a system field accessed through an object instance (e.g.
         #   record.myattr will raise an Attribute error)
         raise AttributeError
 
-    def __set__(self, instance, value):
+    def __set__(self, record, value):
         """Setting the attribute (instance access only).
 
         This method only handles set operations from an instance (e.g.
@@ -194,6 +223,16 @@ class SystemField(ExtensionMixin):
             )
 
         parent[keys[-1]] = value
+
+    def _set_cache(self, instance, obj):
+        """Set an object on the instance's cache."""
+        if not hasattr(instance, '_obj_cache'):
+            instance._obj_cache = {}
+        instance._obj_cache[self.attr_name] = obj
+
+    def _get_cache(self, instance):
+        """Get the object from the instance's cache."""
+        return getattr(instance, '_obj_cache', {}).get(self.attr_name)
 
 
 class SystemFieldsExt(RecordExtension):
