@@ -47,8 +47,8 @@ def es_hit():
         "_primary_term": 1,
         "found": True,
         "_source": {
-            "@id": "4beb3b3e-a935-442e-a47b-6d386947ea20",
-            "@version_id": 4,
+            "uuid": "4beb3b3e-a935-442e-a47b-6d386947ea20",
+            "version_id": 4,
             "created": "2020-09-01T14:26:00+00:00",
             "updated": "2020-09-02T14:28:21.968149+00:00'",
             "id": "12345-abcde",
@@ -67,7 +67,7 @@ def test_esdumper_without_model(testapp, db, example_data):
     """Test the Elasticsearch dumper."""
     # Dump without a model.
     dump = Record(example_data).dumps(dumper=ElasticsearchDumper())
-    for k in ['@uuid', '@version_id', 'created', 'updated']:
+    for k in ['uuid', 'version_id', 'created', 'updated']:
         assert dump[k] is None  # keys is set to none without a model
     # Load without a model defined
     record = Record.loads(dump, loader=ElasticsearchDumper())
@@ -83,8 +83,8 @@ def test_esdumper_with_model(testapp, db, example_data):
 
     # Dump it
     dump = record.dumps(dumper=ElasticsearchDumper())
-    assert dump['@uuid'] == str(record.id)
-    assert dump['@version_id'] == record.revision_id + 1
+    assert dump['uuid'] == str(record.id)
+    assert dump['version_id'] == record.revision_id + 1
     assert dump['created'][:19] == record.created.isoformat()[:19]
     assert dump['updated'][:19] == record.updated.isoformat()[:19]
 
