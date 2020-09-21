@@ -8,6 +8,13 @@
 Changes
 =======
 
+Version 1.4.0a2 (released 2020-09-21)
+
+- Adds a SystemFieldContext which allows knowing the record class when
+  accessing the attribute through the class instead of object instance.
+
+- Adds helpers for caching related objects on the record.
+
 Version 1.4.0a1 (released 2020-09-16)
 
 - Adds support for JSON encoding/decoding to/from the database. This allows
