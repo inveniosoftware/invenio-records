@@ -46,8 +46,8 @@ class ElasticsearchDumper(Dumper):
         """."""
         self._extensions = extensions or []
         self._model_fields = {
-            'id': ('@uuid', UUID),
-            'version_id': ('@version_id', int),
+            'id': ('uuid', UUID),
+            'version_id': ('version_id', int),
             'created': ('created', datetime),
             'updated': ('updated', datetime),
         }
@@ -190,8 +190,8 @@ class ElasticsearchDumper(Dumper):
         The method adds the following keys (if the record has an associated
         model):
 
-        - ``@uuid`` - UUID of the record.
-        - ``@revision`` -  the revision id of the record.
+        - ``uuid`` - UUID of the record.
+        - ``version_id`` -  the revision id of the record.
         - ``created`` - Creation timestamp in UTC.
         - ``updated`` - Modification timestamp in UTC.
         """

@@ -46,10 +46,9 @@ class ModelField(SystemField):
         """The dictionary key to use in dump output.
 
         Note, it's up to the dumper to choose if it respects this name.
-        The name defaults to the model field name prefixed with @ (e.g.
-        ``expires_at`` becomes ``@expires_at``)
+        The name defaults to the model field name.
         """
-        return self._dump_key or '@{}'.format(self.model_field_name)
+        return self._dump_key or self.model_field_name
 
     @property
     def dump_type(self):
