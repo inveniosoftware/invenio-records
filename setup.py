@@ -18,7 +18,8 @@ history = open('CHANGES.rst').read()
 
 tests_require = [
     'mock>=3.0.5',
-    'pytest-invenio>=1.3.3',
+    'pytest-celery>=0.0.0a1',  # TODO: Remove when pytest-invenio 1.4.0
+    'pytest-invenio>=1.3.4',
 ]
 
 extras_require = {
