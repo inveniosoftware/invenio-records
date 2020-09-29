@@ -50,6 +50,7 @@ class ElasticsearchDumper(Dumper):
             'version_id': ('version_id', int),
             'created': ('created', datetime),
             'updated': ('updated', datetime),
+            # is_deleted is purposely not added (deleted record isnt indexed)
         }
         self._model_fields.update(model_fields or {})
 

@@ -91,6 +91,11 @@ class RecordBase(dict):
         """Get last updated timestamp."""
         return self.model.updated if self.model else None
 
+    @property
+    def is_deleted(self):
+        """Get creation timestamp."""
+        return self.model.is_deleted if self.model else None
+
     def validate(self, format_checker=None, validator=None, **kwargs):
         r"""Validate record according to schema defined in ``$schema`` key.
 
