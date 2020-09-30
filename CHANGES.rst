@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.4.0a4 (released 2020-09-30)
+
+- Adds a new is_deleted property to the Records API.
+
 Version 1.4.0a3 (released 2020-09-22)
 
 - Removes the @ prefix that was used to separate metadata fields from other
