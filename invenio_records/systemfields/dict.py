@@ -9,7 +9,7 @@
 
 """Persistent identifier system field for record."""
 
-from invenio_records.dictutils import clear_none, dict_lookup
+from ..dictutils import clear_none, dict_lookup
 from .base import SystemField
 
 

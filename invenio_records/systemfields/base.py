@@ -49,7 +49,7 @@ def _get_inherited_fields(class_, field_class):
 
 
 class SystemFieldContext:
-    """Base class for a system field context
+    """Base class for a system field context.
 
     A system field context is created once you access a field's attribute on
     a class. As the system field may be defined on a super class, this context

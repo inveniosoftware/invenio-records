@@ -62,6 +62,7 @@ class RecordMetadataModelView(ModelView):
             return False
         return True
 
+
 record_adminview = dict(
     modelview=RecordMetadataModelView,
     model=RecordMetadata,
