@@ -10,8 +10,6 @@
 # Usage:
 #   env DB=postgresql ./run-tests.sh
 
-python -m pydocstyle invenio_records tests docs && \
-python -m isort invenio_records tests --check-only --diff && \
 python -m check_manifest --ignore ".travis-*" && \
 python -m sphinx.cmd.build -qnNW docs docs/_build/html && \
 docker-services-cli up ${DB}
