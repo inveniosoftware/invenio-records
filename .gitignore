@@ -66,5 +66,6 @@ target/
 examples/instance/
 
 # Test DB
+test.db
 tests/test.db
 .vscode
