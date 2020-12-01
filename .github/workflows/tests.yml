@@ -74,16 +74,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Generate dependencies
-        if: ${{ matrix.requirements-level != 'dev' }}
         run: |
           python -m pip install --upgrade pip setuptools py wheel requirements-builder
           requirements-builder -e ${{ matrix.EXTRAS }} --level=${{ matrix.requirements-level }} setup.py > .${{ matrix.requirements-level }}-${{ matrix.python-version }}-requirements.txt
-
-      - name: Generate dependencies devel
-        if: ${{ matrix.requirements-level == 'dev' }}
-        run: |
-          python -m pip install --upgrade pip setuptools py wheel requirements-builder
-          requirements-builder -e ${{ matrix.EXTRAS }} --level=${{ matrix.requirements-level }} --req requirements-devel.txt setup.py > .${{ matrix.requirements-level }}-${{ matrix.python-version }}-requirements.txt
 
       - name: Cache pip
         uses: actions/cache@v2
@@ -100,7 +93,5 @@ jobs:
           docker-compose --version
 
       - name: Run tests
-        # You must change the ignore command for the manifest check.
-        # Remove `.travis-*` and add `.*-requirements.txt`
         run: |
           ./run-tests.sh
