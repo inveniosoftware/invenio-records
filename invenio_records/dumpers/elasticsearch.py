@@ -254,8 +254,8 @@ class ElasticsearchDumper(Dumper):
         # Load model fields defined as system fields
         for systemfield in self._iter_modelfields(record_cls):
             model_data[systemfield.model_field_name] = self._load_model_field(
-                record_cls, model_field_name, dump_data, systemfield.dump_key,
-                systemfield.dump_type)
+                record_cls, systemfield.model_field_name, dump_data,
+                systemfield.dump_key, systemfield.dump_type)
 
         # Initialize model if an id was provided.
         if model_data.get('id') is not None:
