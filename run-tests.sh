@@ -8,7 +8,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 # Usage:
-#   env DB=postgresql ./run-tests.sh
+#   env DB=postgresql SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://invenio:invenio@localhost:5432/invenio POSTGRESQL_VERSION=POSTGRESQL_9_LATEST ./run-tests.sh
 
 # Quit on errors
 set -o errexit

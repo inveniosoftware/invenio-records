@@ -11,13 +11,10 @@
 
 import pytest
 from flask import Flask
-from invenio_base import create_app_factory
 from invenio_celery import InvenioCelery
 from invenio_db import InvenioDB
-from invenio_db import db as db_
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.schema import DropConstraint, DropSequence, DropTable
-from sqlalchemy_utils.functions import create_database, database_exists
 
 from invenio_records import InvenioRecords
 
@@ -60,27 +57,3 @@ def testapp(base_app, database):
     Pytest-Invenio also initialises ES with the app fixture.
     """
     yield base_app
-
-
-@pytest.fixture()
-def CustomMetadata(testapp):
-    """Class for custom metadata."""
-    from invenio_records.models import RecordMetadataBase
-
-    class CustomMetadata(db_.Model, RecordMetadataBase):
-        """Custom Record Metadata Model."""
-
-        __tablename__ = 'custom_metadata'
-    return CustomMetadata
-
-
-@pytest.fixture()
-def custom_db(testapp, CustomMetadata):
-    """Database fixture."""
-    InvenioDB(testapp)
-    if not database_exists(str(db_.engine.url)):
-        create_database(str(db_.engine.url))
-    db_.create_all()
-    yield db_
-    db_.session.remove()
-    db_.drop_all()
