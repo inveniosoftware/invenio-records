@@ -22,17 +22,22 @@ from invenio_records.models import RecordMetadataBase
 from invenio_records.systemfields import ModelField, SystemFieldsMixin
 
 
-def test_model_field(testapp, database):
-    """Test dict field with clearing none/empty values."""
+@pytest.fixture(scope='module')
+def Record1Metadata(database):
+    """."""
     db = database
 
     class Record1Metadata(db.Model, RecordMetadataBase):
         __tablename__ = 'record1_metadata'
-        # __versioned__ = None
 
         expires_at = db.Column(db.DateTime())
-
     Record1Metadata.__table__.create(db.engine)
+    return Record1Metadata
+
+
+def test_model_field(testapp, database, Record1Metadata):
+    """Test model field with clearing none/empty values."""
+    db = database
 
     class Record1(Record, SystemFieldsMixin):
         model_cls = Record1Metadata
@@ -90,6 +95,5 @@ def test_model_field(testapp, database):
     # Test dumping with None
     record = Record1.create({})
     dump = record.dumps()
-    print(dump)
     loaded_record = record.loads(dump)
     assert loaded_record.expires_at is None

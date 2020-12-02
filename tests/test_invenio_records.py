@@ -42,27 +42,6 @@ def test_init():
     assert 'invenio-records' in app.extensions
 
 
-def test_alembic(testapp, db):
-    """Test alembic recipes."""
-    ext = testapp.extensions['invenio-db']
-
-    if db.engine.name == 'sqlite':
-        raise pytest.skip('Upgrades are not supported on SQLite.')
-
-    assert not ext.alembic.compare_metadata()
-    db.drop_all()
-    drop_alembic_version_table()
-    ext.alembic.upgrade()
-
-    assert not ext.alembic.compare_metadata()
-    ext.alembic.stamp()
-    ext.alembic.downgrade(target='96e796392533')
-    ext.alembic.upgrade()
-
-    assert not ext.alembic.compare_metadata()
-    drop_alembic_version_table()
-
-
 def test_db(testapp, db):
     """Test database backend."""
     with testapp.app_context():
@@ -149,36 +128,3 @@ def test_db(testapp, db):
         testapp.config['RECORDS_VALIDATION_TYPES'] = {'array': (list, tuple)}
         record_uuid = Record.create(data).commit()
         db.session.commit()
-
-
-def test_class_model(testapp, custom_db, CustomMetadata):
-    """Test custom class model."""
-    db = custom_db
-
-    class CustomRecord(Record):
-        model_cls = CustomMetadata
-
-    assert 'custom_metadata' in db.metadata.tables.keys()
-
-    recid = uuid.UUID('262d2748-ba41-456f-a844-4d043a419a6f')
-
-    # Create a new record with two mutables, a list and a dict
-    rec = CustomRecord.create(
-        {
-            'title': 'Title',
-            'list': ['foo', ],
-            'dict': {'moo': 'boo'},
-        },
-        id_=recid)
-
-    db.session.commit()
-    db.session.expunge_all()
-    # record should be in the table
-    rec = CustomRecord.get_record(recid)
-    assert rec == {
-        'title': 'Title',
-        'list': ['foo', ],
-        'dict': {'moo': 'boo'}
-    }
-    # the record should not be in the default table
-    pytest.raises(NoResultFound, Record.get_record, recid)
