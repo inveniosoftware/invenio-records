@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.4.0a5 (released 2020-12-07)
+
+- Fix elastic search loader for systemfields
+
 Version 1.4.0a4 (released 2020-09-30)
 
 - Adds a new is_deleted property to the Records API.
