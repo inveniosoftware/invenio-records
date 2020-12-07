@@ -257,7 +257,7 @@ class SystemFieldsExt(RecordExtension):
     def post_init(self, record, data, model=None, **kwargs):
         """Called when a new record instance is initialized."""
         # Special treatment for post_init (also has special implementation
-        # in in SystemField)
+        # in SystemField)
         for attr_name, field in self.declared_fields.items():
             field_data = kwargs.get(field.attr_name)
             field.post_init(record, data, model=model, field_data=field_data)

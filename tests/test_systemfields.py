@@ -8,15 +8,13 @@
 
 """Test for system fields."""
 
-
-from datetime import date, datetime
-
 import pytest
 
 from invenio_records.api import Record
 from invenio_records.dumpers import ElasticsearchDumper
 from invenio_records.systemfields import ConstantField, DictField, \
-    SystemField, SystemFieldsMeta, SystemFieldsMixin
+    PKRelation, RelationsField, SystemField, SystemFieldsMixin
+from invenio_records.systemfields.relations import RelationsMapping
 
 
 #
@@ -404,3 +402,96 @@ def test_dict_field_deleted(testapp, database):
     # Loading a deleted record
     record = Record1.get_record(record.id, with_deleted=True)
     assert record.metadata is None
+
+
+#
+# RelationsField
+#
+def test_relations_field_pk_relation(testapp, db):
+    """RelationsField tests for PKRelation."""
+
+    LANGUAGES = {v['id']: v for v in (
+        {'id': 'en', 'title': 'English'},
+        {'id': 'fr', 'title': 'French'},
+    )}
+
+    class Language(Record, SystemFieldsMixin):
+        @classmethod
+        def get_record(cls, id_, with_deleted=False):
+            if id_ in LANGUAGES:
+                return cls(LANGUAGES[id_])
+
+    class Record1(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            language=PKRelation(key='language', record_cls=Language),
+        )
+
+    # Class-field check
+    assert isinstance(Record1.relations, RelationsField)
+    assert isinstance(Record1.relations.language, PKRelation)
+
+    # Empty initialization
+    record = Record1({})
+    assert record == {}
+    assert isinstance(record.relations, RelationsMapping)
+    assert callable(record.relations.language)
+    assert record.relations.language() is None
+
+    # Initialize from dictionary data
+    record = Record1({'language': {'id': 'en'}})
+    res = record.relations.language()
+    assert isinstance(res, Language)
+    assert res == {'id': 'en', 'title': 'English'}
+
+    # Initialize from field data
+    record = Record1({}, relations={'language': 'en'})
+    assert record['language']['id'] == 'en'
+    res = record.relations.language()
+    assert isinstance(res, Language)
+    assert res == {'id': 'en', 'title': 'English'}
+
+    # Set via record data
+    record = Record1.create({})
+    record['language'] = {'id': 'en'}
+    res = record.relations.language()
+    assert isinstance(res, Language)
+    assert res == {'id': 'en', 'title': 'English'}
+    record.commit()  # validates
+    res = record.relations.language()
+    assert isinstance(res, Language)
+    assert res == {'id': 'en', 'title': 'English'}
+
+    record['language'] = {'id': 'invalid'}
+    with pytest.raises(Exception):
+        record.commit()  # fails validation
+
+    # Set via attribute
+    record = Record1({})
+    record.relations.language = 'en'
+    assert record['language']['id'] == 'en'
+    res = record.relations.language()
+    assert isinstance(res, Language)
+    assert res == {'id': 'en', 'title': 'English'}
+
+    # Update existing value
+    record.relations.language = 'fr'
+    assert record['language']['id'] == 'fr'
+    res = record.relations.language()
+    assert isinstance(res, Language)
+    assert res == {'id': 'fr', 'title': 'French'}
+
+    # Set invalid value
+    with pytest.raises(Exception):
+        record.relations.language = 'invalid'
+    # Check that old value is still there
+    assert record['language']['id'] == 'fr'
+    res = record.relations.language()
+    assert isinstance(res, Language)
+    assert res == {'id': 'fr', 'title': 'French'}
+
+    # Clear field
+    record.relations.language = None
+    assert 'language' not in record
+    assert record.relations.language() is None
+
+

@@ -74,11 +74,14 @@ from .base import SystemField, SystemFieldContext, SystemFieldsMeta, \
 from .constant import ConstantField
 from .dict import DictField
 from .model import ModelField
+from .relations import PKRelation, RelationsField
 
 __all__ = (
     'ConstantField',
     'DictField',
     'ModelField',
+    'PKRelation',
+    'RelationsField',
     'SystemField',
     'SystemFieldContext',
     'SystemFieldsMeta',
