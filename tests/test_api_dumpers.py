@@ -16,7 +16,9 @@ from sqlalchemy.dialects import mysql
 
 from invenio_records.api import Record
 from invenio_records.dumpers import ElasticsearchDumper, ElasticsearchDumperExt
+from invenio_records.dumpers.relations import RelationDumper
 from invenio_records.models import RecordMetadataBase
+from invenio_records.systemfields.relations import PKRelation, RelationsField
 
 
 @pytest.fixture()
@@ -146,3 +148,36 @@ def test_esdumper_sa_datatypes(testapp, database):
     assert ElasticsearchDumper._sa_type(Model, 'text') == str
     assert ElasticsearchDumper._sa_type(Model, 'updated') == datetime
     assert ElasticsearchDumper._sa_type(Model, 'invalid') is None
+
+
+def test_relations_dumper(testapp, db, example_data):
+    """Test relations dumper extension."""
+    class RecordWithRelations(Record):
+        relations = RelationsField(
+            language=PKRelation(key='language', record_cls=Record),
+        )
+
+        dumper = ElasticsearchDumper(extensions=[RelationDumper('relations')])
+
+    # Create the record
+    en_language = Record.create({'id': 'en', 'title': 'English', 'iso': 'eng'})
+    db.session.commit()
+    record = RecordWithRelations.create({
+        'foo': 'bar',
+        'mylist': ['a', 'b'],
+    })
+    record.relations.language = en_language
+    db.session.commit()
+
+    # Dump it
+    dump = record.dumps()
+    assert dump == {
+        'foo': 'bar',
+        'mylist': ['a', 'b'],
+        'language': {'id': 'en', 'title': 'English', 'iso': 'eng'}
+    }
+
+    # TODO: Implement loader
+    # Load it
+    # new_record = Record.loads(dump, loader=dumper)
+    # assert 'count' not in new_record
