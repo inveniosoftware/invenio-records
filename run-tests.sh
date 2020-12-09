@@ -8,7 +8,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 # Usage:
-#   env DB=postgresql SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://invenio:invenio@localhost:5432/invenio POSTGRESQL_VERSION=POSTGRESQL_9_LATEST ./run-tests.sh
+#   env DB=postgresql ./run-tests.sh
 
 # Quit on errors
 set -o errexit
@@ -18,13 +18,13 @@ set -o nounset
 
 # Always bring down services
 function cleanup {
-  docker-services-cli down
+  eval "$(docker-services-cli down --env)"
 }
 trap cleanup EXIT
 
 python -m check_manifest --ignore ".*-requirements.txt"
 python -m sphinx.cmd.build -qnNW docs docs/_build/html
-docker-services-cli up ${DB}
+eval "$(docker-services-cli up --db ${DB:-} --env)"
 python -m pytest
 tests_exit_code=$?
 exit "$tests_exit_code"
