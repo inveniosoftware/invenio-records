@@ -26,15 +26,7 @@ class RelationDumper(ElasticsearchDumperExt):
     def dump(self, record, data):
         """Dump relations."""
         relations = getattr(record, self.key)
-        for f in self.fields:
-            if f in relations:
-                rel_field = getattr(relations, f)
-                keys = parse_lookup_key(rel_field.key)
-                data_field_parent = dict_lookup(data, keys, parent=True)
-                related_obj_data = rel_field().dumps()
-                for a in (rel_field.attrs or []):
-                    related_obj_data.pop(a, None)
-                data_field_parent[keys[-1]] = related_obj_data
+        relations.dereference(fields=self.fields)
 
     def load(self, data, record_cls):
         """Load relations."""

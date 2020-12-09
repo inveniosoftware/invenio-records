@@ -154,13 +154,14 @@ def test_relations_dumper(testapp, db, example_data):
     """Test relations dumper extension."""
     class RecordWithRelations(Record):
         relations = RelationsField(
-            language=PKRelation(key='language', record_cls=Record),
+            language=PKRelation(
+                key='language', attrs=['iso'], record_cls=Record),
         )
 
         dumper = ElasticsearchDumper(extensions=[RelationDumper('relations')])
 
     # Create the record
-    en_language = Record.create({'id': 'en', 'title': 'English', 'iso': 'eng'})
+    en_language = Record.create({'title': 'English', 'iso': 'en'})
     db.session.commit()
     record = RecordWithRelations.create({
         'foo': 'bar',
@@ -174,7 +175,7 @@ def test_relations_dumper(testapp, db, example_data):
     assert dump == {
         'foo': 'bar',
         'mylist': ['a', 'b'],
-        'language': {'id': 'en', 'title': 'English', 'iso': 'eng'}
+        'language': {'id': str(en_language.id), 'iso': 'en'}
     }
 
     # TODO: Implement loader
