@@ -8,27 +8,39 @@
 Changes
 =======
 
-Version 1.4.0a5 (released 2020-12-07)
+Version 1.4.0 (released 2020-12-09)
 
-- Fix elastic search loader for systemfields
+- Backwards incompatible: By default the versioning table is now disabled in
+  the ``RecordMetadataBase`` (the ``RecordMetadata`` is still versioned). If
+  you subclasses ``RecordMetadataBase`` and needs versioning, you need to add
+  the following line in your class:
 
-Version 1.4.0a4 (released 2020-09-30)
+  .. code-block:: python
+
+        class MyRecordMetadata(db.Model, RecordMetadataBase):
+            __versioned__ = {}
+
+- Backwards incompatible: The ``Record.validate()`` method is now split in
+  two methods ``validate()`` and ``_validate()``. If you overwrote the
+  ``validate()`` method in a subclass, you may need to overwrite instead
+  ``_validate()``.
+
+- Backwards incompatible: Due to the JSON encoding/decoding support, the
+  Python dictionary representing the record and the SQLAlchemy models are
+  separate objects and updating one, won't automatically update the other.
+  Normally, you should not have accessed ``record.model.json`` in your code,
+  however if you did, you need to rewrite it and rely on the ``create()`` and
+  ``commit()`` methods to update the model's ``json`` column.
 
 - Adds a new is_deleted property to the Records API.
 
-Version 1.4.0a3 (released 2020-09-22)
-
 - Removes the @ prefix that was used to separate metadata fields from other
   fields.
-
-Version 1.4.0a2 (released 2020-09-21)
 
 - Adds a SystemFieldContext which allows knowing the record class when
   accessing the attribute through the class instead of object instance.
 
 - Adds helpers for caching related objects on the record.
-
-Version 1.4.0a1 (released 2020-09-16)
 
 - Adds support for JSON encoding/decoding to/from the database. This allows
   e.g. have records with complex data types such as datetime objects.
@@ -57,29 +69,6 @@ Version 1.4.0a1 (released 2020-09-16)
   is_deleted hybrid property on the database model.
 
 - Adds support for undeleting a soft-deleted record.
-
-- Backwards incompatible: By default the versioning table is now disabled in
-  the ``RecordMetadataBase`` (the ``RecordMetadata`` is still versioned). If
-  you subclasses ``RecordMetadataBase`` and needs versioning, you need to add
-  the following line in your class:
-
-  .. code-block:: python
-
-        class MyRecordMetadata(db.Model, RecordMetadataBase):
-            __versioned__ = {}
-
-- Backwards incompatible: The ``Record.validate()`` method is now split in
-  two methods ``validate()`` and ``_validate()``. If you overwrote the
-  ``validate()`` method in a subclass, you may need to overwrite instead
-  ``_validate()``.
-
-- Backwards incompatible: Due to the JSON encoding/decoding support, the
-  Python dictionary representing the record and the SQLAlchemy models are
-  separate objects and updating one, won't automatically update the other.
-  Normally, you should not have accessed ``record.model.json`` in your code,
-  however if you did, you need to rewrite it and rely on the ``create()`` and
-  ``commit()`` methods to update the model's ``json`` column.
-
 
 Version 1.3.2 (released 2020-05-27)
 
