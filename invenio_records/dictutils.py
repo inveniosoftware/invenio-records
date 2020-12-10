@@ -103,3 +103,34 @@ def dict_lookup(source, lookup_key, parent=False):
         except (TypeError, IndexError, ValueError) as exc:
             raise KeyError(lookup_key) from exc
     return value
+
+
+def dict_set(source, key, value):
+    """Set a value into a dict via a dot-notated key.
+
+    This also creates missing key "paths".
+
+    Examples of the supported dot notation:
+
+    - ``'a'`` - Equivalent to ``source['a'] = value``
+    - ``'a.b'`` - Equivalent to ``source['a']['b'] = value``
+    - ``'a.b.0'`` - Equivalent to ``source['a']['b'][0] = value`` (for lists)
+
+    List notation is also supported:
+
+    - `['a']``
+    - ``['a','b']``
+    - ``['a','b', 0]``
+
+    :param source: The dictionary object to set the value in.
+    :param key: A string using dot notation, or a list of keys.
+    :param value: The value to be set.
+    """
+    keys = parse_lookup_key(key)
+    parent = source
+    for key in keys[:-1]:
+        if isinstance(key, int):
+            parent = parent[key]
+        else:
+            parent = parent.setdefault(key, {})
+    parent[keys[-1]] = value
