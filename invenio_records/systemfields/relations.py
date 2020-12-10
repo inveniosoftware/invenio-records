@@ -66,7 +66,7 @@ class RelationResult:
         obj = self.resolve(relation_id)
         parent.update({
             k: v for k, v in obj.dumps().items()
-            if self.attrs is None or k in self.attrs
+            if attrs is None or k in attrs
         })
         return parent
 
@@ -80,7 +80,7 @@ class RelationResult:
         except KeyError:
             return None
 
-        del_keys = [k for k in parent if self.attrs is None or k in self.attrs]
+        del_keys = [k for k in parent if attrs is None or k in attrs]
         for k in del_keys:
             del parent[k]
         parent[self._value_key_suffix] = relation_id
@@ -252,7 +252,7 @@ class RelationListResult(RelationResult):
                         obj = self.resolve(parent[rel_id_key])
                         parent.update({
                             k: v for k, v in obj.dumps().items()
-                            if self.attrs is None or k in self.attrs
+                            if attrs is None or k in attrs
                         })
                 return parent_container
         except KeyError:
@@ -269,15 +269,13 @@ class RelationListResult(RelationResult):
                     if rel_id_key in parent:
                         relation_id = parent[rel_id_key]
                         del_keys = [
-                            k for k in parent
-                            if self.attrs is None or k in self.attrs]
+                            k for k in parent if attrs is None or k in attrs]
                         for k in del_keys:
                             del parent[k]
                         parent[rel_id_key] = relation_id
                 return parent_container
         except KeyError:
             return None
-
 
     def append(self, value):
         """Append a relation to the list."""
@@ -343,7 +341,7 @@ class ListRelation(RelationBase):
 
 
 class PKListRelation(ListRelation, PKRelation):
-    pass
+    """Primary-key list relation."""
 
 
 class RelationsMapping:

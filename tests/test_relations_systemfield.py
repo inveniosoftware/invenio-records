@@ -8,14 +8,15 @@
 
 """Tests for relations system field."""
 
-import pytest
 from collections.abc import Iterable
+
+import pytest
 
 from invenio_records.api import Record
 from invenio_records.systemfields import PKRelation, RelationsField, \
     SystemFieldsMixin
-from invenio_records.systemfields.relations import InvalidRelationValue, PKListRelation, \
-    RelationsMapping
+from invenio_records.systemfields.relations import InvalidRelationValue, \
+    PKListRelation, RelationsMapping
 
 
 @pytest.fixture()
@@ -31,9 +32,9 @@ def languages(db):
     )
 
     languages = {}
-    for l in languages_data:
-        lang_rec = Language.create(l)
-        languages[l['iso']] = lang_rec
+    for lang in languages_data:
+        lang_rec = Language.create(lang)
+        languages[lang['iso']] = lang_rec
     db.session.commit()
     return Language, languages
 
@@ -249,4 +250,47 @@ def test_relations_field_pk_list_relation(testapp, db, languages):
     record.relations.languages = None
     assert 'languages' not in record
     assert record.relations.languages() is None
+    record.commit()
+
+
+def test_nested_relations_field(testapp, db, languages):
+    """Tests deeply nested relations."""
+
+    Language, languages = languages
+    en_lang = languages['en']
+    fr_lang = languages['fr']
+    es_lang = languages['es']
+    it_lang = languages['it']
+
+    class Record1(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            deep_single=PKRelation(
+                key='metadata.deep.language', record_cls=Language),
+            deep_list=PKListRelation(
+                key='metadata.deep.languages', record_cls=Language),
+            deep_sibling=PKRelation(
+                key='metadata.deep.dark.language', record_cls=Language),
+        )
+
+    # Set all fields
+    record = Record1.create({})
+    record.relations.deep_single = en_lang
+    record.relations.deep_list = [en_lang, fr_lang, es_lang]
+    record.relations.deep_sibling = it_lang
+
+    assert record == {
+        'metadata': {
+            'deep': {
+                'language': {'id': str(en_lang.id)},
+                'languages': [
+                    {'id': str(en_lang.id)},
+                    {'id': str(fr_lang.id)},
+                    {'id': str(es_lang.id)}
+                ],
+                'dark': {
+                    'language': {'id': str(it_lang.id)},
+                }
+            }
+        }
+    }
     record.commit()

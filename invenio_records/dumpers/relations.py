@@ -11,7 +11,7 @@
 Dumper used to dump/load relations to/from an ElasticSearch body.
 """
 
-from ..dictutils import dict_lookup, parse_lookup_key
+from ..dictutils import dict_lookup, dict_set, parse_lookup_key
 from .elasticsearch import ElasticsearchDumperExt
 
 
@@ -27,6 +27,10 @@ class RelationDumper(ElasticsearchDumperExt):
         """Dump relations."""
         relations = getattr(record, self.key)
         relations.dereference(fields=self.fields)
+        relation_fields = self.fields or relations
+        for rel_field_name in relation_fields:
+            rel_field = getattr(relations, rel_field_name)
+            dict_set(data, rel_field.key, dict_lookup(record, rel_field.key))
 
     def load(self, data, record_cls):
         """Load relations."""

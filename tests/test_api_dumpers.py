@@ -172,11 +172,13 @@ def test_relations_dumper(testapp, db, example_data):
 
     # Dump it
     dump = record.dumps()
-    assert dump == {
-        'foo': 'bar',
-        'mylist': ['a', 'b'],
-        'language': {'id': str(en_language.id), 'iso': 'en'}
-    }
+    assert dump['foo'] == 'bar'
+    assert dump['mylist'] == ['a', 'b']
+    assert dump['language'] == {'id': str(en_language.id), 'iso': 'en'}
+    assert dump['uuid'] == str(record.id)
+    assert dump['version_id'] == record.revision_id + 1
+    assert dump['created'][:19] == record.created.isoformat()[:19]
+    assert dump['updated'][:19] == record.updated.isoformat()[:19]
 
     # TODO: Implement loader
     # Load it
