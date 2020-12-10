@@ -18,7 +18,8 @@ from invenio_records.api import Record
 from invenio_records.dumpers import ElasticsearchDumper, ElasticsearchDumperExt
 from invenio_records.dumpers.relations import RelationDumper
 from invenio_records.models import RecordMetadataBase
-from invenio_records.systemfields.relations import PKRelation, RelationsField
+from invenio_records.systemfields.relations import PKListRelation, \
+    PKRelation, RelationsField
 
 
 @pytest.fixture()
@@ -156,18 +157,22 @@ def test_relations_dumper(testapp, db, example_data):
         relations = RelationsField(
             language=PKRelation(
                 key='language', attrs=['iso'], record_cls=Record),
+            languages=PKListRelation(
+                key='languages', attrs=['iso'], record_cls=Record),
         )
 
         dumper = ElasticsearchDumper(extensions=[RelationDumper('relations')])
 
     # Create the record
     en_language = Record.create({'title': 'English', 'iso': 'en'})
+    fr_language = Record.create({'title': 'French', 'iso': 'fr'})
     db.session.commit()
     record = RecordWithRelations.create({
         'foo': 'bar',
         'mylist': ['a', 'b'],
     })
     record.relations.language = en_language
+    record.relations.languages = [en_language, fr_language]
     db.session.commit()
 
     # Dump it
@@ -175,6 +180,10 @@ def test_relations_dumper(testapp, db, example_data):
     assert dump['foo'] == 'bar'
     assert dump['mylist'] == ['a', 'b']
     assert dump['language'] == {'id': str(en_language.id), 'iso': 'en'}
+    assert dump['languages'] == [
+        {'id': str(en_language.id), 'iso': 'en'},
+        {'id': str(fr_language.id), 'iso': 'fr'},
+    ]
     assert dump['uuid'] == str(record.id)
     assert dump['version_id'] == record.revision_id + 1
     assert dump['created'][:19] == record.created.isoformat()[:19]
