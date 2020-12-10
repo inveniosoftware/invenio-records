@@ -15,7 +15,7 @@ from ..dictutils import dict_lookup, dict_set, parse_lookup_key
 from .elasticsearch import ElasticsearchDumperExt
 
 
-class RelationDumper(ElasticsearchDumperExt):
+class RelationDumperExt(ElasticsearchDumperExt):
     """Dumper for a relations field."""
 
     def __init__(self, key, fields=None):
