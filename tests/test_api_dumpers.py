@@ -16,7 +16,7 @@ from sqlalchemy.dialects import mysql
 
 from invenio_records.api import Record
 from invenio_records.dumpers import ElasticsearchDumper, ElasticsearchDumperExt
-from invenio_records.dumpers.relations import RelationDumper
+from invenio_records.dumpers.relations import RelationDumperExt
 from invenio_records.models import RecordMetadataBase
 from invenio_records.systemfields.relations import PKListRelation, \
     PKRelation, RelationsField
@@ -161,7 +161,8 @@ def test_relations_dumper(testapp, db, example_data):
                 key='languages', attrs=['iso'], record_cls=Record),
         )
 
-        dumper = ElasticsearchDumper(extensions=[RelationDumper('relations')])
+        dumper = ElasticsearchDumper(
+            extensions=[RelationDumperExt('relations')])
 
     # Create the record
     en_language = Record.create({'title': 'English', 'iso': 'en'})
