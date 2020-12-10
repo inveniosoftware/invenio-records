@@ -9,9 +9,10 @@
 """Relations system field."""
 
 from typing import Iterable
+
 from ..dictutils import dict_lookup, parse_lookup_key
-from .base import SystemField
 from ..errors import RecordsError
+from .base import SystemField
 
 
 class RelationError(RecordsError):
@@ -287,7 +288,7 @@ class RelationListResult(RelationResult):
         raise NotImplemented()
 
 
-class PKListRelation(PKRelation):
+class ListRelation(RelationBase):
     """Primary-key relation list type."""
 
     result_cls = RelationListResult
@@ -295,9 +296,9 @@ class PKListRelation(PKRelation):
     def parse_value(self, value):
         """Parse a record (or ID) to the ID to be stored."""
         if isinstance(value, (tuple, list)):
-            return [super(PKListRelation, self).parse_value(v) for v in value]
+            return [super(ListRelation, self).parse_value(v) for v in value]
         else:
-            raise InvalidRelationValue(f'Invalid value. Expected list.')
+            raise InvalidRelationValue('Invalid value. Expected list.')
 
     def set_value(self, record, value):
         """Set the relation value."""
@@ -307,7 +308,7 @@ class PKListRelation(PKRelation):
             keys = parse_lookup_key(self.value_key)
             store_key, rel_id_key = keys[-2:]
             try:
-                parent = dict_lookup(record, keys[:-2], parent=True)
+                parent = dict_lookup(record, keys[:-1], parent=True)
             except KeyError as e:
                 parent = record
                 for k in keys[:-2]:
@@ -339,6 +340,10 @@ class PKListRelation(PKRelation):
         if self._clear_empty and parent == []:
             parent = dict_lookup(record, keys[:-1], parent=True)
             parent.pop(keys[-2], None)
+
+
+class PKListRelation(ListRelation, PKRelation):
+    pass
 
 
 class RelationsMapping:
