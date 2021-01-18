@@ -12,7 +12,6 @@ from collections import namedtuple
 from copy import deepcopy
 
 import pytest
-from sqlalchemy import inspect
 
 from invenio_records.api import Record
 from invenio_records.systemfields import RelatedModelField, \
