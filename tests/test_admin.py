@@ -10,10 +10,10 @@
 
 
 import uuid
+from unittest.mock import patch
 
 from flask import url_for
 from flask_admin import Admin, menu
-from mock import patch
 from sqlalchemy.exc import SQLAlchemyError
 
 from invenio_records.admin import record_adminview
