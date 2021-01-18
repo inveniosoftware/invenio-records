@@ -18,6 +18,8 @@ from sqlalchemy.schema import DropConstraint, DropSequence, DropTable
 
 from invenio_records import InvenioRecords
 
+pytest_plugins = ("celery.contrib.pytest", )
+
 
 @compiles(DropTable, 'postgresql')
 def _compile_drop_table(element, compiler, **kwargs):
