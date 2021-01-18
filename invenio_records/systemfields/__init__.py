@@ -74,6 +74,7 @@ from .base import SystemField, SystemFieldContext, SystemFieldsMeta, \
 from .constant import ConstantField
 from .dict import DictField
 from .model import ModelField
+from .relatedmodelfield import RelatedModelField, RelatedModelFieldContext
 from .relations import PKRelation, RelationsField
 
 __all__ = (
@@ -81,6 +82,8 @@ __all__ = (
     'DictField',
     'ModelField',
     'PKRelation',
+    'RelatedModelField',
+    'RelatedModelFieldContext',
     'RelationsField',
     'SystemField',
     'SystemFieldContext',
