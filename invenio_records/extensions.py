@@ -29,14 +29,20 @@ class ExtensionMixin:
     def post_init(self, record, data, model=None, **kwargs):
         """Called after a record is initialized."""
 
-    def pre_dump(self, record, dumper=None):
+    def pre_dump(self, record, data, dumper=None):
         """Called before a record is dumped."""
 
-    def post_load(self, record, loader=None):
+    def post_dump(self, record, data, dumper=None):
+        """Called after a record is dumped."""
+
+    def pre_load(self, data, loader=None):
+        """Called before a record is loaded."""
+
+    def post_load(self, record, data, loader=None):
         """Called after a record is loaded."""
 
     def pre_create(self, record):
-        """Called after a record is created."""
+        """Called before a record is created."""
 
     def post_create(self, record):
         """Called after a record is created."""

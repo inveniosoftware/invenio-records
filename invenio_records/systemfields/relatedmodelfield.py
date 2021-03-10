@@ -91,7 +91,7 @@ class RelatedModelField(SystemField):
         Uses a cached object if it exists.
 
         IMPORTANT: By default, if the object is loaded from the record JSON
-        object instead of from the database mdoel, it is NOT added to the
+        object instead of from the database model, it is NOT added to the
         database session. Thus, the related object will be in a transient state
         instead of persistent state. This is useful for instance in search
         queries to avoid hitting the database, however if you need to make
