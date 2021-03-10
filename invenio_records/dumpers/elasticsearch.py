@@ -185,7 +185,7 @@ class ElasticsearchDumper(Dumper):
                 if systemfield.dump:
                     yield systemfield
 
-    def dump(self, record):
+    def dump(self, record, data):
         """Dump a record.
 
         The method adds the following keys (if the record has an associated
@@ -197,7 +197,7 @@ class ElasticsearchDumper(Dumper):
         - ``updated`` - Modification timestamp in UTC.
         """
         # Copy data first, otherwise we modify the record.
-        dump_data = super().dump(record)
+        dump_data = super().dump(record, data)
 
         # Dump model fields explicitly requested
         it = self._model_fields.items()

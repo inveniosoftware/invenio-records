@@ -9,7 +9,8 @@
 """Record API."""
 
 
-from copy import deepcopy
+import inspect
+import warnings
 
 from flask import current_app
 from invenio_db import db
@@ -217,13 +218,36 @@ class RecordBase(dict):
         """
         dumper = dumper or self.dumper
 
+        data = {}
+
         # Run pre dump extensions
         for e in self._extensions:
-            e.pre_dump(self, dumper=dumper)
+            if 'data' in inspect.signature(e.pre_dump).parameters:
+                e.pre_dump(self, data, dumper=dumper)
+            else:
+                # TODO: Remove in v1.6.0 or later
+                warnings.warn(
+                    "The pre_dump hook must take a positional argument data.",
+                    DeprecationWarning
+                )
+                e.pre_dump(self, dumper=dumper)
 
-        # Execute the dump - for backwards compatibility we use the default
-        # dumper which returns a deepcopy.
-        return dumper.dump(self)
+        if 'data' in inspect.signature(dumper.dump).parameters:
+            # Execute the dump - for backwards compatibility we use the default
+            # dumper which returns a deepcopy.
+            data = dumper.dump(self, data)
+        else:
+            # TODO: Remove in v1.6.0 or later
+            warnings.warn(
+                "The dumper.dump() must take a positional argument data.",
+                DeprecationWarning
+            )
+            data = dumper.dump(self)
+
+        for e in self._extensions:
+            e.post_dump(self, data, dumper=dumper)
+
+        return data
 
     @classmethod
     def loads(cls, data, loader=None):
@@ -236,11 +260,24 @@ class RecordBase(dict):
         # named with s even if it should probably have been called "dump"
         # instead.
         loader = loader or cls.dumper
+
+        # Run pre load extensions
+        for e in cls._extensions:
+            e.pre_load(data, loader=loader)
+
         record = loader.load(data, cls)
 
         # Run post load extensions
         for e in cls._extensions:
-            e.post_load(record, loader=loader)
+            if 'data' in inspect.signature(e.post_load).parameters:
+                e.post_load(record, data, loader=loader)
+            else:
+                # TODO: Remove in v1.6.0 or later
+                warnings.warn(
+                    "The post_load hook must take a positional argument data.",
+                    DeprecationWarning
+                )
+                e.post_load(record, loader=loader)
 
         return record
 
@@ -362,6 +399,10 @@ class Record(RecordBase):
         :params patch: Dictionary of record metadata.
         :returns: A new :class:`Record` instance.
         """
+        warnings.warn(
+            "The patch() method is deprecated and will be removed.",
+            DeprecationWarning
+        )
         data = apply_patch(dict(self), patch)
         return self.__class__(data, model=self.model)
 

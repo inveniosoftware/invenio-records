@@ -9,6 +9,7 @@
 """The core of the system fields implementation."""
 
 import inspect
+import warnings
 
 from ..dictutils import dict_lookup, parse_lookup_key
 from ..extensions import ExtensionMixin, RecordExtension, RecordMeta
@@ -262,13 +263,33 @@ class SystemFieldsExt(RecordExtension):
             field_data = kwargs.get(field.attr_name)
             field.post_init(record, data, model=model, field_data=field_data)
 
-    def pre_dump(self, *args, **kwargs):
+    def pre_dump(self, record, data, dumper=None):
         """Called before a record is dumped."""
-        self._run('pre_dump', *args, **kwargs)
+        for field in self.declared_fields.values():
+            pre_dump_params = inspect.signature(field.pre_dump).parameters
+            if 'data' in pre_dump_params:
+                field.pre_dump(record, data, dumper=dumper)
+            else:
+                # TODO: Remove in v1.6.0 or later
+                warnings.warn(
+                   "The pre_dump hook must take a positional argument data.",
+                   DeprecationWarning
+                )
+                field.pre_dump(record, dumper=dumper)
 
-    def post_load(self, *args, **kwargs):
+    def post_load(self, record, data, loader=None):
         """Called after a record is loaded."""
-        self._run('post_load', *args, **kwargs)
+        for field in self.declared_fields.values():
+            post_load_params = inspect.signature(field.post_load).parameters
+            if 'data' in post_load_params:
+                field.post_load(record, data, loader=loader)
+            else:
+                # TODO: Remove in v1.6.0 or later
+                warnings.warn(
+                   "The post_load hook must take a positional argument data.",
+                   DeprecationWarning
+                )
+                field.post_load(record, loader=loader)
 
     def pre_create(self, *args, **kwargs):
         """Called after a record is created."""

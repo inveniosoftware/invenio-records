@@ -14,7 +14,7 @@ from copy import deepcopy
 class Dumper:
     """Interface for dumpers."""
 
-    def dump(self, record):
+    def dump(self, record, data):
         """Dump a record that can be used a source document for Elasticsearch.
 
         The job of this method is to create a Python dictionary from the record
@@ -25,8 +25,10 @@ class Dumper:
         that changes to the dump affects the record.
 
         :param record: The record to dump.
+        :param data: The initial dump data passed in by ``record.dumps()``.
         """
-        return deepcopy(dict(record))
+        data.update(deepcopy(dict(record)))
+        return data
 
     def load(self, data, record_cls):
         """Load a record from the source document of an Elasticsearch hit.
