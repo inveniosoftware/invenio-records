@@ -83,6 +83,9 @@ def ExtensionRecord():
         def post_load(self, record, loader=None):
             self.called.append('post_load')
 
+        def pre_create(self, record):
+            self.called.append('pre_create')
+
         def post_create(self, record):
             self.called.append('post_create')
 
@@ -221,7 +224,7 @@ def test_extension_post_create(testapp, db, ExtensionRecord):
     """Test post create hook."""
     rec = ExtensionRecord.create({})
     assert ExtensionRecord.ext.called == [
-        'pre_init', 'post_init', 'post_create']
+        'pre_init', 'post_init', 'pre_create', 'post_create']
 
 
 def test_extension_pre_dump(testapp, db, ExtensionRecord):
@@ -245,7 +248,7 @@ def test_extension_pre_commit(testapp, db, ExtensionRecord):
     rec = ExtensionRecord.create({})
     rec.commit()
     assert ExtensionRecord.ext.called == [
-        'pre_init', 'post_init', 'post_create', 'pre_commit']
+        'pre_init', 'post_init', 'pre_create', 'post_create', 'pre_commit']
 
 
 def test_extension_delete(testapp, db, ExtensionRecord):
@@ -254,7 +257,9 @@ def test_extension_delete(testapp, db, ExtensionRecord):
     db.session.commit()
     rec.delete()
     assert ExtensionRecord.ext.called == [
-        'pre_init', 'post_init', 'post_create', 'pre_delete', 'post_delete']
+        'pre_init', 'post_init', 'pre_create', 'post_create', 'pre_delete',
+        'post_delete',
+    ]
 
 
 def test_extension_revert(testapp, database, ExtensionRecord):
@@ -267,8 +272,8 @@ def test_extension_revert(testapp, database, ExtensionRecord):
     assert rec.revision_id == 1
     rec.revert(0)
     assert ExtensionRecord.ext.called == [
-         'pre_init', 'post_init', 'post_create', 'pre_commit', 'pre_revert',
-         'pre_init', 'post_init', 'post_revert'
+         'pre_init', 'post_init', 'pre_create', 'post_create', 'pre_commit',
+         'pre_revert', 'pre_init', 'post_init', 'post_revert'
     ]
 
 

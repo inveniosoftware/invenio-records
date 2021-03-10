@@ -270,6 +270,10 @@ class SystemFieldsExt(RecordExtension):
         """Called after a record is loaded."""
         self._run('post_load', *args, **kwargs)
 
+    def pre_create(self, *args, **kwargs):
+        """Called after a record is created."""
+        self._run('pre_create', *args, **kwargs)
+
     def post_create(self, *args, **kwargs):
         """Called after a record is created."""
         self._run('post_create', *args, **kwargs)

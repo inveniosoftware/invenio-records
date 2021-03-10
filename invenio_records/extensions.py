@@ -35,6 +35,9 @@ class ExtensionMixin:
     def post_load(self, record, loader=None):
         """Called after a record is loaded."""
 
+    def pre_create(self, record):
+        """Called after a record is created."""
+
     def post_create(self, record):
         """Called after a record is created."""
 

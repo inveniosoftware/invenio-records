@@ -299,6 +299,10 @@ class Record(RecordBase):
                     record=record
                 )
 
+            # Run pre create extensions
+            for e in cls._extensions:
+                e.pre_create(record)
+
             # Validate also encodes the data
             record._validate(
                 format_checker=format_checker,
