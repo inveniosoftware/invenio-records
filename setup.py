@@ -16,6 +16,8 @@ readme = open('README.rst').read()
 history = open('CHANGES.rst').read()
 
 
+invenio_db_version = '>=1.0.9,<1.1.0'
+
 tests_require = [
     'pytest-invenio>=1.4.1',
 ]
@@ -25,13 +27,13 @@ extras_require = {
         'Sphinx>=2.4',
     ],
     'mysql': [
-        'invenio-db[mysql,versioning]>=1.0.5',
+        f'invenio-db[mysql,versioning]{invenio_db_version}',
     ],
     'postgresql': [
-        'invenio-db[postgresql,versioning]>=1.0.5',
+        f'invenio-db[postgresql,versioning]{invenio_db_version}',
     ],
     'sqlite': [
-        'invenio-db[versioning]>=1.0.5',
+        f'invenio-db[versioning]{invenio_db_version}',
     ],
     'admin': [
         'invenio-admin>=1.2.1',
