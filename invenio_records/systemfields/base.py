@@ -277,6 +277,34 @@ class SystemFieldsExt(RecordExtension):
                 )
                 field.pre_dump(record, dumper=dumper)
 
+    def post_dump(self, record, data, dumper=None):
+        """Called after a record is dumped."""
+        for field in self.declared_fields.values():
+            post_dump_params = inspect.signature(field.post_dump).parameters
+            if 'data' in post_dump_params:
+                field.post_dump(record, data, dumper=dumper)
+            else:
+                # TODO: Remove in v1.6.0 or later
+                warnings.warn(
+                   "The post_dump hook must take a positional argument data.",
+                   DeprecationWarning
+                )
+                field.post_dump(record, dumper=dumper)
+
+    def pre_load(self, data, loader=None):
+        """Called before a record is loaded."""
+        for field in self.declared_fields.values():
+            pre_load_params = inspect.signature(field.pre_load).parameters
+            if 'data' in pre_load_params:
+                field.pre_load(data, loader=loader)
+            else:
+                # TODO: Remove in v1.6.0 or later
+                warnings.warn(
+                   "The pre_load hook must take a positional argument data.",
+                   DeprecationWarning
+                )
+                field.pre_load(loader=loader)
+
     def post_load(self, record, data, loader=None):
         """Called after a record is loaded."""
         for field in self.declared_fields.values():
