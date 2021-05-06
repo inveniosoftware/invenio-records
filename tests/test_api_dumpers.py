@@ -180,10 +180,22 @@ def test_relations_dumper(testapp, db, example_data):
     dump = record.dumps()
     assert dump['foo'] == 'bar'
     assert dump['mylist'] == ['a', 'b']
-    assert dump['language'] == {'id': str(en_language.id), 'iso': 'en'}
+    assert dump['language'] == {
+        'id': str(en_language.id),
+        'iso': 'en',
+        '@v': str(en_language.id) + '::' + str(en_language.revision_id)
+    }
     assert dump['languages'] == [
-        {'id': str(en_language.id), 'iso': 'en'},
-        {'id': str(fr_language.id), 'iso': 'fr'},
+        {
+            'id': str(en_language.id),
+            'iso': 'en',
+            '@v': str(en_language.id) + '::' + str(en_language.revision_id)
+        },
+        {
+            'id': str(fr_language.id),
+            'iso': 'fr',
+            '@v': str(fr_language.id) + '::' + str(fr_language.revision_id)
+        },
     ]
     assert dump['uuid'] == str(record.id)
     assert dump['version_id'] == record.revision_id + 1

@@ -11,7 +11,7 @@
 Dumper used to dump/load relations to/from an ElasticSearch body.
 """
 
-from ..dictutils import dict_lookup, dict_set, parse_lookup_key
+from ..dictutils import dict_lookup, dict_set
 from .elasticsearch import ElasticsearchDumperExt
 
 

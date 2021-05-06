@@ -1,0 +1,39 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of Invenio.
+# Copyright (C) 2020-2021 CERN.
+#
+# Invenio is free software; you can redistribute it and/or modify it
+# under the terms of the MIT License; see LICENSE file for more details.
+
+"""Relations system field.
+
+The field consists of:
+
+- The system field itself.
+- A relation mapping which is an object returned when accessing the system
+  field from an instance (e.g. ``record.relations``).
+- Relations (e.g. PKRelation) used for defining a relationship to a specific
+  record type.
+- Results, values returned when accessing a field (e.g.
+  ``record.relations.languages``).
+"""
+
+from .errors import InvalidRelationValue, RelationError
+from .field import RelationsField
+from .mapping import RelationsMapping
+from .relations import ListRelation, PKListRelation, PKRelation, RelationBase
+from .results import RelationListResult, RelationResult
+
+__all__ = (
+    'InvalidRelationValue',
+    'ListRelation',
+    'PKListRelation',
+    'PKRelation',
+    'RelationBase',
+    'RelationError',
+    'RelationListResult',
+    'RelationResult',
+    'RelationsField',
+    'RelationsMapping',
+)

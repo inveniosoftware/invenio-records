@@ -120,6 +120,7 @@ def test_relations_field_pk_relation(testapp, db, languages):
     assert record['language'] == {
         'id': str(fr_lang.id),
         'iso': 'fr',  # only stores the "iso" field
+        '@v': str(fr_lang.id) + '::' + str(fr_lang.revision_id),
     }
 
     # Commit clean dereferened fields
@@ -231,6 +232,7 @@ def test_relations_field_pk_list_relation(testapp, db, languages):
     assert record['languages'] == [{
         'id': str(fr_lang.id),
         'iso': 'fr',  # only stores the "iso" field
+        '@v': str(fr_lang.id) + '::' + str(fr_lang.revision_id),
     }]
 
     # Commit clean dereferened fields
