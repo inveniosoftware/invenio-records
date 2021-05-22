@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2021 RERO.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -330,6 +331,10 @@ class SystemFieldsExt(RecordExtension):
     def pre_commit(self, *args, **kwargs):
         """Called before a record is committed."""
         self._run('pre_commit', *args, **kwargs)
+
+    def post_commit(self, *args, **kwargs):
+        """Called after a record is commited."""
+        self._run('post_commit', *args, **kwargs)
 
     def pre_delete(self, *args, **kwargs):
         """Called before a record is deleted."""

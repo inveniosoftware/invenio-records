@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2021 RERO.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -49,6 +50,9 @@ class ExtensionMixin:
 
     def pre_commit(self, record):
         """Called before a record is committed."""
+
+    def post_commit(self, record):
+        """Called after a record is committed."""
 
     def pre_delete(self, record, force=False):
         """Called before a record is deleted."""

@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2021 RERO.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -91,6 +92,9 @@ def ExtensionRecord():
 
         def pre_commit(self, record):
             self.called.append('pre_commit')
+
+        def post_commit(self, record):
+            self.called.append('post_commit')
 
         def pre_delete(self, record, force=False):
             self.called.append('pre_delete')
@@ -243,12 +247,13 @@ def test_extension_post_load(testapp, db, ExtensionRecord):
         'post_load']
 
 
-def test_extension_pre_commit(testapp, db, ExtensionRecord):
-    """Test post load hook."""
+def test_extension_commit(testapp, db, ExtensionRecord):
+    """Test commit hooks."""
     rec = ExtensionRecord.create({})
     rec.commit()
     assert ExtensionRecord.ext.called == [
-        'pre_init', 'post_init', 'pre_create', 'post_create', 'pre_commit']
+        'pre_init', 'post_init', 'pre_create', 'post_create', 'pre_commit',
+        'post_commit']
 
 
 def test_extension_delete(testapp, db, ExtensionRecord):
@@ -273,7 +278,7 @@ def test_extension_revert(testapp, database, ExtensionRecord):
     rec.revert(0)
     assert ExtensionRecord.ext.called == [
          'pre_init', 'post_init', 'pre_create', 'post_create', 'pre_commit',
-         'pre_revert', 'pre_init', 'post_init', 'post_revert'
+         'post_commit', 'pre_revert', 'pre_init', 'post_init', 'post_revert'
     ]
 
 

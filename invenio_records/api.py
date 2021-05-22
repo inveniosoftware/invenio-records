@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2015-2020 CERN.
+# Copyright (C) 2021 RERO.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -467,6 +468,10 @@ class Record(RecordBase):
                 current_app._get_current_object(),
                 record=self
             )
+
+        # Run post commit extensions
+        for e in self._extensions:
+            e.post_commit(self)
 
         return self
 
