@@ -107,6 +107,16 @@ class RelationListResult(RelationResult):
     def _lookup_id(self, data):
         return dict_lookup(data, self.field._value_key_suffix)
 
+    def _lookup_data(self):
+        data = dict_lookup(self.record, self.key)
+        if self.relation_field:
+            filtered_data = [
+                e.get(self.relation_field) for e in data
+                if self.relation_field in e
+            ]
+            return filtered_data
+        return data
+
     def validate(self):
         """Validate the field."""
         try:

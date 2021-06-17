@@ -7,6 +7,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """Relations system field."""
+from copy import deepcopy
 
 from invenio_db import db
 
@@ -125,12 +126,46 @@ class ListRelation(RelationBase):
 
     result_cls = RelationListResult
 
+    def __init__(self, *args, relation_field=None, **kwargs):
+        """Initialize the list relation.
+
+        :param relation_field:  The field representing the relation. (Intended
+                                to be used when we are passing a list of
+                                objects but only one field of each object is
+                                referring to a relation)
+        :type relation_field: str
+        """
+        self.relation_field = relation_field
+        super().__init__(*args, **kwargs)
+
     def parse_value(self, value):
         """Parse a record (or ID) to the ID to be stored."""
         if isinstance(value, (tuple, list)):
+            if self.relation_field:
+                return [super(ListRelation, self).parse_value(
+                    v.get(self.relation_field)) for v in
+                        value if self.relation_field in v]
             return [super(ListRelation, self).parse_value(v) for v in value]
         else:
             raise InvalidRelationValue('Invalid value. Expected list.')
+
+    def _get_parent(self, record, keys):
+        """Get parent dict."""
+        try:
+            parent = dict_lookup(record, keys[:-1], parent=True)
+        except KeyError as e:
+            parent = record
+            for k in keys[:-2]:
+                if k not in parent:
+                    parent[k] = {}
+                else:
+                    if not isinstance(parent[k], dict):
+                        raise KeyError(
+                            f"Expected a dict at subkey '{k}'. "
+                            f"Found '{parent[k].__class__.__name__}'."
+                        )
+                parent = parent[k]
+        return parent
 
     def set_value(self, record, value):
         """Set the relation value."""
@@ -139,21 +174,18 @@ class ListRelation(RelationBase):
         if self.exists_many(store_values):
             keys = parse_lookup_key(self.value_key)
             store_key, rel_id_key = keys[-2:]
-            try:
-                parent = dict_lookup(record, keys[:-1], parent=True)
-            except KeyError as e:
-                parent = record
-                for k in keys[:-2]:
-                    if k not in parent:
-                        parent[k] = {}
-                    else:
-                        if not isinstance(parent[k], dict):
-                            raise KeyError(
-                                f"Expected a dict at subkey '{k}'. "
-                                f"Found '{parent[k].__class__.__name__}'."
-                            )
-                    parent = parent[k]
-            parent[store_key] = [{rel_id_key: sv} for sv in store_values]
+            parent = self._get_parent(record, keys)
+
+            if self.relation_field:
+                values_list = deepcopy(value)
+                for v in values_list:
+                    sv = v.get(self.relation_field)
+                    if sv:
+                        v[self.relation_field] = {rel_id_key: sv}
+            else:
+                values_list = [{rel_id_key: sv} for sv in store_values]
+
+            parent[store_key] = values_list
         else:
             raise InvalidRelationValue("Invalid values.")
 
