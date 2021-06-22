@@ -25,10 +25,14 @@ def languages(db):
         pass
 
     languages_data = (
-        {'title': 'English', 'iso': 'en'},
-        {'title': 'French', 'iso': 'fr'},
-        {'title': 'Spanish', 'iso': 'es'},
-        {'title': 'Italian', 'iso': 'it'},
+        {'title': 'English', 'iso': 'en', 'information': {
+            'native_speakers': '400 million', 'ethnicity': 'English'}},
+        {'title': 'French', 'iso': 'fr', 'information': {
+            'native_speakers': '76.8 million', 'ethnicity': 'French'}},
+        {'title': 'Spanish', 'iso': 'es', 'information': {
+            'native_speakers': '489 million', 'ethnicity': 'Spanish'}},
+        {'title': 'Italian', 'iso': 'it', 'information': {
+            'native_speakers': '67 million', 'ethnicity': 'Italians'}},
     )
 
     languages = {}
@@ -153,7 +157,8 @@ def test_relations_field_pk_list_relation(testapp, db, languages):
     class Record1(Record, SystemFieldsMixin):
         relations = RelationsField(
             languages=PKListRelation(
-                key='languages', attrs=['iso'], record_cls=Language),
+                key='languages', attrs=['iso', 'information.ethnicity'],
+                record_cls=Language),
         )
 
     # Class-field check
@@ -194,7 +199,6 @@ def test_relations_field_pk_list_relation(testapp, db, languages):
     assert isinstance(res_iter, Iterable)
     res = next(res_iter)
     assert res == en_lang
-
     record['languages'] = {'id': 'invalid'}
     with pytest.raises(InvalidRelationValue):
         record.commit()  # fails validation
@@ -232,6 +236,7 @@ def test_relations_field_pk_list_relation(testapp, db, languages):
     assert record['languages'] == [{
         'id': str(fr_lang.id),
         'iso': 'fr',  # only stores the "iso" field
+        'information': {'ethnicity': 'French'},
         '@v': str(fr_lang.id) + '::' + str(fr_lang.revision_id),
     }]
 

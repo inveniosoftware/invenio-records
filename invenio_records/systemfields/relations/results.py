@@ -8,7 +8,7 @@
 
 """Relations system field."""
 
-from ...dictutils import dict_lookup, parse_lookup_key
+from ...dictutils import dict_lookup, dict_set, parse_lookup_key
 from .errors import InvalidRelationValue
 
 
@@ -73,10 +73,18 @@ class RelationResult:
         obj = self.resolve(data[self.field._value_key_suffix])
         # Inject selected key/values from related record into
         # the current record.
-        data.update({
-            k: v for k, v in obj.items()
-            if attrs is None or k in attrs
-        })
+
+        if attrs is None:
+            data.update({
+                k: v for k, v in obj.items()
+            })
+        else:
+            new_obj = {}
+            for a in attrs:
+                if dict_lookup(obj, a):
+                    dict_set(new_obj, a, dict_lookup(obj, a))
+            data.update(new_obj)
+
         # Add a version counter "@v" used for optimistic
         # concurrency control. It allows to search for all
         # outdated records and reindex them.
@@ -86,9 +94,7 @@ class RelationResult:
     def _clean_one(self, data, attrs):
         """Remove all but "id" key for a dereferenced related object."""
         relation_id = data[self.field._value_key_suffix]
-        del_keys = ['@v'] + [k for k in data if attrs is None or k in attrs]
-        for k in del_keys:
-            del data[k]
+        data.clear()
         data[self.field._value_key_suffix] = relation_id
         return data
 
