@@ -156,17 +156,23 @@ def test_relations_dumper(testapp, db, example_data):
     class RecordWithRelations(Record):
         relations = RelationsField(
             language=PKRelation(
-                key='language', attrs=['iso'], record_cls=Record),
+                key='language', attrs=['iso', 'information.ethnicity'],
+                record_cls=Record),
             languages=PKListRelation(
-                key='languages', attrs=['iso'], record_cls=Record),
+                key='languages', attrs=['iso', 'information.ethnicity'],
+                record_cls=Record),
         )
 
         dumper = ElasticsearchDumper(
             extensions=[RelationDumperExt('relations')])
 
     # Create the record
-    en_language = Record.create({'title': 'English', 'iso': 'en'})
-    fr_language = Record.create({'title': 'French', 'iso': 'fr'})
+    en_language = Record.create(
+        {'title': 'English', 'iso': 'en', 'information': {
+            'native_speakers': '400 million', 'ethnicity': 'English'}})
+    fr_language = Record.create(
+        {'title': 'French', 'iso': 'fr', 'information': {
+            'native_speakers': '76.8 million', 'ethnicity': 'French'}})
     db.session.commit()
     record = RecordWithRelations.create({
         'foo': 'bar',
@@ -183,17 +189,20 @@ def test_relations_dumper(testapp, db, example_data):
     assert dump['language'] == {
         'id': str(en_language.id),
         'iso': 'en',
+        'information': {'ethnicity': 'English'},
         '@v': str(en_language.id) + '::' + str(en_language.revision_id)
     }
     assert dump['languages'] == [
         {
             'id': str(en_language.id),
             'iso': 'en',
+            'information': {'ethnicity': 'English'},
             '@v': str(en_language.id) + '::' + str(en_language.revision_id)
         },
         {
             'id': str(fr_language.id),
             'iso': 'fr',
+            'information': {'ethnicity': 'French'},
             '@v': str(fr_language.id) + '::' + str(fr_language.revision_id)
         },
     ]
