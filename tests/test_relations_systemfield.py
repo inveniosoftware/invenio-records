@@ -16,7 +16,7 @@ from invenio_records.api import Record
 from invenio_records.systemfields import PKRelation, RelationsField, \
     SystemFieldsMixin
 from invenio_records.systemfields.relations import InvalidRelationValue, \
-    PKListRelation, RelationsMapping
+    PKListRelation, PKNestedListRelation, RelationsMapping
 
 
 @pytest.fixture()
@@ -592,4 +592,517 @@ def test_nested_relations_field(testapp, db, languages):
             }
         }
     }
+    record.commit()
+
+
+def test_relations_field_pk_nested_list_of_objects_w_related_field(
+    testapp, db, languages
+):
+    """RelationsField tests for PKListRelation with a list of objects."""
+
+    Language, languages = languages
+    en_lang = languages['en']
+    fr_lang = languages['fr']
+    es_lang = languages['es']
+
+    class Record1(Record, SystemFieldsMixin):
+        # end result should be
+        # {
+        #   nested_array: [
+        #       {languages: [en, fr]},
+        #       {languages: [en, es]}
+        #   ]
+        # }
+        relations = RelationsField(
+            nested_array_of_objects=PKNestedListRelation(
+                key='nested_array_of_objects',
+                attrs=['iso'],
+                record_cls=Language,
+                relation_field='languages'
+            ),
+        )
+
+    def _test_iterators(record):
+        res_iter = record.relations.nested_array_of_objects()
+        assert isinstance(res_iter, Iterable)
+        # first inner list
+        res_inner_iter = next(res_iter)
+        assert isinstance(res_inner_iter, Iterable)
+        res = next(res_inner_iter)
+        assert res == en_lang
+        res = next(res_inner_iter)
+        assert res == es_lang
+        with pytest.raises(StopIteration):  # finished first iterator
+            res = next(res_inner_iter)
+        # second inner list
+        res_inner_iter = next(res_iter)
+        assert isinstance(res_inner_iter, Iterable)
+        res = next(res_inner_iter)
+        assert res == fr_lang
+        res = next(res_inner_iter)
+        assert res == en_lang
+        with pytest.raises(StopIteration):  # finished second iterator
+            res = next(res_inner_iter)
+
+    def _test_inner_values(record):
+        with pytest.raises(KeyError):
+            record['nested_array_of_objects'][0]['languages'][0]['id']
+        assert record['nested_array_of_objects'][1]['languages'][0]['id'] == (
+            str(en_lang.id))
+        assert record['nested_array_of_objects'][1]['languages'][1]['id'] == (
+            str(es_lang.id))
+        assert record['nested_array_of_objects'][2]['languages'][0]['id'] == (
+            str(fr_lang.id))
+        assert record['nested_array_of_objects'][2]['languages'][1]['id'] == (
+            str(en_lang.id))
+
+    # Class-field check
+    assert isinstance(Record1.relations, RelationsField)
+    assert isinstance(
+        Record1.relations.nested_array_of_objects, PKNestedListRelation
+    )
+
+    # Empty initialization
+    record = Record1({})
+    assert record == {}
+    assert isinstance(record.relations, RelationsMapping)
+    assert callable(record.relations.nested_array_of_objects)
+    assert record.relations.nested_array_of_objects() is None
+
+    # Initialize from dictionary data
+    record = Record1({'nested_array_of_objects': [
+        {
+            'field1': "no language",
+            'field2': "random string",
+            'field3': {
+                'nestedField': 'nested string'
+            }
+        },
+        {
+            'languages': [
+                {"id": str(en_lang.id)}, {"id": str(es_lang.id)}
+            ],
+            'field1': "string"
+        },
+        {
+            'languages': [
+                {"id": str(fr_lang.id)}, {"id": str(en_lang.id)}
+            ],
+            'field2': "string2"
+        }
+    ]})
+
+    _test_iterators(record)
+
+    # Initialize from field data
+    record = Record1(
+        {"metadata": {"title": "random title"}},
+        relations={'nested_array_of_objects': [
+            {
+                'field1': "no language",
+                'field2': "random string",
+                'field3': {
+                    'nestedField': 'nested string'
+                }
+            },
+            {
+                'languages': [str(en_lang.id), str(es_lang.id)],
+                'field1': "string"
+            },
+            {
+                'languages': [str(fr_lang.id), str(en_lang.id)],
+                'field2': "string2"
+            }
+        ]})
+    _test_inner_values(record)
+    _test_iterators(record)
+
+    # Set via record dictionary data
+    record = Record1.create({})
+    record['nested_array_of_objects'] = [
+        {
+            'field1': "no language",
+            'field2': "random string",
+            'field3': {
+                'nestedField': 'nested string'
+            }
+        },
+        {
+            'languages': [
+                {"id": str(en_lang.id)}, {"id": str(es_lang.id)}
+            ],
+            'field1': "string"
+        },
+        {
+            'languages': [
+                {"id": str(fr_lang.id)}, {"id": str(en_lang.id)}
+            ],
+            'field2': "string2"
+        }
+    ]
+
+    _test_iterators(record)
+
+    record.commit()  # validates
+
+    _test_iterators(record)
+
+    # fails with non-list types
+    record['nested_array_of_objects'] = [
+        {
+            'field1': "no language",
+            'field2': "random string",
+            'field3': {
+                'nestedField': 'nested string'
+            },
+            'languages': {'id': str(es_lang.id)}
+        },
+        {'field1': "testString"}
+    ]
+    with pytest.raises(InvalidRelationValue):
+        record.commit()  # fails validation
+
+    # fails with invalid values
+    record['nested_array_of_objects'] = [
+        {
+            'field1': "no language",
+            'field2': "random string",
+            'field3': {
+                'nestedField': 'nested string'
+            },
+            'languages': [{'id': 'invalid'}]
+        },
+        {'field1': "testString"}
+    ]
+    with pytest.raises(InvalidRelationValue):
+        record.commit()  # fails validation
+
+    # Set via attribute
+    record = Record1.create({})
+    record.relations.nested_array_of_objects = [
+        {
+            'field1': "no language",
+            'field2': "random string",
+            'field3': {
+                'nestedField': 'nested string'
+            }
+        },
+        {
+            'languages': [str(en_lang.id), str(es_lang.id)],
+            'field1': "string"
+        },
+        {
+            'languages': [str(fr_lang.id), str(en_lang.id)],
+            'field2': "string2"
+        }
+    ]
+    _test_inner_values(record)
+    _test_iterators(record)
+
+    # Update existing value
+    record.relations.nested_array_of_objects = [
+        {
+            'languages': [str(fr_lang.id), str(en_lang.id)],
+            'field2': "string2"
+        }
+    ]
+    assert record['nested_array_of_objects'][0]['languages'][0]['id'] == (
+        str(fr_lang.id))
+    assert record['nested_array_of_objects'][0]['languages'][1]['id'] == (
+        str(en_lang.id))
+    res_iter = record.relations.nested_array_of_objects()
+    assert isinstance(res_iter, Iterable)
+    # first inner list
+    res_inner_iter = next(res_iter)
+    assert isinstance(res_inner_iter, Iterable)
+    res = next(res_inner_iter)
+    assert res == fr_lang
+    res = next(res_inner_iter)
+    assert res == en_lang
+    with pytest.raises(StopIteration):  # finished first iterator
+        res = next(res_inner_iter)
+
+    # Set invalid value
+    with pytest.raises(InvalidRelationValue):
+        record.relations.nested_array_of_objects = 'invalid'
+    # Check that old value is still there
+    assert record['nested_array_of_objects'][0]['languages'][0]['id'] == (
+        str(fr_lang.id))
+    assert record['nested_array_of_objects'][0]['languages'][1]['id'] == (
+        str(en_lang.id))
+    res_iter = record.relations.nested_array_of_objects()
+    assert isinstance(res_iter, Iterable)
+    # first inner list
+    res_inner_iter = next(res_iter)
+    assert isinstance(res_inner_iter, Iterable)
+    res = next(res_inner_iter)
+    assert res == fr_lang
+    res = next(res_inner_iter)
+    assert res == en_lang
+    with pytest.raises(StopIteration):  # finished first iterator
+        res = next(res_inner_iter)
+
+    # Dereference relation
+    record.relations.nested_array_of_objects.dereference()
+    assert record['nested_array_of_objects'] == [
+        {
+            'languages': [  # last updated values are fr + en
+                {
+                    'id': str(fr_lang.id),
+                    'iso': 'fr',
+                    '@v': str(fr_lang.id) + '::' + str(fr_lang.revision_id),
+                }, {
+                    'id': str(en_lang.id),
+                    'iso': 'en',
+                    '@v': str(en_lang.id) + '::' + str(en_lang.revision_id),
+                },
+            ],
+            'field2': "string2"
+        },
+    ]
+
+    # Commit clean dereferenced fields
+    record.commit()
+    assert record['nested_array_of_objects'][0]['languages'][0]['id'] == (
+        str(fr_lang.id))
+    assert record['nested_array_of_objects'][0]['languages'][1]['id'] == (
+        str(en_lang.id))
+
+    # Commit to DB and refetch
+    db.session.commit()
+    record = Record1.get_record(record.id)
+    assert record['nested_array_of_objects'][0]['languages'][0]['id'] == (
+        str(fr_lang.id))
+    assert record['nested_array_of_objects'][0]['languages'][1]['id'] == (
+        str(en_lang.id))
+    res_iter = record.relations.nested_array_of_objects()
+    assert isinstance(res_iter, Iterable)
+    # first inner list
+    res_inner_iter = next(res_iter)
+    assert isinstance(res_inner_iter, Iterable)
+    res = next(res_inner_iter)
+    assert res == fr_lang
+    res = next(res_inner_iter)
+    assert res == en_lang
+    with pytest.raises(StopIteration):  # finished first iterator
+        res = next(res_inner_iter)
+
+    # Clear field
+    record.relations.nested_array_of_objects = None
+    assert 'nested_array_of_objects' not in record
+    assert record.relations.nested_array_of_objects() is None
+    record.commit()
+
+
+def test_relations_field_pk_nested_list_of_objects_wo_related_field(
+    testapp, db, languages
+):
+    """RelationsField tests for PKListRelation with a list of objects."""
+
+    Language, languages = languages
+    en_lang = languages['en']
+    fr_lang = languages['fr']
+    es_lang = languages['es']
+
+    class Record1(Record, SystemFieldsMixin):
+        # end result should be
+        # {
+        #   nested_languages: [
+        #       [en, fr],
+        #       [es, fr],
+        #   ]
+        # }
+        relations = RelationsField(
+            nested_languages=PKNestedListRelation(
+                key='nested_languages',
+                attrs=['iso'],
+                record_cls=Language,
+            ),
+        )
+
+    def _test_iterators(record):
+        res_iter = record.relations.nested_languages()
+        assert isinstance(res_iter, Iterable)
+        # first inner list
+        res_inner_iter = next(res_iter)
+        assert isinstance(res_inner_iter, Iterable)
+        res = next(res_inner_iter)
+        assert res == en_lang
+        res = next(res_inner_iter)
+        assert res == es_lang
+        with pytest.raises(StopIteration):  # finished first iterator
+            res = next(res_inner_iter)
+        # second inner list
+        res_inner_iter = next(res_iter)
+        assert isinstance(res_inner_iter, Iterable)
+        res = next(res_inner_iter)
+        assert res == fr_lang
+        res = next(res_inner_iter)
+        assert res == en_lang
+        with pytest.raises(StopIteration):  # finished second iterator
+            res = next(res_inner_iter)
+
+    def _test_inner_values(record):
+        assert record['nested_languages'][0][0]['id'] == (
+            str(en_lang.id))
+        assert record['nested_languages'][0][1]['id'] == (
+            str(es_lang.id))
+        assert record['nested_languages'][1][0]['id'] == (
+            str(fr_lang.id))
+        assert record['nested_languages'][1][1]['id'] == (
+            str(en_lang.id))
+
+    # Class-field check
+    assert isinstance(Record1.relations, RelationsField)
+    assert isinstance(
+        Record1.relations.nested_languages, PKNestedListRelation
+    )
+
+    # Empty initialization
+    record = Record1({})
+    assert record == {}
+    assert isinstance(record.relations, RelationsMapping)
+    assert callable(record.relations.nested_languages)
+    assert record.relations.nested_languages() is None
+
+    # Initialize from dictionary data
+    record = Record1({'nested_languages': [
+        [{"id": str(en_lang.id)}, {"id": str(es_lang.id)}],
+        [{"id": str(fr_lang.id)}, {"id": str(en_lang.id)}]
+    ]})
+
+    _test_iterators(record)
+
+    # Initialize from field data
+    record = Record1(
+        {"metadata": {"title": "random title"}},
+        relations={'nested_languages': [
+            [str(en_lang.id), str(es_lang.id)],
+            [str(fr_lang.id), str(en_lang.id)],
+        ]})
+    _test_inner_values(record)
+    _test_iterators(record)
+
+    # Set via record dictionary data
+    record = Record1.create({})
+    record['nested_languages'] = [
+        [{"id": str(en_lang.id)}, {"id": str(es_lang.id)}],
+        [{"id": str(fr_lang.id)}, {"id": str(en_lang.id)}],
+    ]
+
+    _test_iterators(record)
+
+    record.commit()  # validates
+
+    _test_iterators(record)
+
+    # fails with non-list types
+    record['nested_languages'] = [
+        {'id': str(es_lang.id)}
+    ]
+    with pytest.raises(InvalidRelationValue):
+        record.commit()  # fails validation
+
+    # fails with invalid values
+    record['nested_languages'] = [
+        [{'id': 'invalid'}]
+    ]
+    with pytest.raises(InvalidRelationValue):
+        record.commit()  # fails validation
+
+    # Set via attribute
+    record = Record1.create({})
+    record.relations.nested_languages = [
+        [str(en_lang.id), str(es_lang.id)],
+        [str(fr_lang.id), str(en_lang.id)],
+    ]
+    _test_inner_values(record)
+    _test_iterators(record)
+
+    # Update existing value
+    record.relations.nested_languages = [
+        [str(fr_lang.id), str(en_lang.id)],
+    ]
+    assert record['nested_languages'][0][0]['id'] == (
+        str(fr_lang.id))
+    assert record['nested_languages'][0][1]['id'] == (
+        str(en_lang.id))
+    res_iter = record.relations.nested_languages()
+    assert isinstance(res_iter, Iterable)
+    # first inner list
+    res_inner_iter = next(res_iter)
+    assert isinstance(res_inner_iter, Iterable)
+    res = next(res_inner_iter)
+    assert res == fr_lang
+    res = next(res_inner_iter)
+    assert res == en_lang
+    with pytest.raises(StopIteration):  # finished first iterator
+        res = next(res_inner_iter)
+
+    # Set invalid value
+    with pytest.raises(InvalidRelationValue):
+        record.relations.nested_languages = 'invalid'
+    # Check that old value is still there
+    assert record['nested_languages'][0][0]['id'] == (
+        str(fr_lang.id))
+    assert record['nested_languages'][0][1]['id'] == (
+        str(en_lang.id))
+    res_iter = record.relations.nested_languages()
+    assert isinstance(res_iter, Iterable)
+    # first inner list
+    res_inner_iter = next(res_iter)
+    assert isinstance(res_inner_iter, Iterable)
+    res = next(res_inner_iter)
+    assert res == fr_lang
+    res = next(res_inner_iter)
+    assert res == en_lang
+    with pytest.raises(StopIteration):  # finished first iterator
+        res = next(res_inner_iter)
+
+    # Dereference relation
+    record.relations.nested_languages.dereference()
+    assert record['nested_languages'] == [
+        [  # last updated values are fr + en
+            {
+                'id': str(fr_lang.id),
+                'iso': 'fr',
+                '@v': str(fr_lang.id) + '::' + str(fr_lang.revision_id),
+            }, {
+                'id': str(en_lang.id),
+                'iso': 'en',
+                '@v': str(en_lang.id) + '::' + str(en_lang.revision_id),
+            },
+        ],
+    ]
+
+    # Commit clean dereferenced fields
+    record.commit()
+    assert record['nested_languages'][0][0]['id'] == (
+        str(fr_lang.id))
+    assert record['nested_languages'][0][1]['id'] == (
+        str(en_lang.id))
+
+    # Commit to DB and refetch
+    db.session.commit()
+    record = Record1.get_record(record.id)
+    assert record['nested_languages'][0][0]['id'] == (
+        str(fr_lang.id))
+    assert record['nested_languages'][0][1]['id'] == (
+        str(en_lang.id))
+    res_iter = record.relations.nested_languages()
+    assert isinstance(res_iter, Iterable)
+    # first inner list
+    res_inner_iter = next(res_iter)
+    assert isinstance(res_inner_iter, Iterable)
+    res = next(res_inner_iter)
+    assert res == fr_lang
+    res = next(res_inner_iter)
+    assert res == en_lang
+    with pytest.raises(StopIteration):  # finished first iterator
+        res = next(res_inner_iter)
+
+    # Clear field
+    record.relations.nested_languages = None
+    assert 'nested_languages' not in record
+    assert record.relations.nested_languages() is None
     record.commit()

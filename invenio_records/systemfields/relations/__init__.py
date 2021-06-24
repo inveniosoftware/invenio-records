@@ -22,17 +22,22 @@ The field consists of:
 from .errors import InvalidRelationValue, RelationError
 from .field import RelationsField
 from .mapping import RelationsMapping
-from .relations import ListRelation, PKListRelation, PKRelation, RelationBase
-from .results import RelationListResult, RelationResult
+from .relations import ListRelation, NestedListRelation, PKListRelation, \
+    PKNestedListRelation, PKRelation, RelationBase
+from .results import RelationListResult, RelationNestedListResult, \
+    RelationResult
 
 __all__ = (
     'InvalidRelationValue',
     'ListRelation',
+    'NestedListRelation',
     'PKListRelation',
+    'PKNestedListRelation',
     'PKRelation',
     'RelationBase',
     'RelationError',
     'RelationListResult',
+    'RelationNestedListResult',
     'RelationResult',
     'RelationsField',
     'RelationsMapping',

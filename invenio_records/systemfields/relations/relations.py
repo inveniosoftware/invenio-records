@@ -13,7 +13,8 @@ from invenio_db import db
 
 from ...dictutils import dict_lookup, parse_lookup_key
 from .errors import InvalidRelationValue
-from .results import RelationListResult, RelationResult
+from .results import RelationListResult, RelationNestedListResult, \
+    RelationResult
 
 
 class RelationBase:
@@ -253,3 +254,68 @@ class PKRelation(RelationBase):
 
 class PKListRelation(ListRelation, PKRelation):
     """Primary-key list relation."""
+
+
+class NestedListRelation(ListRelation):
+    """Primary-key relation list type."""
+
+    result_cls = RelationNestedListResult
+
+    def exists_many(self, ids):
+        """Default multiple existence check by a list of IDs."""
+        return all(
+            all(self.exists(i) for i in inner_ids) for inner_ids in ids
+        )
+
+    def parse_value(self, value):
+        """Parse a record (or ID) to the ID to be stored."""
+        if isinstance(value, (tuple, list)):
+            outter_list = []
+            if self.relation_field:
+                for inner_list in value:
+                    inner_v = inner_list.get(self.relation_field)
+                    if inner_v:
+                        outter_list.append([
+                            super(ListRelation, self).parse_value(v)
+                            for v in inner_v
+                        ])
+            else:
+                for inner_list in value:
+                    outter_list.append([
+                        super(ListRelation, self).parse_value(v)
+                        for v in inner_list
+                    ])
+            return outter_list
+        else:
+            raise InvalidRelationValue('Invalid value. Expected list.')
+
+    def set_value(self, record, value):
+        """Set the relation value."""
+        store_values = self.parse_value(value)
+        # Validate all values
+        if self.exists_many(store_values):
+            keys = parse_lookup_key(self.value_key)
+            store_key, rel_id_key = keys[-2:]
+            parent = self._get_parent(record, keys)
+
+            if self.relation_field:
+                values_list = deepcopy(value)
+                for v in values_list:
+                    inner_sv = v.get(self.relation_field)
+                    if inner_sv:
+                        v[self.relation_field] = [
+                            {rel_id_key: sv} for sv in inner_sv
+                        ]
+            else:
+                values_list = [
+                    [{rel_id_key: sv} for sv in inner_values]
+                    for inner_values in store_values
+                ]
+
+            parent[store_key] = values_list
+        else:
+            raise InvalidRelationValue("Invalid values.")
+
+
+class PKNestedListRelation(NestedListRelation, PKRelation):
+    """Primary-key nested list relation."""

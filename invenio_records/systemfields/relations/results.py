@@ -184,3 +184,59 @@ class RelationListResult(RelationResult):
     def insert(self, index, value):
         """Insert a relation to the list."""
         raise NotImplementedError()
+
+
+class RelationNestedListResult(RelationListResult):
+    """Relation access result."""
+
+    def __call__(self, force=True):
+        """Resolve the relation."""
+        try:
+            values = self._lookup_data()
+            parent_list = []
+            for inner_list in values:
+                parent_list.append((
+                    self.resolve(v[self._value_key_suffix])
+                    for v in inner_list
+                ))
+
+            return iter(parent_list)
+        except KeyError:
+            return None
+
+    def validate(self):
+        """Validate the field."""
+        try:
+            values = self._lookup_data()
+            if values and not isinstance(values, list):
+                raise InvalidRelationValue(
+                    f'Invalid value {values}, should be list.')
+
+            for outter_v in values:
+                if outter_v and not isinstance(outter_v, list):
+                    raise InvalidRelationValue(
+                        f'Invalid inner value {outter_v}, should be list.'
+                    )
+                for v in outter_v:
+                    relation_id = self._lookup_id(v)
+                    if not self.exists(relation_id):
+                        raise InvalidRelationValue(
+                            f'Invalid value {relation_id}.')
+        except KeyError:
+            return None
+
+    def _apply_items(self, func, attrs=None):
+        """Iterate over the list of objects."""
+        # The attributes we want to get from the related record.
+        attrs = attrs or self.attrs
+        try:
+            # Get the list of objects we have to dereference/clean.
+            values = self._lookup_data()
+            if values:
+                for outter_v in values:
+                    for v in outter_v:
+                        if self.field._value_key_suffix in v:
+                            func(v, attrs)
+                return values
+        except KeyError:
+            return None
