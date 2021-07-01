@@ -193,14 +193,18 @@ class RelationNestedListResult(RelationListResult):
         """Resolve the relation."""
         try:
             values = self._lookup_data()
-            parent_list = []
-            for inner_list in values:
-                parent_list.append((
-                    self.resolve(v[self._value_key_suffix])
-                    for v in inner_list
-                ))
-
-            return iter(parent_list)
+            parent_iter = []
+            for inner_values in values:
+                inner_iter = []
+                for v in inner_values:
+                    try:
+                        inner_iter.append(
+                            self.resolve(v[self._value_key_suffix])
+                        )
+                    except KeyError:
+                        continue
+                parent_iter.append(iter(inner_iter))
+            return iter(parent_iter)
         except KeyError:
             return None
 
