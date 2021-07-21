@@ -17,3 +17,7 @@ class RelationError(RecordsError):
 
 class InvalidRelationValue(RelationError):
     """Invalid relation value."""
+
+
+class InvalidCheckValue(RelationError):
+    """Invalid check value."""
