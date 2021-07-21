@@ -9,7 +9,7 @@
 """Relations system field."""
 
 from ...dictutils import dict_lookup, dict_set, parse_lookup_key
-from .errors import InvalidRelationValue
+from .errors import InvalidCheckValue, InvalidRelationValue
 
 
 class RelationResult:
@@ -39,12 +39,39 @@ class RelationResult:
         """Proxy attribute access to field."""
         return getattr(self.field, name)
 
+    def _value_check(self, value_to_check, object):
+        """Checks if the value is present in the object."""
+        for key, value in value_to_check.items():
+            if isinstance(value, dict):
+                try:
+                    self._value_check(value, object[key])
+                except KeyError:
+                    raise InvalidCheckValue(f'Invalid key {key}.')
+            else:
+                try:
+                    if isinstance(value, list):
+                        if object[key] not in value:
+                            raise InvalidCheckValue(
+                                f"Invalid value: {object[key]}"
+                            )
+                    else:
+                        if object[key] != value:
+                            raise InvalidCheckValue(
+                                f"Invalid value: {object[key]}"
+                            )
+                except KeyError:
+                    pass
+
     def validate(self):
         """Validate the field."""
         try:
             val = self._lookup_id()
             if not self.exists(val):
                 raise InvalidRelationValue(f'Invalid value {val}.')
+            if self.value_check:
+                data = self._lookup_data()
+                obj = self.resolve(data[self.field._value_key_suffix])
+                self._value_check(self.value_check, obj)
         except KeyError:
             return None
 
@@ -135,6 +162,9 @@ class RelationListResult(RelationResult):
                 relation_id = self._lookup_id(v)
                 if not self.exists(relation_id):
                     raise InvalidRelationValue(f'Invalid value {relation_id}.')
+                if self.value_check:
+                    obj = self.resolve(v[self.field._value_key_suffix])
+                    self._value_check(self.value_check, obj)
         except KeyError:
             return None
 
@@ -226,6 +256,9 @@ class RelationNestedListResult(RelationListResult):
                     if not self.exists(relation_id):
                         raise InvalidRelationValue(
                             f'Invalid value {relation_id}.')
+                    if self.value_check:
+                        obj = self.resolve(v[self.field._value_key_suffix])
+                        self._value_check(self.value_check, obj)
         except KeyError:
             return None
 

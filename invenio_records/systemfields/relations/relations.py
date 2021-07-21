@@ -23,13 +23,14 @@ class RelationBase:
     result_cls = RelationResult
 
     def __init__(self, key=None, attrs=None, _value_key_suffix='id',
-                 _clear_empty=True, cache_key=None):
+                 _clear_empty=True, cache_key=None, value_check=None):
         """Initialize the relation."""
         self.key = key
         self.attrs = attrs
         self._value_key_suffix = _value_key_suffix
         self._clear_empty = _clear_empty
         self._cache_key = cache_key
+        self.value_check = value_check
         self._cache_ref = None
 
     def inject_cache(self, cache, default_key):

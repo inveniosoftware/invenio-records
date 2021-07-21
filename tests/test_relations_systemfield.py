@@ -17,6 +17,7 @@ from invenio_records.systemfields import PKRelation, RelationsField, \
     SystemFieldsMixin
 from invenio_records.systemfields.relations import InvalidRelationValue, \
     PKListRelation, PKNestedListRelation, RelationsMapping
+from invenio_records.systemfields.relations.errors import InvalidCheckValue
 
 
 @pytest.fixture()
@@ -33,6 +34,8 @@ def languages(db):
             'native_speakers': '489 million', 'ethnicity': 'Spanish'}},
         {'title': 'Italian', 'iso': 'it', 'information': {
             'native_speakers': '67 million', 'ethnicity': 'Italians'}},
+        {'title': 'Old English', 'iso': 'oe', 'information': {
+            'native_speakers': '400 million', 'ethnicity': 'English'}},
     )
 
     languages = {}
@@ -1106,3 +1109,439 @@ def test_relations_field_pk_nested_list_of_objects_wo_related_field(
     assert 'nested_languages' not in record
     assert record.relations.nested_languages() is None
     record.commit()
+
+
+def test_relations_field_pk_relation_with_value_check(testapp, db, languages):
+    """RelationsField tests for PKRelation with value_check param."""
+
+    Language, languages = languages
+    en_lang = languages['en']
+    fr_lang = languages['fr']
+    es_lang = languages['es']
+    oe_lang = languages['oe']
+
+    # Correct record definition with 1 value to check
+    class Record1(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            language=PKRelation(
+                key='language',
+                attrs=['iso'],
+                record_cls=Language,
+                value_check=dict(information=dict(ethnicity='English')),
+            )
+        )
+
+    # Correct record definition with a list of values to check for
+    class Record2(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            language=PKRelation(
+                key='language',
+                attrs=['iso'],
+                record_cls=Language,
+                value_check=dict(
+                    information=dict(ethnicity=['English', 'French'])
+                ),
+            )
+        )
+
+    # Wrong record definition, value_check must contain existing fields in the
+    # vocabulary value
+    class Record3(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            language=PKRelation(
+                key='language',
+                attrs=['iso'],
+                record_cls=Language,
+                value_check=dict(wrong_value=dict(ethnicity='English')),
+            )
+        )
+
+    # Correct record definition with multiple values to check
+    class Record4(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            language=PKRelation(
+                key='language',
+                attrs=['iso'],
+                record_cls=Language,
+                value_check=dict(
+                    information=dict(ethnicity='English'), iso='oe'
+                ),
+            )
+        )
+
+    record = Record1.create({})
+    record['language'] = {'id': str(fr_lang.id)}
+    # Fails because only ethnicity accepted is English
+    with pytest.raises(InvalidCheckValue):
+        record.commit()  # validates
+
+    record['language'] = {'id': str(en_lang.id)}
+    record.commit()  # validates
+    res = record.relations.language()
+    assert isinstance(res, Language)
+    assert res == en_lang
+
+    record = Record2.create({})
+    record['language'] = {'id': str(es_lang.id)}
+    # Fails because only ethnicity accepted is English and French
+    with pytest.raises(InvalidCheckValue):
+        record.commit()  # validates
+
+    record['language'] = {'id': str(fr_lang.id)}
+    record.commit()  # validates
+    res = record.relations.language()
+    assert isinstance(res, Language)
+    assert res == fr_lang
+
+    record = Record3.create({})
+    record['language'] = {'id': str(en_lang.id)}
+    # Fails because wrong_value is not a field of the language vocabulary
+    with pytest.raises(InvalidCheckValue):
+        record.commit()  # validates
+
+    record = Record4.create({})
+    record['language'] = {'id': str(en_lang.id)}
+    # Fails because only records with English ethnicity and 'oe' as iso are
+    # accepted
+    with pytest.raises(InvalidCheckValue):
+        record.commit()  # validates
+
+    record['language'] = {'id': str(oe_lang.id)}
+    record.commit()  # validates
+    res = record.relations.language()
+    assert isinstance(res, Language)
+    assert res == oe_lang
+
+
+def test_relations_field_pk_list_relation_with_value_check(
+    testapp, db, languages
+):
+    """RelationsField tests for PKListRelation with value_check param."""
+
+    Language, languages = languages
+    en_lang = languages['en']
+    fr_lang = languages['fr']
+    es_lang = languages['es']
+    oe_lang = languages['oe']
+
+    # Correct record definition with 1 value to check
+    class Record1(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            languages=PKListRelation(
+                key='languages',
+                attrs=['iso', 'information.ethnicity'],
+                record_cls=Language,
+                value_check=dict(
+                    information=dict(ethnicity='English')
+                ),
+            )
+        )
+
+    # Correct record definition with a list of values to check for
+    class Record2(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            languages=PKListRelation(
+                key='languages',
+                attrs=['iso', 'information.ethnicity'],
+                record_cls=Language,
+                value_check=dict(
+                    information=dict(ethnicity=['English', 'French'])
+                ),
+            )
+        )
+
+    # Wrong record definition, value_check must contain existing fields in the
+    # vocabulary value
+    class Record3(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            languages=PKListRelation(
+                key='languages',
+                attrs=['iso', 'information.ethnicity'],
+                record_cls=Language,
+                value_check=dict(wrong_value=dict(ethnicity='English')),
+            )
+        )
+
+    # Correct record definition with multiple values to check
+    class Record4(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            languages=PKListRelation(
+                key='languages',
+                attrs=['iso', 'information.ethnicity'],
+                record_cls=Language,
+                value_check=dict(
+                    information=dict(ethnicity='English'), iso='oe'
+                ),
+            )
+        )
+
+    record = Record1.create({})
+    record['languages'] = [{'id': str(fr_lang.id)}]
+    # Fails because only ethnicity accepted is English
+    with pytest.raises(InvalidCheckValue):
+        record.commit()  # validates
+
+    record['languages'] = [{'id': str(en_lang.id)}]
+    record.commit()  # validates
+    res_iter = record.relations.languages()
+    assert isinstance(res_iter, Iterable)
+    res = next(res_iter)
+    assert res == en_lang
+
+    record = Record2.create({})
+    record['languages'] = [{'id': str(es_lang.id)}, {'id': str(en_lang.id)}]
+    # Fails because only ethnicity accepted is English and French
+    with pytest.raises(InvalidCheckValue):
+        record.commit()  # validates
+
+    record['languages'] = [{'id': str(fr_lang.id)}, {'id': str(en_lang.id)}]
+    record.commit()  # validates
+    res_iter = record.relations.languages()
+    assert isinstance(res_iter, Iterable)
+    res = next(res_iter)
+    assert res == fr_lang
+
+    record = Record3.create({})
+    record['languages'] = [{'id': str(en_lang.id)}]
+    # Fails because wrong_value is not a field of the language vocabulary
+    with pytest.raises(InvalidCheckValue):
+        record.commit()  # validates
+
+    record = Record4.create({})
+    record['languages'] = [{'id': str(en_lang.id)}]
+    # Fails because only records with English ethnicity and 'oe' as iso are
+    # accepted
+    with pytest.raises(InvalidCheckValue):
+        record.commit()  # validates
+
+    record['languages'] = [{'id': str(oe_lang.id)}]
+    record.commit()  # validates
+    res_iter = record.relations.languages()
+    assert isinstance(res_iter, Iterable)
+    res = next(res_iter)
+    assert res == oe_lang
+
+
+def test_relations_field_pk_nested_list_of_obj_w_related_field_w_value_check(
+    testapp, db, languages
+):
+    """RelationsField tests for PKListRelation with a list of objects and
+    with the value_check param."""
+
+    Language, languages = languages
+    en_lang = languages['en']
+    fr_lang = languages['fr']
+    es_lang = languages['es']
+    oe_lang = languages['oe']
+
+    # Correct record definition with 1 value to check
+    class Record1(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            nested_array_of_objects=PKNestedListRelation(
+                key='nested_array_of_objects',
+                attrs=['iso'],
+                record_cls=Language,
+                relation_field='languages',
+                value_check=dict(
+                    information=dict(ethnicity='English')
+                ),
+            ),
+        )
+
+    # Correct record definition with a list of values to check for
+    class Record2(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            nested_array_of_objects=PKNestedListRelation(
+                key='nested_array_of_objects',
+                attrs=['iso'],
+                record_cls=Language,
+                relation_field='languages',
+                value_check=dict(
+                    information=dict(ethnicity=['English', 'French'])
+                ),
+            ),
+        )
+
+    # Wrong record definition, value_check must contain existing fields in the
+    # vocabulary value
+    class Record3(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            nested_array_of_objects=PKNestedListRelation(
+                key='nested_array_of_objects',
+                attrs=['iso'],
+                record_cls=Language,
+                relation_field='languages',
+                value_check=dict(wrong_value=dict(ethnicity='English')),
+            ),
+        )
+
+    # Correct record definition with multiple values to check
+    class Record4(Record, SystemFieldsMixin):
+        relations = RelationsField(
+            nested_array_of_objects=PKNestedListRelation(
+                key='nested_array_of_objects',
+                attrs=['iso'],
+                record_cls=Language,
+                relation_field='languages',
+                value_check=dict(
+                    information=dict(ethnicity='English'), iso='oe'
+                ),
+            ),
+        )
+
+    record = Record1.create({})
+    record['nested_array_of_objects'] = [
+        {
+            'languages': [
+                {"id": str(en_lang.id)}, {"id": str(es_lang.id)}
+            ],
+            'field1': "string"
+        },
+        {
+            'languages': [
+                {"id": str(fr_lang.id)}, {"id": str(en_lang.id)}
+            ],
+            'field2': "string2"
+        }
+    ]
+    # Fails because only ethnicity accepted is English
+    with pytest.raises(InvalidCheckValue):
+        record.commit()  # validates
+
+    record['nested_array_of_objects'] = [
+        {
+            'languages': [
+                {"id": str(en_lang.id)}
+            ],
+            'field1': "string"
+        },
+        {
+            'languages': [
+                {"id": str(en_lang.id)}
+            ],
+            'field2': "string2"
+        }
+    ]
+    res_iter = record.relations.nested_array_of_objects()
+    assert isinstance(res_iter, Iterable)
+    # first inner list
+    res_inner_iter = next(res_iter)
+    assert isinstance(res_inner_iter, Iterable)
+    res = next(res_inner_iter)
+    assert res == en_lang
+    with pytest.raises(StopIteration):  # finished first iterator
+        res = next(res_inner_iter)
+    # second inner list
+    res_inner_iter = next(res_iter)
+    assert isinstance(res_inner_iter, Iterable)
+    res = next(res_inner_iter)
+    assert res == en_lang
+    with pytest.raises(StopIteration):  # finished second iterator
+        res = next(res_inner_iter)
+    record.commit()  # validates
+
+    record = Record2.create({})
+    record['nested_array_of_objects'] = [
+        {
+            'languages': [
+                {"id": str(en_lang.id)}, {"id": str(es_lang.id)}
+            ],
+            'field1': "string"
+        },
+        {
+            'languages': [
+                {"id": str(fr_lang.id)}, {"id": str(en_lang.id)}
+            ],
+            'field2': "string2"
+        }
+    ]
+    # Fails because only ethnicity accepted is English and French
+    with pytest.raises(InvalidCheckValue):
+        record.commit()  # validates
+
+    record['nested_array_of_objects'] = [
+        {
+            'languages': [
+                {"id": str(en_lang.id)}, {"id": str(fr_lang.id)}
+            ],
+            'field1': "string"
+        },
+        {
+            'languages': [
+                {"id": str(fr_lang.id)}, {"id": str(en_lang.id)}
+            ],
+            'field2': "string2"
+        }
+    ]
+
+    record.commit()  # validates
+    res_iter = record.relations.nested_array_of_objects()
+    assert isinstance(res_iter, Iterable)
+    # first inner list
+    res_inner_iter = next(res_iter)
+    assert isinstance(res_inner_iter, Iterable)
+    res = next(res_inner_iter)
+    assert res == en_lang
+    res = next(res_inner_iter)
+    assert res == fr_lang
+    with pytest.raises(StopIteration):  # finished first iterator
+        res = next(res_inner_iter)
+    # second inner list
+    res_inner_iter = next(res_iter)
+    assert isinstance(res_inner_iter, Iterable)
+    res = next(res_inner_iter)
+    assert res == fr_lang
+    res = next(res_inner_iter)
+    assert res == en_lang
+    with pytest.raises(StopIteration):  # finished second iterator
+        res = next(res_inner_iter)
+
+    record = Record3.create({})
+    record['nested_array_of_objects'] = [
+        {
+            'languages': [
+                {"id": str(en_lang.id)}, {"id": str(fr_lang.id)}
+            ],
+            'field1': "string"
+        },
+        {
+            'languages': [
+                {"id": str(fr_lang.id)}, {"id": str(en_lang.id)}
+            ],
+            'field2': "string2"
+        }
+    ]
+    # Fails because wrong_value is not a field of the language vocabulary
+    with pytest.raises(InvalidCheckValue):
+        record.commit()  # validates
+
+    record = Record4.create({})
+    record['nested_array_of_objects'] = [
+        {
+            'languages': [
+                {"id": str(en_lang.id)}
+            ],
+            'field1': "string"
+        }
+    ]
+    # Fails because only ethnicity accepted is English
+    with pytest.raises(InvalidCheckValue):
+        record.commit()  # validates
+
+    record['nested_array_of_objects'] = [
+        {
+            'languages': [
+                {"id": str(oe_lang.id)}
+            ],
+            'field1': "string"
+        }
+    ]
+    res_iter = record.relations.nested_array_of_objects()
+    assert isinstance(res_iter, Iterable)
+    # first inner list
+    res_inner_iter = next(res_iter)
+    assert isinstance(res_inner_iter, Iterable)
+    res = next(res_inner_iter)
+    assert res == oe_lang
+    with pytest.raises(StopIteration):  # finished first iterator
+        next(res_inner_iter)
