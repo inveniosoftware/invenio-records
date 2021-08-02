@@ -42,25 +42,29 @@ class RelationResult:
     def _value_check(self, value_to_check, object):
         """Checks if the value is present in the object."""
         for key, value in value_to_check.items():
+            if key not in object:
+                raise InvalidCheckValue(f'Invalid key {key}.')
             if isinstance(value, dict):
-                try:
-                    self._value_check(value, object[key])
-                except KeyError:
-                    raise InvalidCheckValue(f'Invalid key {key}.')
+                self._value_check(value, object[key])
             else:
-                try:
-                    if isinstance(value, list):
-                        if object[key] not in value:
-                            raise InvalidCheckValue(
-                                f"Invalid value: {object[key]}"
-                            )
-                    else:
-                        if object[key] != value:
-                            raise InvalidCheckValue(
-                                f"Invalid value: {object[key]}"
-                            )
-                except KeyError:
-                    pass
+                if not isinstance(value, list):
+                    raise InvalidCheckValue(
+                        f"Invalid value_check value: {value}; it must be "
+                        "a list"
+                    )
+                elif isinstance(object[key], list):
+                    value_exist = set(object[key]).intersection(set(value))
+                    if not value_exist:
+                        raise InvalidCheckValue(
+                            f"Failed cross checking value_check value "
+                            f"{value} with record value {object[key]}."
+                        )
+                else:
+                    if object[key] not in value:
+                        raise InvalidCheckValue(
+                            f"Failed cross checking value_check value "
+                            f"{value} with record value {object[key]}."
+                        )
 
     def validate(self):
         """Validate the field."""
