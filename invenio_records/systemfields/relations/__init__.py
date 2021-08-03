@@ -19,7 +19,7 @@ The field consists of:
   ``record.relations.languages``).
 """
 
-from .errors import InvalidRelationValue, RelationError
+from .errors import InvalidCheckValue, InvalidRelationValue, RelationError
 from .field import RelationsField
 from .mapping import RelationsMapping
 from .relations import ListRelation, NestedListRelation, PKListRelation, \
@@ -29,6 +29,7 @@ from .results import RelationListResult, RelationNestedListResult, \
 
 __all__ = (
     'InvalidRelationValue',
+    'InvalidCheckValue',
     'ListRelation',
     'NestedListRelation',
     'PKListRelation',
