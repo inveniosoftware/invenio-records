@@ -3,6 +3,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2021 CERN.
+# Copyright (C) 2021 TU Wien.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -12,7 +13,6 @@
 import urllib.parse
 
 from jsonschema import RefResolutionError, RefResolver
-from jsonschema.compat import urljoin
 
 
 class InvenioRefResolver(RefResolver):
@@ -41,4 +41,4 @@ def urljoin_with_custom_scheme(*args, **kwargs):
             if scheme not in urllib.parse.uses_netloc:
                 urllib.parse.uses_netloc.append(scheme)
 
-    return urljoin(*args, **kwargs)
+    return urllib.parse.urljoin(*args, **kwargs)

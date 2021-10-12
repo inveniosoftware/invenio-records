@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2015-2018 CERN.
+# Copyright (C) 2021      TU Wien.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -59,7 +60,7 @@ install_requires = [
     'jsonpatch>=1.26',
     'jsonref>=0.2',
     'jsonresolver>=0.3.1',
-    'jsonschema>=3.0.0,<4.0.0',
+    'jsonschema>=3.0.0,<5.0.0',
 ]
 
 packages = find_packages()
