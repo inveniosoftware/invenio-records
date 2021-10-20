@@ -8,7 +8,24 @@
 Changes
 =======
 
-Version 1.5.0 (released TBD)
+Version 1.6.0 (released 2021-10-20)
+
+- Adds a new relations system field for managing relations between records.
+  Part of RFC #40.
+
+- Adds a new related model system field to serialize/dump a related object into
+  the record JSON.
+
+- Adds new configuration variables to allow injecting a custom JSONSchema
+  RefResolver together with a custom JSONSchema store. Part of RFC #42 to
+  simplify JSON Schema resolution and registry management and more easily build
+  composable JSONSchemas.
+
+- Deprecated the Record.patch() method.
+
+Version 1.5.0
+
+- Not released to avoid polluting Invenio v3.4.
 
 Version 1.4.0 (released 2020-12-09)
 
