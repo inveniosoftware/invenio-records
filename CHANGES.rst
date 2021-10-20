@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.4.1 (released 2021-10-20)
+
+- Pins jsonschema>=3,<4.
+
 Version 1.4.0 (released 2020-12-09)
 
 - Backwards incompatible: By default the versioning table is now disabled in

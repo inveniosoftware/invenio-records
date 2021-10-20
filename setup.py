@@ -58,7 +58,7 @@ install_requires = [
     'jsonpatch>=1.26',
     'jsonref>=0.2',
     'jsonresolver>=0.3.1',
-    'jsonschema>=3.0.0',
+    'jsonschema>=3.0.0,<4.0.0',
 ]
 
 packages = find_packages()
