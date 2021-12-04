@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.6.1 (released 2021-12-04)
+
+- Adds support for the post commit life-cycle hook.
+
 Version 1.6.0 (released 2021-10-20)
 
 - Adds a new relations system field for managing relations between records.
