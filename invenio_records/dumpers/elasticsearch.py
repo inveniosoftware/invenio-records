@@ -151,7 +151,7 @@ class ElasticsearchDumper(Dumper):
         dump[dump_key] = self._serialize(val, dump_type)
 
     def _load_model_field(self, record_cls, model_field_name, dump, dump_key,
-                          dump_type):
+                          load_type):
         """Helper method to load model fields from dump.
 
         :param record_cls: The record class being used for loading.
@@ -169,12 +169,11 @@ class ElasticsearchDumper(Dumper):
             return val
 
         # Determine dump data type if not provided
-        if dump_type is None:
-            sa_field = getattr(record_cls.model_cls, model_field_name)
-            dump_type = self._sa_type(record_cls.model_cls, model_field_name)
+        if load_type is None:
+            load_type = self._sa_type(record_cls.model_cls, model_field_name)
 
         # Deserialize the value
-        return self._deserialize(val, dump_type)
+        return self._deserialize(val, load_type)
 
     @staticmethod
     def _iter_modelfields(record_cls):
@@ -247,15 +246,15 @@ class ElasticsearchDumper(Dumper):
         # Load explicitly defined model fields.
         model_data = {}
         it = self._model_fields.items()
-        for model_field_name, (dump_key, dump_type) in it:
+        for model_field_name, (dump_key, load_type) in it:
             model_data[model_field_name] = self._load_model_field(
-                record_cls, model_field_name, dump_data, dump_key, dump_type)
+                record_cls, model_field_name, dump_data, dump_key, load_type)
 
         # Load model fields defined as system fields
         for systemfield in self._iter_modelfields(record_cls):
             model_data[systemfield.model_field_name] = self._load_model_field(
                 record_cls, systemfield.model_field_name, dump_data,
-                systemfield.dump_key, systemfield.dump_type)
+                systemfield.dump_key, systemfield.load_type)
 
         # Initialize model if an id was provided.
         if model_data.get('id') is not None:
