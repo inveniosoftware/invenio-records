@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-          python-version: [3.6, 3.7, 3.8]
+          python-version: [3.7, 3.8]
           requirements-level: [min, pypi]
           db-service: [postgresql9, postgresql11, mysql5, mysql8]
           exclude:
@@ -28,10 +28,10 @@ jobs:
             requirements-level: min
 
           - db-service: postgresql11
-            python-version: 3.6
+            python-version: 3.7
 
           - db-service: mysql8
-            python-version: 3.6
+            python-version: 3.7
 
           include:
           - db-service: postgresql9
