@@ -45,12 +45,12 @@ def _create_validator(schema, base_validator_cls=None, custom_checks=None):
     """Create a fitting jsonschema validator class.
 
     :param schema: The schema for which to create a fitting validator
-    :param base_validator_cls: The base :class:`jsonschema.IValidator` class
-        to base the new validator class on -- if not specified, the base
+    :param base_validator_cls: The base :class:`jsonschema.protocols.Validator`
+        class to base the new validator class on -- if not specified, the base
         class will be determined by the given schema.
     :param custom_checks: A dictionary with type names and Python types
         to check against, e.g. {"string": str, "object": dict}
-    :returns: An fitting :class:`jsonschema.IValidator` class
+    :returns: An fitting :class:`jsonschema.protocols.Validator` class
     """
     validator_cls = base_validator_cls or validator_for(schema)
     if custom_checks:
