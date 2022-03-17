@@ -128,8 +128,8 @@ class RecordBase(dict):
             raises a :class:`jsonschema.exceptions.ValidationError`.
 
           * **validator** --
-            A :class:`jsonschema.IValidator` class used for record validation.
-            It will be used as `cls` argument when calling
+            A :class:`jsonschema.protocols.Validator` class used for record
+            validation. It will be used as `cls` argument when calling
             :func:`jsonschema.validate`. For example
 
             >>> from jsonschema.validators import extend, Draft4Validator
@@ -167,8 +167,8 @@ class RecordBase(dict):
         # below in _validate() which is also the one used internally to avoid
         # double encoding of the dict to JSON.
         # 2) We ignore **kwargs (but keep it for backward compatibility) as
-        # the jsonschema.IValidator only takes the two keyword arguments
-        # formater_checker and cls (i.e. validator).
+        # the jsonschema.protocols.Validator only takes the two keyword
+        # arguments formater_checker and cls (i.e. validator).
         self._validate(format_checker=format_checker, validator=validator)
 
     def _validate(self, format_checker=None, validator=None, use_model=False):
@@ -315,8 +315,8 @@ class Record(RecordBase):
             :func:`~invenio_records.api.RecordBase.validate` for more details.
 
           * **validator** --
-            A :class:`jsonschema.IValidator` class that will be used to
-            validate the record. See
+            A :class:`jsonschema.protocols.Validator` class that will be used
+            to validate the record. See
             :func:`~invenio_records.api.RecordBase.validate` for more details.
 
         :param data: Dict with the record metadata.
@@ -432,8 +432,8 @@ class Record(RecordBase):
             :func:`~invenio_records.api.RecordBase.validate` for more details.
 
           * **validator** --
-            A :class:`jsonschema.IValidator` class that will be used to
-            validate the record. See
+            A :class:`jsonschema.protocols.Validator` class that will be used
+            to validate the record. See
             :func:`~invenio_records.api.RecordBase.validate` for more details.
 
         :returns: The :class:`Record` instance.
