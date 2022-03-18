@@ -16,7 +16,7 @@ class ModelField(SystemField):
     """Model field for providing get and set access on a model field."""
 
     def __init__(self, model_field_name=None, dump=True, dump_key=None,
-                 dump_type=None):
+                 dump_type=None, load_type=None):
         """Initialize the field.
 
         :param model_field_name: Name of field on the database model.
@@ -29,6 +29,7 @@ class ModelField(SystemField):
         self.dump = dump
         self._dump_key = dump_key
         self._dump_type = dump_type
+        self._load_type = load_type
 
     #
     # Helpers
@@ -57,6 +58,14 @@ class ModelField(SystemField):
         Defaults to none, meaning the dumper will determine how to dump it.
         """
         return self._dump_type
+
+    @property
+    def load_type(self):
+        """The data type used to determine how to deserialize the model field.
+
+        Defaults to dump_type.
+        """
+        return self._load_type or self._dump_type
 
     def _set(self, model, value):
         """Internal method to set value on the model's field."""
