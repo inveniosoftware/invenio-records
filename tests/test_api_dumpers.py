@@ -9,15 +9,20 @@
 """Test the dumpers API."""
 
 from datetime import date, datetime
+from enum import Enum
 from uuid import UUID
 
 import pytest
+from invenio_db import db
 from sqlalchemy.dialects import mysql
+from sqlalchemy_utils.types import ChoiceType
 
 from invenio_records.api import Record
 from invenio_records.dumpers import ElasticsearchDumper, ElasticsearchDumperExt
 from invenio_records.dumpers.relations import RelationDumperExt
 from invenio_records.models import RecordMetadataBase
+from invenio_records.systemfields import SystemFieldsMixin
+from invenio_records.systemfields.model import ModelField
 from invenio_records.systemfields.relations import PKListRelation, \
     PKRelation, RelationsField
 
@@ -215,3 +220,40 @@ def test_relations_dumper(testapp, db, example_data):
     # Load it
     # new_record = Record.loads(dump, loader=dumper)
     # assert 'count' not in new_record
+
+
+def test_load_dump_type(testapp):
+    dumper = ElasticsearchDumper()
+    rec = TestRecord.create({}, test=EnumTestModel.REGISTERED)
+    # Serialize
+    dumped_data = dumper.dump(rec, {})
+    assert isinstance(dumped_data["test"], str)
+    # Deserialize
+    loaded_data = dumper.load(dumped_data, TestRecord)
+    assert isinstance(loaded_data.test, EnumTestModel)
+
+
+# Similar to PIDStatus
+class EnumTestModel(Enum):
+    NEW = "N"
+    REGISTERED = "R"
+
+    def __init__(self, value):
+        """Hack."""
+
+    def __str__(self):
+        """Return its value."""
+        return self.value
+
+
+class TestMetadata(db.Model, RecordMetadataBase):
+    """Represent a record metadata."""
+
+    __tablename__ = 'test_dumper_table'
+    test = db.Column(ChoiceType(EnumTestModel, impl=db.CHAR(1)))
+
+
+# Similar to ModelPIDField
+class TestRecord(Record, SystemFieldsMixin):
+    model_cls = TestMetadata
+    test = ModelField(dump_type=str)
