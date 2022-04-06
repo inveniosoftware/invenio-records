@@ -1,12 +1,19 @@
 ..
     This file is part of Invenio.
-    Copyright (C) 2015-2020 CERN.
+    Copyright (C) 2015-2022 CERN.
 
     Invenio is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
 
 Changes
 =======
+
+Version 1.6.2 (released 2022-04-06)
+
+- Removes python 3.6 from test suite.
+- Initializes parent class of ModelField.
+- Bumps several dependencies (invenio-db, invenio-base, etc.) to
+  support Flask 2.1.
 
 Version 1.6.1 (released 2021-12-04)
 
