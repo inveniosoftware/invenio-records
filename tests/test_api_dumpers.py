@@ -16,6 +16,7 @@ from sqlalchemy.dialects import mysql
 
 from invenio_records.api import Record
 from invenio_records.dumpers import ElasticsearchDumper, ElasticsearchDumperExt
+from invenio_records.dumpers.indexedat import IndexedAtDumperExt
 from invenio_records.dumpers.relations import RelationDumperExt
 from invenio_records.models import RecordMetadataBase
 from invenio_records.systemfields.relations import PKListRelation, \
@@ -215,3 +216,34 @@ def test_relations_dumper(testapp, db, example_data):
     # Load it
     # new_record = Record.loads(dump, loader=dumper)
     # assert 'count' not in new_record
+
+
+def test_indexedtime_dumper(testapp, db, example_data):
+    """Test relations dumper extension."""
+    class RecordWithIndexedTime(Record):
+
+        dumper = ElasticsearchDumper(
+            extensions=[IndexedAtDumperExt()]
+        )
+
+    # create the record
+    record = RecordWithIndexedTime.create({
+        'foo': 'bar',
+        'mylist': ['a', 'b'],
+    })
+    db.session.commit()
+
+    # dump it
+    dump = record.dumps()
+    assert dump['foo'] == 'bar'
+    assert dump['mylist'] == ['a', 'b']
+    assert dump['uuid'] == str(record.id)
+    assert dump['version_id'] == record.revision_id + 1
+    assert dump['created'][:19] == record.created.isoformat()[:19]
+    assert dump['updated'][:19] == record.updated.isoformat()[:19]
+    # only feasible to check the date (not time)
+    assert dump['indexed_at'][:19] == record.created.isoformat()[:19]
+
+    # load it
+    new_record = RecordWithIndexedTime.loads(dump)
+    assert 'indexed_at' not in new_record
