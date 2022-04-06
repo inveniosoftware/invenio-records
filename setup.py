@@ -17,7 +17,7 @@ readme = open('README.rst').read()
 history = open('CHANGES.rst').read()
 
 
-invenio_db_version = '>=1.0.9,<1.1.0'
+invenio_db_version = '>=1.0.14,<1.1.0'
 
 tests_require = [
     'pytest-invenio>=1.4.1',
@@ -54,7 +54,7 @@ setup_requires = [
 
 install_requires = [
     'arrow>=0.16.0',
-    'invenio-base>=1.2.7',
+    'invenio-base>=1.2.11',
     'invenio-celery>=1.2.2',
     'invenio-i18n>=1.2.0',
     'jsonpatch>=1.26',
