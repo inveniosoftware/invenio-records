@@ -157,10 +157,10 @@ def test_relations_dumper(testapp, db, example_data):
     class RecordWithRelations(Record):
         relations = RelationsField(
             language=PKRelation(
-                key='language', attrs=['iso', 'information.ethnicity'],
+                key='language', keys=['iso', 'information.ethnicity'],
                 record_cls=Record),
             languages=PKListRelation(
-                key='languages', attrs=['iso', 'information.ethnicity'],
+                key='languages', keys=['iso', 'information.ethnicity'],
                 record_cls=Record),
         )
 

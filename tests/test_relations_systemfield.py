@@ -57,7 +57,7 @@ def test_relations_field_pk_relation(testapp, db, languages):
     class Record1(Record, SystemFieldsMixin):
         relations = RelationsField(
             language=PKRelation(
-                key='language', attrs=['iso'], record_cls=Language),
+                key='language', keys=['iso'], record_cls=Language),
         )
 
     # Class-field check
@@ -161,7 +161,7 @@ def test_relations_field_pk_list_relation(testapp, db, languages):
     class Record1(Record, SystemFieldsMixin):
         relations = RelationsField(
             languages=PKListRelation(
-                key='languages', attrs=['iso', 'information.ethnicity'],
+                key='languages', keys=['iso', 'information.ethnicity'],
                 record_cls=Language),
         )
 
@@ -276,7 +276,7 @@ def test_relations_field_pk_list_relation_of_objects(testapp, db, languages):
         relations = RelationsField(
             array_of_objects=PKListRelation(
                 key='array_of_objects',
-                attrs=['iso'],
+                keys=['iso'],
                 record_cls=Language,
                 relation_field='language'
             ),
@@ -620,7 +620,7 @@ def test_relations_field_pk_nested_list_of_objects_w_related_field(
         relations = RelationsField(
             nested_array_of_objects=PKNestedListRelation(
                 key='nested_array_of_objects',
-                attrs=['iso'],
+                keys=['iso'],
                 record_cls=Language,
                 relation_field='languages'
             ),
@@ -919,7 +919,7 @@ def test_relations_field_pk_nested_list_of_objects_wo_related_field(
         relations = RelationsField(
             nested_languages=PKNestedListRelation(
                 key='nested_languages',
-                attrs=['iso'],
+                keys=['iso'],
                 record_cls=Language,
             ),
         )
@@ -1126,7 +1126,7 @@ def test_relations_field_pk_relation_with_value_check(testapp, db, languages):
         relations = RelationsField(
             language=PKRelation(
                 key='language',
-                attrs=['iso'],
+                keys=['iso'],
                 record_cls=Language,
                 value_check=dict(information=dict(ethnicity='English')),
             )
@@ -1137,7 +1137,7 @@ def test_relations_field_pk_relation_with_value_check(testapp, db, languages):
         relations = RelationsField(
             language=PKRelation(
                 key='language',
-                attrs=['iso'],
+                keys=['iso'],
                 record_cls=Language,
                 value_check=dict(
                     information=dict(ethnicity=['English', 'French'])
@@ -1151,7 +1151,7 @@ def test_relations_field_pk_relation_with_value_check(testapp, db, languages):
         relations = RelationsField(
             language=PKRelation(
                 key='language',
-                attrs=['iso'],
+                keys=['iso'],
                 record_cls=Language,
                 value_check=dict(wrong_value=dict(ethnicity=['English'])),
             )
@@ -1162,7 +1162,7 @@ def test_relations_field_pk_relation_with_value_check(testapp, db, languages):
         relations = RelationsField(
             language=PKRelation(
                 key='language',
-                attrs=['iso'],
+                keys=['iso'],
                 record_cls=Language,
                 value_check=dict(
                     information=dict(ethnicity=['English']), iso=['oe']
@@ -1224,7 +1224,7 @@ def test_relations_field_pk_list_relation_with_value_check(
         relations = RelationsField(
             languages=PKListRelation(
                 key='languages',
-                attrs=['iso', 'information.ethnicity'],
+                keys=['iso', 'information.ethnicity'],
                 record_cls=Language,
                 value_check=dict(
                     information=dict(ethnicity='English')
@@ -1237,7 +1237,7 @@ def test_relations_field_pk_list_relation_with_value_check(
         relations = RelationsField(
             languages=PKListRelation(
                 key='languages',
-                attrs=['iso', 'information.ethnicity'],
+                keys=['iso', 'information.ethnicity'],
                 record_cls=Language,
                 value_check=dict(
                     information=dict(ethnicity=['English', 'French'])
@@ -1251,7 +1251,7 @@ def test_relations_field_pk_list_relation_with_value_check(
         relations = RelationsField(
             languages=PKListRelation(
                 key='languages',
-                attrs=['iso', 'information.ethnicity'],
+                keys=['iso', 'information.ethnicity'],
                 record_cls=Language,
                 value_check=dict(wrong_value=dict(ethnicity=['English'])),
             )
@@ -1262,7 +1262,7 @@ def test_relations_field_pk_list_relation_with_value_check(
         relations = RelationsField(
             languages=PKListRelation(
                 key='languages',
-                attrs=['iso', 'information.ethnicity'],
+                keys=['iso', 'information.ethnicity'],
                 record_cls=Language,
                 value_check=dict(
                     information=dict(ethnicity=['English']), iso=['oe']
@@ -1327,7 +1327,7 @@ def test_relations_field_pk_nested_list_of_obj_w_related_field_w_value_check(
         relations = RelationsField(
             nested_array_of_objects=PKNestedListRelation(
                 key='nested_array_of_objects',
-                attrs=['iso'],
+                keys=['iso'],
                 record_cls=Language,
                 relation_field='languages',
                 value_check=dict(
@@ -1341,7 +1341,7 @@ def test_relations_field_pk_nested_list_of_obj_w_related_field_w_value_check(
         relations = RelationsField(
             nested_array_of_objects=PKNestedListRelation(
                 key='nested_array_of_objects',
-                attrs=['iso'],
+                keys=['iso'],
                 record_cls=Language,
                 relation_field='languages',
                 value_check=dict(
@@ -1356,7 +1356,7 @@ def test_relations_field_pk_nested_list_of_obj_w_related_field_w_value_check(
         relations = RelationsField(
             nested_array_of_objects=PKNestedListRelation(
                 key='nested_array_of_objects',
-                attrs=['iso'],
+                keys=['iso'],
                 record_cls=Language,
                 relation_field='languages',
                 value_check=dict(wrong_value=dict(ethnicity=['English'])),
@@ -1368,7 +1368,7 @@ def test_relations_field_pk_nested_list_of_obj_w_related_field_w_value_check(
         relations = RelationsField(
             nested_array_of_objects=PKNestedListRelation(
                 key='nested_array_of_objects',
-                attrs=['iso'],
+                keys=['iso'],
                 record_cls=Language,
                 relation_field='languages',
                 value_check=dict(
