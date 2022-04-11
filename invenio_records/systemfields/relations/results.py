@@ -8,7 +8,7 @@
 
 """Relations system field."""
 
-from ...dictutils import dict_lookup, dict_set, parse_lookup_key
+from ...dictutils import dict_lookup, dict_set
 from .errors import InvalidCheckValue, InvalidRelationValue
 
 
@@ -79,42 +79,50 @@ class RelationResult:
         except KeyError:
             return None
 
-    def dereference(self, attrs=None):
+    def dereference(self, keys=None, attrs=None):
         """Dereference the relation field object inside the record."""
         try:
             data = self._lookup_data()
-            return self._dereference_one(data, attrs or self.attrs)
+            return self._dereference_one(
+                data, keys or self.keys, attrs or self.attrs)
         except KeyError:
             return None
 
-    def clean(self, attrs=None):
+    def clean(self, keys=None, attrs=None):
         """Clean the dereferenced attributes inside the record."""
         try:
             data = self._lookup_data()
-            return self._clean_one(data, attrs or self.attrs)
+            return self._clean_one(
+                data, keys or self.keys, attrs or self.attrs)
         except KeyError:
             return None
 
-    def _dereference_one(self, data, attrs):
+    def _dereference_one(self, data, keys, attrs):
         """Dereference a single object into a dict."""
         # Don't dereference if already referenced.
         if '@v' in data:
-            return
+            return data
+
         # Get related record
         obj = self.resolve(data[self.field._value_key_suffix])
         # Inject selected key/values from related record into
         # the current record.
 
-        if attrs is None:
+        # From record dictionary
+        if keys is None:
             data.update({
                 k: v for k, v in obj.items()
             })
         else:
             new_obj = {}
-            for a in attrs:
-                if dict_lookup(obj, a):
-                    dict_set(new_obj, a, dict_lookup(obj, a))
+            for k in keys:
+                if dict_lookup(obj, k):
+                    dict_set(new_obj, k, dict_lookup(obj, k))
             data.update(new_obj)
+
+        # From record attributes (i.e. system fields)
+        for a in attrs:
+            data[a] = getattr(obj, a)
 
         # Add a version counter "@v" used for optimistic
         # concurrency control. It allows to search for all
@@ -122,7 +130,7 @@ class RelationResult:
         data['@v'] = f'{obj.id}::{obj.revision_id}'
         return data
 
-    def _clean_one(self, data, attrs):
+    def _clean_one(self, data, keys, attrs):
         """Remove all but "id" key for a dereferenced related object."""
         relation_id = data[self.field._value_key_suffix]
         data.clear()
@@ -172,9 +180,10 @@ class RelationListResult(RelationResult):
         except KeyError:
             return None
 
-    def _apply_items(self, func, attrs=None):
+    def _apply_items(self, func, keys=None, attrs=None):
         """Iterate over the list of objects."""
         # The attributes we want to get from the related record.
+        keys = keys or self.keys
         attrs = attrs or self.attrs
         try:
             # Get the list of objects we have to dereference/clean.
@@ -186,12 +195,12 @@ class RelationListResult(RelationResult):
                     # only related records (by requiring precense of "id" key),
                     # or if you can mix non-linked records.
                     if self.field._value_key_suffix in v:
-                        func(v, attrs)
+                        func(v, keys, attrs)
                 return values
         except KeyError:
             return None
 
-    def dereference(self, attrs=None):
+    def dereference(self, keys=None, attrs=None):
         """Dereference the relation field object inside the record.
 
         Dereferences a list of ids::
@@ -202,14 +211,14 @@ class RelationListResult(RelationResult):
 
             [{"id": "eng", "title": ..., "@v": ...}]
         """
-        return self._apply_items(self._dereference_one, attrs)
+        return self._apply_items(self._dereference_one, keys, attrs)
 
-    def clean(self, attrs=None):
+    def clean(self, keys=None, attrs=None):
         """Clean the dereferenced attributes inside the record.
 
         Reverses changes made by dereference.
         """
-        return self._apply_items(self._clean_one, attrs)
+        return self._apply_items(self._clean_one, keys, attrs)
 
     def append(self, value):
         """Append a relation to the list."""
@@ -266,10 +275,11 @@ class RelationNestedListResult(RelationListResult):
         except KeyError:
             return None
 
-    def _apply_items(self, func, attrs=None):
+    def _apply_items(self, func, keys=None, attrs=None):
         """Iterate over the list of objects."""
         # The attributes we want to get from the related record.
         attrs = attrs or self.attrs
+        keys = keys or self.keys
         try:
             # Get the list of objects we have to dereference/clean.
             values = self._lookup_data()
@@ -277,7 +287,7 @@ class RelationNestedListResult(RelationListResult):
                 for outter_v in values:
                     for v in outter_v:
                         if self.field._value_key_suffix in v:
-                            func(v, attrs)
+                            func(v, keys, attrs)
                 return values
         except KeyError:
             return None

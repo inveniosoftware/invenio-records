@@ -72,5 +72,5 @@ class RelationsField(SystemField):
     #
     def pre_commit(self, record):
         """Initialise the model field."""
-        record.relations.validate()
-        record.relations.clean()
+        self.obj(record).validate()
+        self.obj(record).clean()
