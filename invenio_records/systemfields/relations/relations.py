@@ -320,3 +320,54 @@ class NestedListRelation(ListRelation):
 
 class PKNestedListRelation(NestedListRelation, PKRelation):
     """Primary-key nested list relation."""
+
+
+class NestedRelation(RelationBase):
+    """Primary-key nested relation type."""
+
+    result_cls = RelationListResult
+
+    def __init__(self, *args, relation_field=None, **kwargs):
+        """Initialize the list relation.
+
+        :param relation_field:  The field representing the relation. (Intended
+                                to be used when we are passing a list of
+                                objects but only one field of each object is
+                                referring to a relation)
+        :type relation_field: str
+        """
+        self.relation_field = relation_field
+        super().__init__(*args, **kwargs)
+
+    def parse_value(self, value):
+        """Parse a record (or ID) to the ID to be stored."""
+        if isinstance(value, (tuple, list)):
+            outter_list = []
+            if self.relation_field:
+                for inner_object in value:
+                    inner_v = inner_object.get(self.relation_field)
+                    if inner_v:
+                        outter_list.append(inner_v)
+            else:
+                print("else")  # TODO work in progress
+            return outter_list
+        else:
+            raise InvalidRelationValue('Invalid value.')
+
+    def set_value(self, record, value):
+        """Set the relation value."""
+        store_values = self.parse_value(value)
+        # Validate all values
+        keys = parse_lookup_key(self.value_key)
+        store_key, rel_id_key = keys[-2:]
+        parent = self._get_parent(record, keys)
+
+        values_list = deepcopy(value)
+        for v in values_list:
+            inner_sv = v.get(self.relation_field)
+            if inner_sv:
+                v[self.relation_field] = [
+                    {rel_id_key: sv} for sv in inner_sv
+                ]
+
+        parent[store_key] = values_list

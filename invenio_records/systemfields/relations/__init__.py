@@ -22,8 +22,8 @@ The field consists of:
 from .errors import InvalidCheckValue, InvalidRelationValue, RelationError
 from .field import RelationsField
 from .mapping import RelationsMapping
-from .relations import ListRelation, NestedListRelation, PKListRelation, \
-    PKNestedListRelation, PKRelation, RelationBase
+from .relations import ListRelation, NestedListRelation, NestedRelation, \
+    PKListRelation, PKNestedListRelation, PKRelation, RelationBase
 from .results import RelationListResult, RelationNestedListResult, \
     RelationResult
 
@@ -32,6 +32,7 @@ __all__ = (
     'InvalidCheckValue',
     'ListRelation',
     'NestedListRelation',
+    'NestedRelation',
     'PKListRelation',
     'PKNestedListRelation',
     'PKRelation',
