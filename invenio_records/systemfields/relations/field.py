@@ -43,6 +43,9 @@ class RelationsField(SystemField):
     #
     def obj(self, instance):
         """Get the relations object."""
+        if not instance:  # class access
+            # FIXME: the inv map would be calculated every access
+            return RelationsMapping(record=None, fields=self._fields)
         # Check cache
         obj = self._get_cache(instance)
         if obj:
@@ -50,6 +53,10 @@ class RelationsField(SystemField):
         obj = RelationsMapping(record=instance, fields=self._fields)
         self._set_cache(instance, obj)
         return obj
+
+    def inverse_get(self, inv_key):
+        """Get the inverse relations of a field."""
+        return self.obj(instance=None).inverse_get(inv_key)
 
     #
     # Data descriptor

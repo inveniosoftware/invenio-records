@@ -16,11 +16,18 @@ class RelationsMapping:
         """Initialize the relations mapping."""
         # Needed because we overwrite __setattr__
         cache = {}
+        super().__setattr__('_inverse_map', {})
         super().__setattr__('_record', record)
         super().__setattr__('_fields', fields)
         super().__setattr__('_cache', cache)
         for name, field in fields.items():
             field.inject_cache(cache, name)
+            inv_key = getattr(field, "inv_key", None)
+            if inv_key:
+                if not self._inverse_map.get(inv_key, None):
+                    self._inverse_map[inv_key] = [field.key]
+                else:
+                    self._inverse_map[inv_key].append([field.key])
 
     def __getattr__(self, name):
         """Get a relation field."""
@@ -66,3 +73,7 @@ class RelationsMapping:
         """Clean dereferenced relation fields."""
         for name in (fields or self):
             getattr(self, name).clean()
+
+    def inverse_get(self, inv_key):
+        """Get the inverse relations of a field."""
+        return self._inverse_map.get(inv_key, None)
