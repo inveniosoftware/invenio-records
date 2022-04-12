@@ -330,7 +330,8 @@ See :doc:`api` for extensive API documentation.
 
 from .api import Record
 from .ext import InvenioRecords
-from .version import __version__
+
+__version__ = '1.6.2'
 
 __all__ = (
     'InvenioRecords',

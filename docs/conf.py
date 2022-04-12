@@ -13,6 +13,8 @@ from __future__ import print_function
 import os
 import sys
 
+from invenio_records import __version__
+
 # Plug example application into module path
 sys.path.append('examples')
 
@@ -51,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Invenio-Records'
-copyright = u'2015-2019, CERN'
+copyright = u'2015-2022, CERN'
 author = u'CERN'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -61,12 +63,7 @@ author = u'CERN'
 # The short X.Y version.
 
 # Get the version string. Cannot be done with import!
-g = {}
-with open(os.path.join(os.path.dirname(__file__), '..',
-                       'invenio_records', 'version.py'),
-          'rt') as fp:
-    exec(fp.read(), g)
-    version = g['__version__']
+version = __version__
 
 # The full version, including alpha/beta/rc tags.
 release = version
