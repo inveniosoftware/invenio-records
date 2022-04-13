@@ -23,7 +23,8 @@ from .errors import InvalidCheckValue, InvalidRelationValue, RelationError
 from .field import RelationsField
 from .mapping import RelationsMapping
 from .relations import ListRelation, NestedListRelation, NestedRelation, \
-    PKListRelation, PKNestedListRelation, PKRelation, RelationBase
+    PKListRelation, PKNestedListRelation, PKNestedRelation, PKRelation, \
+    RelationBase
 from .results import RelationListResult, RelationNestedListResult, \
     RelationResult
 
@@ -35,6 +36,7 @@ __all__ = (
     'NestedRelation',
     'PKListRelation',
     'PKNestedListRelation',
+    'PKNestedRelation',
     'PKRelation',
     'RelationBase',
     'RelationError',
