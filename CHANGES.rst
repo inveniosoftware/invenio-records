@@ -8,6 +8,28 @@
 Changes
 =======
 
+Version 1.7.0 (released 2022-04-13)
+
+- Adds support for relations defined via database-level foreign keys.
+
+- Backwards incompatible: Changes the relations definitions to support both
+  dictionary keys and object attributes instead of only dictionary keys. Change
+  existing code from::
+
+    Relation(
+        # ...
+        attrs=['title'],
+    ),
+
+  to::
+
+    Relation(
+        # ...
+        keys=['title'],
+    ),
+
+- Move from setup.py to setup.cfg for purely declarative package definitions.
+
 Version 1.6.2 (released 2022-04-06)
 
 - Removes python 3.6 from test suite.
