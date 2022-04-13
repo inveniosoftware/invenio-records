@@ -116,8 +116,10 @@ class RelationResult:
         else:
             new_obj = {}
             for k in keys:
-                if dict_lookup(obj, k):
+                try:
                     dict_set(new_obj, k, dict_lookup(obj, k))
+                except KeyError:
+                    pass
             data.update(new_obj)
 
         # From record attributes (i.e. system fields)
