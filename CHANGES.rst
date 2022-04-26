@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.7.1 (released 2022-04-26)
+
+- Fixes dictionary lookup during dereferencing for optional/non-existing keys.
+
 Version 1.7.0 (released 2022-04-13)
 
 - Adds support for relations defined via database-level foreign keys.
