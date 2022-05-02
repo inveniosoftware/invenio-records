@@ -12,7 +12,7 @@ from copy import deepcopy
 
 import pytest
 
-from invenio_records.dictutils import clear_none, dict_lookup
+from invenio_records.dictutils import clear_none, dict_lookup, dict_merge
 
 
 def test_clear_none():
@@ -63,3 +63,35 @@ def test_dict_lookup():
     assert pytest.raises(KeyError, dict_lookup, d, 'b.x')
     assert pytest.raises(KeyError, dict_lookup, d, 'b.c.0')
     assert pytest.raises(KeyError, dict_lookup, d, 'd.3')
+
+
+def test_dict_merge():
+    """Test dict merge."""
+    dest = dict()
+    source = dict(foo="bar")
+    dict_merge(dest, source)
+
+    assert dest == dict(foo="bar")
+
+    dest = {
+        "foo1": "bar1",
+        "metadata": {
+            "field1": 3
+        }
+    }
+    source = {
+        "foo2": "bar2",
+        "metadata": {
+            "field2": "test"
+        }
+    }
+    dict_merge(dest, source)
+
+    assert dest == {
+        "foo1": "bar1",
+        "foo2": "bar2",
+        "metadata": {
+            "field1": 3,
+            "field2": "test"
+        }
+    }
