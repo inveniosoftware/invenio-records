@@ -134,3 +134,16 @@ def dict_set(source, key, value):
         else:
             parent = parent.setdefault(key, {})
     parent[keys[-1]] = value
+
+
+def dict_merge(dest, source):
+    """Merges source into dest.
+
+    It does not merge arrays of dicts.
+    """
+    for key in source:
+        if key in dest:
+            if isinstance(dest[key], dict) and isinstance(source[key], dict):
+                dict_merge(dest[key], source[key])
+        else:
+            dest[key] = source[key]
