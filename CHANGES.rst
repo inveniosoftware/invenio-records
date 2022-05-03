@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.7.2 (released 2022-05-03)
+
+- Fixes regression in 1.7.1.
+
 Version 1.7.1 (released 2022-04-26)
 
 - Fixes dictionary lookup during dereferencing for optional/non-existing keys.
