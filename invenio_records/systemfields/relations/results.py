@@ -117,7 +117,9 @@ class RelationResult:
             new_obj = {}
             for k in keys:
                 try:
-                    dict_set(new_obj, k, dict_lookup(obj, k))
+                    val = dict_lookup(obj, k)
+                    if val:
+                        dict_set(new_obj, k, val)
                 except KeyError:
                     pass
             data.update(new_obj)
