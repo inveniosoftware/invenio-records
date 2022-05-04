@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.7.3 (released 2022-05-04)
+
+- Adds utility to merge Python dicts
+
 Version 1.7.2 (released 2022-05-03)
 
 - Fixes regression in 1.7.1.
