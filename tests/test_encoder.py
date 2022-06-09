@@ -20,23 +20,25 @@ from invenio_records import Record
 @pytest.fixture()
 def encoder():
     """Return a simple encoder."""
+
     class CustomEncoder:
         @classmethod
         def encode(cls, data):
-            if 'date' in data.get('nested', {}):
-                data['nested']['date'] = data['nested']['date'].isoformat()
+            if "date" in data.get("nested", {}):
+                data["nested"]["date"] = data["nested"]["date"].isoformat()
             return data
 
         @classmethod
         def decode(cls, data):
-            if 'date' in data.get('nested', {}):
-                datestr = data['nested']['date']
-                data['nested']['date'] = date(
+            if "date" in data.get("nested", {}):
+                datestr = data["nested"]["date"]
+                data["nested"]["date"] = date(
                     int(datestr[0:4]),
                     int(datestr[5:7]),
                     int(datestr[8:10]),
                 )
             return data
+
     return CustomEncoder
 
 
@@ -47,12 +49,7 @@ def schema():
         "type": "object",
         "properties": {
             "title": {"type": "string"},
-            "nested": {
-                "type": "object",
-                "properties": {
-                    "date": {"type": "string"}
-                }
-            },
+            "nested": {"type": "object", "properties": {"date": {"type": "string"}}},
         },
     }
 
@@ -79,7 +76,7 @@ def record_cls(encoder):
 
 def test_noencoding(testapp, db, record_cls):
     """Simple sanity check."""
-    data = {'title': 'Title'}
+    data = {"title": "Title"}
     rec = record_cls.create(data)
     assert dict(rec) == rec.model.json
     assert rec.model.data == rec.model.json
@@ -89,48 +86,48 @@ def test_encoding(testapp, db, record_cls, testdate, testdatestr):
     """Test encoding/decoding in custom classes."""
     # Create a record with a Python date inside (record_cls has an encoder
     # which will encode/decode the "date" field if present).
-    data = {'title': 'Title', 'nested': {'date': testdate}}
+    data = {"title": "Title", "nested": {"date": testdate}}
     rec = record_cls.create(data)
     db.session.commit()
 
     # Record and data should still hold a python date
-    assert data['nested']['date'] == testdate
-    assert rec['nested']['date'] == testdate
+    assert data["nested"]["date"] == testdate
+    assert rec["nested"]["date"] == testdate
 
     # The underlying model JSON field should have a string instead.
-    assert rec.model.json['nested']['date'] == testdatestr
+    assert rec.model.json["nested"]["date"] == testdatestr
 
     # Decoding the data: Get the record again
     rec = record_cls.get_record(rec.id)
 
     # Record and data should still hold a python date
-    assert rec['nested']['date'] == testdate
+    assert rec["nested"]["date"] == testdate
 
     # The underlying model JSON field should have a string instead.
-    assert rec.model.json['nested']['date'] == testdatestr
+    assert rec.model.json["nested"]["date"] == testdatestr
 
 
 def test_encoding_with_versioning(testapp, database, record_cls, testdate):
     """Test reverting a revision."""
     db = database
     # Create a record and a new revision
-    rec = record_cls.create({'title': 'Title', 'nested': {'date': testdate}})
+    rec = record_cls.create({"title": "Title", "nested": {"date": testdate}})
     db.session.commit()
 
     # Change record (making a new revision)
-    newdate = rec['nested']['date'] + timedelta(days=1)
-    rec['nested']['date'] = newdate
+    newdate = rec["nested"]["date"] + timedelta(days=1)
+    rec["nested"]["date"] = newdate
     rec.commit()
     db.session.commit()
 
     # Record and model should have the new date.
-    assert rec['nested']['date'] == newdate
-    assert rec.model.json['nested']['date'] == newdate.isoformat()
+    assert rec["nested"]["date"] == newdate
+    assert rec.model.json["nested"]["date"] == newdate.isoformat()
 
     # Now revert the record and check against initial date.
     rec = rec.revert(0)
-    assert rec['nested']['date'] == testdate
-    assert rec.model.json['nested']['date'] == testdate.isoformat()
+    assert rec["nested"]["date"] == testdate
+    assert rec.model.json["nested"]["date"] == testdate.isoformat()
 
 
 def test_encoding_with_schema(testapp, database, record_cls, testdate, schema):
@@ -138,18 +135,20 @@ def test_encoding_with_schema(testapp, database, record_cls, testdate, schema):
     db = database
 
     # Create a record
-    rec = record_cls.create({
-        '$schema': schema,
-        'title': 'Title',
-        'nested': {'date': testdate},
-    })
+    rec = record_cls.create(
+        {
+            "$schema": schema,
+            "title": "Title",
+            "nested": {"date": testdate},
+        }
+    )
     db.session.commit()
     # No assertion: because JSONSchema validation will raise an Exception
     # if it fails to operate the date
 
     # Try on record update as well (since commit() also validates)
-    newdate = rec['nested']['date'] + timedelta(days=1)
-    rec['nested']['date'] = newdate
+    newdate = rec["nested"]["date"] + timedelta(days=1)
+    rec["nested"]["date"] = newdate
     rec.commit()
     db.session.commit()
     # No assertion: because JSONSchema validation will raise an Exception
@@ -161,9 +160,9 @@ def test_encoding_with_schema_fail(testapp, database, testdate, schema):
     db = database
 
     data = {
-        '$schema': schema,
-        'title': 'Title',
-        'nested': {'date': testdate},
+        "$schema": schema,
+        "title": "Title",
+        "nested": {"date": testdate},
     }
 
     assert pytest.raises(ValidationError, Record.create, data)

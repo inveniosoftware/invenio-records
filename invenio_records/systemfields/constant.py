@@ -15,7 +15,7 @@ from .base import SystemField
 class ConstantField(SystemField):
     """Constant fields add a constant value to a key in the record."""
 
-    def __init__(self, key=None, value=''):
+    def __init__(self, key=None, value=""):
         """Initialize the field.
 
         :param key: The key to set in the dictionary (dot notation supported

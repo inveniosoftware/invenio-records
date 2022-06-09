@@ -78,8 +78,8 @@ class RecordMeta(type):
         """Create a new record class."""
         # Initialise an "_extensions" attribute on each class, to ensure each
         # class have a separate extensions registry.
-        if '_extensions' not in attrs:
-            attrs['_extensions'] = []
+        if "_extensions" not in attrs:
+            attrs["_extensions"] = []
 
         # Construct the class.
         return super().__new__(mcs, name, bases, attrs)

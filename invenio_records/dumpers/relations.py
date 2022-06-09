@@ -31,10 +31,7 @@ class RelationDumperExt(ElasticsearchDumperExt):
         for rel_field_name in relation_fields:
             rel_field = getattr(relations, rel_field_name)
             try:
-                dict_set(
-                    data, rel_field.key,
-                    dict_lookup(record, rel_field.key)
-                )
+                dict_set(data, rel_field.key, dict_lookup(record, rel_field.key))
             except KeyError:
                 pass
 

@@ -18,27 +18,28 @@ from sqlalchemy.schema import DropConstraint, DropSequence, DropTable
 
 from invenio_records import InvenioRecords
 
-pytest_plugins = ("celery.contrib.pytest", )
+pytest_plugins = ("celery.contrib.pytest",)
 
 
-@compiles(DropTable, 'postgresql')
+@compiles(DropTable, "postgresql")
 def _compile_drop_table(element, compiler, **kwargs):
-    return compiler.visit_drop_table(element) + ' CASCADE'
+    return compiler.visit_drop_table(element) + " CASCADE"
 
 
-@compiles(DropConstraint, 'postgresql')
+@compiles(DropConstraint, "postgresql")
 def _compile_drop_constraint(element, compiler, **kwargs):
-    return compiler.visit_drop_constraint(element) + ' CASCADE'
+    return compiler.visit_drop_constraint(element) + " CASCADE"
 
 
-@compiles(DropSequence, 'postgresql')
+@compiles(DropSequence, "postgresql")
 def _compile_drop_sequence(element, compiler, **kwargs):
-    return compiler.visit_drop_sequence(element) + ' CASCADE'
+    return compiler.visit_drop_sequence(element) + " CASCADE"
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def create_app(instance_path):
     """Application factory fixture for use with pytest-invenio."""
+
     def _create_app(**config):
         app_ = Flask(
             __name__,
@@ -49,10 +50,11 @@ def create_app(instance_path):
         InvenioDB(app_)
         InvenioRecords(app_)
         return app_
+
     return _create_app
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def testapp(base_app, database):
     """Application with just a database.
 

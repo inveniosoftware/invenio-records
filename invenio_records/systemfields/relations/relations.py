@@ -13,8 +13,7 @@ from invenio_db import db
 
 from ...dictutils import dict_lookup, parse_lookup_key
 from .errors import InvalidRelationValue
-from .results import RelationListResult, RelationNestedListResult, \
-    RelationResult
+from .results import RelationListResult, RelationNestedListResult, RelationResult
 
 
 class RelationBase:
@@ -22,8 +21,16 @@ class RelationBase:
 
     result_cls = RelationResult
 
-    def __init__(self, key=None, attrs=None, keys=None, _value_key_suffix='id',
-                 _clear_empty=True, cache_key=None, value_check=None):
+    def __init__(
+        self,
+        key=None,
+        attrs=None,
+        keys=None,
+        _value_key_suffix="id",
+        _clear_empty=True,
+        cache_key=None,
+        value_check=None,
+    ):
         """Initialize the relation."""
         self.key = key
         self.attrs = attrs or []
@@ -58,7 +65,7 @@ class RelationBase:
     @property
     def value_key(self):
         """Default stored value key getter."""
-        return f'{self.key}.{self._value_key_suffix}'
+        return f"{self.key}.{self._value_key_suffix}"
 
     def exists(self, id_):
         """Default existence check by ID."""
@@ -145,12 +152,14 @@ class ListRelation(RelationBase):
         """Parse a record (or ID) to the ID to be stored."""
         if isinstance(value, (tuple, list)):
             if self.relation_field:
-                return [super(ListRelation, self).parse_value(
-                    v.get(self.relation_field)) for v in
-                        value if self.relation_field in v]
+                return [
+                    super(ListRelation, self).parse_value(v.get(self.relation_field))
+                    for v in value
+                    if self.relation_field in v
+                ]
             return [super(ListRelation, self).parse_value(v) for v in value]
         else:
-            raise InvalidRelationValue('Invalid value. Expected list.')
+            raise InvalidRelationValue("Invalid value. Expected list.")
 
     def _get_parent(self, record, keys):
         """Get parent dict."""
@@ -242,7 +251,8 @@ class PKRelation(RelationBase):
             return str(value.id)
         else:
             raise InvalidRelationValue(
-                f'Invalid value. Expected "str" or "{self.record_cls}"')
+                f'Invalid value. Expected "str" or "{self.record_cls}"'
+            )
 
     # TODO: We could have a more efficient "exists" via PK queries
     # def exists(self, id_):
@@ -265,9 +275,7 @@ class NestedListRelation(ListRelation):
 
     def exists_many(self, ids):
         """Default multiple existence check by a list of IDs."""
-        return all(
-            all(self.exists(i) for i in inner_ids) for inner_ids in ids
-        )
+        return all(all(self.exists(i) for i in inner_ids) for inner_ids in ids)
 
     def parse_value(self, value):
         """Parse a record (or ID) to the ID to be stored."""
@@ -277,19 +285,17 @@ class NestedListRelation(ListRelation):
                 for inner_list in value:
                     inner_v = inner_list.get(self.relation_field)
                     if inner_v:
-                        outter_list.append([
-                            super(ListRelation, self).parse_value(v)
-                            for v in inner_v
-                        ])
+                        outter_list.append(
+                            [super(ListRelation, self).parse_value(v) for v in inner_v]
+                        )
             else:
                 for inner_list in value:
-                    outter_list.append([
-                        super(ListRelation, self).parse_value(v)
-                        for v in inner_list
-                    ])
+                    outter_list.append(
+                        [super(ListRelation, self).parse_value(v) for v in inner_list]
+                    )
             return outter_list
         else:
-            raise InvalidRelationValue('Invalid value. Expected list.')
+            raise InvalidRelationValue("Invalid value. Expected list.")
 
     def set_value(self, record, value):
         """Set the relation value."""
@@ -305,9 +311,7 @@ class NestedListRelation(ListRelation):
                 for v in values_list:
                     inner_sv = v.get(self.relation_field)
                     if inner_sv:
-                        v[self.relation_field] = [
-                            {rel_id_key: sv} for sv in inner_sv
-                        ]
+                        v[self.relation_field] = [{rel_id_key: sv} for sv in inner_sv]
             else:
                 values_list = [
                     [{rel_id_key: sv} for sv in inner_values]

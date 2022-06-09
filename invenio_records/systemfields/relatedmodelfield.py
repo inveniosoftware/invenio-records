@@ -48,8 +48,9 @@ class RelatedModelFieldContext(SystemFieldContext):
 class RelatedModelField(SystemField):
     """Related model system field."""
 
-    def __init__(self, model, key=None, required=False, load=None, dump=None,
-                 context_cls=None):
+    def __init__(
+        self, model, key=None, required=False, load=None, dump=None, context_cls=None
+    ):
         """Initialize the field.
 
         :param model: Related SQLAlchemy model.

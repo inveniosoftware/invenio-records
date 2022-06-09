@@ -11,7 +11,7 @@
 
 from jsonschema.validators import Draft4Validator, extend, validator_for
 
-PartialDraft4Validator = extend(Draft4Validator, {'required': None})
+PartialDraft4Validator = extend(Draft4Validator, {"required": None})
 """Partial JSON Schema (draft 4) validator.
 
 Special validator that contains the same validation rules of Draft4Validator,
@@ -35,10 +35,7 @@ def _generate_legacy_type_checks(types):
 
         return type_check
 
-    return {
-        typename: gen_type_check(pytypes)
-        for (typename, pytypes) in types.items()
-    }
+    return {typename: gen_type_check(pytypes) for (typename, pytypes) in types.items()}
 
 
 def _create_validator(schema, base_validator_cls=None, custom_checks=None):

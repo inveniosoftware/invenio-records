@@ -18,51 +18,47 @@ from invenio_records.dictutils import clear_none, dict_lookup, dict_merge
 def test_clear_none():
     """Test clearning of the dictionary."""
     d = {
-        'a': None,
-        'b': {
-            'c': None
-        },
-        'd': ['1', None, []],
-        'e': [{'a': None, 'b': []}],
+        "a": None,
+        "b": {"c": None},
+        "d": ["1", None, []],
+        "e": [{"a": None, "b": []}],
     }
 
     clear_none(d)
     # Modifications are done in place, so gotta test after the function call.
-    assert d == {'d': ['1']}
+    assert d == {"d": ["1"]}
 
     d = {
-        'a': None,
-        'b': [
-            {'a': '1', 'b': None},
+        "a": None,
+        "b": [
+            {"a": "1", "b": None},
         ],
     }
     clear_none(d)
     # Modifications are done in place, so gotta test after the function call.
-    assert d == {'b': [{'a': '1'}]}
+    assert d == {"b": [{"a": "1"}]}
 
 
 def test_dict_lookup():
     """Test lookup by a key."""
     d = {
-        'a': 1,
-        'b': {
-            'c': None
-        },
-        'd': ['1', '2'],
+        "a": 1,
+        "b": {"c": None},
+        "d": ["1", "2"],
     }
-    assert dict_lookup(d, 'a') == d['a']
-    assert dict_lookup(d, 'b') == d['b']
-    assert dict_lookup(d, 'b.c') == d['b']['c']
-    assert dict_lookup(d, 'd') == d['d']
-    assert dict_lookup(d, 'd.0') == d['d'][0]
-    assert dict_lookup(d, 'd.1') == d['d'][1]
-    assert dict_lookup(d, 'd.-1') == d['d'][-1]
+    assert dict_lookup(d, "a") == d["a"]
+    assert dict_lookup(d, "b") == d["b"]
+    assert dict_lookup(d, "b.c") == d["b"]["c"]
+    assert dict_lookup(d, "d") == d["d"]
+    assert dict_lookup(d, "d.0") == d["d"][0]
+    assert dict_lookup(d, "d.1") == d["d"][1]
+    assert dict_lookup(d, "d.-1") == d["d"][-1]
 
-    assert pytest.raises(KeyError, dict_lookup, d, 'x')
-    assert pytest.raises(KeyError, dict_lookup, d, 'a.x')
-    assert pytest.raises(KeyError, dict_lookup, d, 'b.x')
-    assert pytest.raises(KeyError, dict_lookup, d, 'b.c.0')
-    assert pytest.raises(KeyError, dict_lookup, d, 'd.3')
+    assert pytest.raises(KeyError, dict_lookup, d, "x")
+    assert pytest.raises(KeyError, dict_lookup, d, "a.x")
+    assert pytest.raises(KeyError, dict_lookup, d, "b.x")
+    assert pytest.raises(KeyError, dict_lookup, d, "b.c.0")
+    assert pytest.raises(KeyError, dict_lookup, d, "d.3")
 
 
 def test_dict_merge():
@@ -73,25 +69,12 @@ def test_dict_merge():
 
     assert dest == dict(foo="bar")
 
-    dest = {
-        "foo1": "bar1",
-        "metadata": {
-            "field1": 3
-        }
-    }
-    source = {
-        "foo2": "bar2",
-        "metadata": {
-            "field2": "test"
-        }
-    }
+    dest = {"foo1": "bar1", "metadata": {"field1": 3}}
+    source = {"foo2": "bar2", "metadata": {"field2": "test"}}
     dict_merge(dest, source)
 
     assert dest == {
         "foo1": "bar1",
         "foo2": "bar2",
-        "metadata": {
-            "field1": 3,
-            "field2": "test"
-        }
+        "metadata": {"field1": 3, "field2": "test"},
     }

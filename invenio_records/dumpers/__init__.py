@@ -52,7 +52,7 @@ from .base import Dumper
 from .elasticsearch import ElasticsearchDumper, ElasticsearchDumperExt
 
 __all__ = (
-    'Dumper',
-    'ElasticsearchDumper',
-    'ElasticsearchDumperExt',
+    "Dumper",
+    "ElasticsearchDumper",
+    "ElasticsearchDumperExt",
 )

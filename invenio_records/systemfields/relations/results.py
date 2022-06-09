@@ -43,14 +43,13 @@ class RelationResult:
         """Checks if the value is present in the object."""
         for key, value in value_to_check.items():
             if key not in object:
-                raise InvalidCheckValue(f'Invalid key {key}.')
+                raise InvalidCheckValue(f"Invalid key {key}.")
             if isinstance(value, dict):
                 self._value_check(value, object[key])
             else:
                 if not isinstance(value, list):
                     raise InvalidCheckValue(
-                        f"Invalid value_check value: {value}; it must be "
-                        "a list"
+                        f"Invalid value_check value: {value}; it must be " "a list"
                     )
                 elif isinstance(object[key], list):
                     value_exist = set(object[key]).intersection(set(value))
@@ -71,7 +70,7 @@ class RelationResult:
         try:
             val = self._lookup_id()
             if not self.exists(val):
-                raise InvalidRelationValue(f'Invalid value {val}.')
+                raise InvalidRelationValue(f"Invalid value {val}.")
             if self.value_check:
                 data = self._lookup_data()
                 obj = self.resolve(data[self.field._value_key_suffix])
@@ -83,8 +82,7 @@ class RelationResult:
         """Dereference the relation field object inside the record."""
         try:
             data = self._lookup_data()
-            return self._dereference_one(
-                data, keys or self.keys, attrs or self.attrs)
+            return self._dereference_one(data, keys or self.keys, attrs or self.attrs)
         except KeyError:
             return None
 
@@ -92,15 +90,14 @@ class RelationResult:
         """Clean the dereferenced attributes inside the record."""
         try:
             data = self._lookup_data()
-            return self._clean_one(
-                data, keys or self.keys, attrs or self.attrs)
+            return self._clean_one(data, keys or self.keys, attrs or self.attrs)
         except KeyError:
             return None
 
     def _dereference_one(self, data, keys, attrs):
         """Dereference a single object into a dict."""
         # Don't dereference if already referenced.
-        if '@v' in data:
+        if "@v" in data:
             return data
 
         # Get related record
@@ -110,9 +107,7 @@ class RelationResult:
 
         # From record dictionary
         if keys is None:
-            data.update({
-                k: v for k, v in obj.items()
-            })
+            data.update({k: v for k, v in obj.items()})
         else:
             new_obj = {}
             for k in keys:
@@ -131,7 +126,7 @@ class RelationResult:
         # Add a version counter "@v" used for optimistic
         # concurrency control. It allows to search for all
         # outdated records and reindex them.
-        data['@v'] = f'{obj.id}::{obj.revision_id}'
+        data["@v"] = f"{obj.id}::{obj.revision_id}"
         return data
 
     def _clean_one(self, data, keys, attrs):
@@ -160,8 +155,7 @@ class RelationListResult(RelationResult):
         data = dict_lookup(self.record, self.key)
         if self.relation_field:
             filtered_data = [
-                e.get(self.relation_field) for e in data
-                if self.relation_field in e
+                e.get(self.relation_field) for e in data if self.relation_field in e
             ]
             return filtered_data
         return data
@@ -171,13 +165,12 @@ class RelationListResult(RelationResult):
         try:
             values = self._lookup_data()
             if values and not isinstance(values, list):
-                raise InvalidRelationValue(
-                    f'Invalid value {values}, should be list.')
+                raise InvalidRelationValue(f"Invalid value {values}, should be list.")
 
             for v in values:
                 relation_id = self._lookup_id(v)
                 if not self.exists(relation_id):
-                    raise InvalidRelationValue(f'Invalid value {relation_id}.')
+                    raise InvalidRelationValue(f"Invalid value {relation_id}.")
                 if self.value_check:
                     obj = self.resolve(v[self.field._value_key_suffix])
                     self._value_check(self.value_check, obj)
@@ -245,9 +238,7 @@ class RelationNestedListResult(RelationListResult):
                 inner_iter = []
                 for v in inner_values:
                     try:
-                        inner_iter.append(
-                            self.resolve(v[self._value_key_suffix])
-                        )
+                        inner_iter.append(self.resolve(v[self._value_key_suffix]))
                     except KeyError:
                         continue
                 parent_iter.append(iter(inner_iter))
@@ -260,19 +251,17 @@ class RelationNestedListResult(RelationListResult):
         try:
             values = self._lookup_data()
             if values and not isinstance(values, list):
-                raise InvalidRelationValue(
-                    f'Invalid value {values}, should be list.')
+                raise InvalidRelationValue(f"Invalid value {values}, should be list.")
 
             for outter_v in values:
                 if outter_v and not isinstance(outter_v, list):
                     raise InvalidRelationValue(
-                        f'Invalid inner value {outter_v}, should be list.'
+                        f"Invalid inner value {outter_v}, should be list."
                     )
                 for v in outter_v:
                     relation_id = self._lookup_id(v)
                     if not self.exists(relation_id):
-                        raise InvalidRelationValue(
-                            f'Invalid value {relation_id}.')
+                        raise InvalidRelationValue(f"Invalid value {relation_id}.")
                     if self.value_check:
                         obj = self.resolve(v[self.field._value_key_suffix])
                         self._value_check(self.value_check, obj)

@@ -19,8 +19,11 @@ from invenio_records.dumpers import ElasticsearchDumper, ElasticsearchDumperExt
 from invenio_records.dumpers.indexedat import IndexedAtDumperExt
 from invenio_records.dumpers.relations import RelationDumperExt
 from invenio_records.models import RecordMetadataBase
-from invenio_records.systemfields.relations import PKListRelation, \
-    PKRelation, RelationsField
+from invenio_records.systemfields.relations import (
+    PKListRelation,
+    PKRelation,
+    RelationsField,
+)
 
 
 @pytest.fixture()
@@ -63,7 +66,7 @@ def es_hit():
             "pids": {
                 "oaiid": {"value": "", "provider": "local"},
             },
-        }
+        },
     }
 
 
@@ -71,7 +74,7 @@ def test_esdumper_without_model(testapp, db, example_data):
     """Test the Elasticsearch dumper."""
     # Dump without a model.
     dump = Record(example_data).dumps(dumper=ElasticsearchDumper())
-    for k in ['uuid', 'version_id', 'created', 'updated']:
+    for k in ["uuid", "version_id", "created", "updated"]:
         assert dump[k] is None  # keys is set to none without a model
     # Load without a model defined
     record = Record.loads(dump, loader=ElasticsearchDumper())
@@ -87,10 +90,10 @@ def test_esdumper_with_model(testapp, db, example_data):
 
     # Dump it
     dump = record.dumps(dumper=ElasticsearchDumper())
-    assert dump['uuid'] == str(record.id)
-    assert dump['version_id'] == record.revision_id + 1
-    assert dump['created'][:19] == record.created.isoformat()[:19]
-    assert dump['updated'][:19] == record.updated.isoformat()[:19]
+    assert dump["uuid"] == str(record.id)
+    assert dump["version_id"] == record.revision_id + 1
+    assert dump["created"][:19] == record.created.isoformat()[:19]
+    assert dump["updated"][:19] == record.updated.isoformat()[:19]
 
     # Load it
     new_record = Record.loads(dump, loader=ElasticsearchDumper())
@@ -107,24 +110,24 @@ def test_esdumper_with_extensions(testapp, db, example_data):
     # Create a simple extension that adds a computed field.
     class TestExt(ElasticsearchDumperExt):
         def dump(self, record, data):
-            data['count'] = len(data['mylist'])
+            data["count"] = len(data["mylist"])
 
         def load(self, data, record_cls):
-            data.pop('count')
+            data.pop("count")
 
     dumper = ElasticsearchDumper(extensions=[TestExt()])
 
     # Create the record
-    record = Record.create({'mylist': ['a', 'b']})
+    record = Record.create({"mylist": ["a", "b"]})
     db.session.commit()
 
     # Dump it
     dump = record.dumps(dumper=dumper)
-    assert dump['count'] == 2
+    assert dump["count"] == 2
 
     # Load it
     new_record = Record.loads(dump, loader=dumper)
-    assert 'count' not in new_record
+    assert "count" not in new_record
 
 
 def test_esdumper_sa_datatypes(testapp, database):
@@ -136,81 +139,92 @@ def test_esdumper_sa_datatypes(testapp, database):
         text = db.Column(db.Text)
         biginteger = db.Column(db.BigInteger)
         integer = db.Column(db.Integer)
-        boolean = db.Column(db.Boolean(name='boolean'))
-        text_variant = db.Column(db.Text().with_variant(
-            mysql.VARCHAR(255), 'mysql'))
+        boolean = db.Column(db.Boolean(name="boolean"))
+        text_variant = db.Column(db.Text().with_variant(mysql.VARCHAR(255), "mysql"))
 
-    assert ElasticsearchDumper._sa_type(Model, 'biginteger') == int
-    assert ElasticsearchDumper._sa_type(Model, 'boolean') == bool
-    assert ElasticsearchDumper._sa_type(Model, 'created') == datetime
-    assert ElasticsearchDumper._sa_type(Model, 'id') == UUID
-    assert ElasticsearchDumper._sa_type(Model, 'integer') == int
-    assert ElasticsearchDumper._sa_type(Model, 'json') == dict
-    assert ElasticsearchDumper._sa_type(Model, 'text_variant') == str
-    assert ElasticsearchDumper._sa_type(Model, 'text') == str
-    assert ElasticsearchDumper._sa_type(Model, 'updated') == datetime
-    assert ElasticsearchDumper._sa_type(Model, 'invalid') is None
+    assert ElasticsearchDumper._sa_type(Model, "biginteger") == int
+    assert ElasticsearchDumper._sa_type(Model, "boolean") == bool
+    assert ElasticsearchDumper._sa_type(Model, "created") == datetime
+    assert ElasticsearchDumper._sa_type(Model, "id") == UUID
+    assert ElasticsearchDumper._sa_type(Model, "integer") == int
+    assert ElasticsearchDumper._sa_type(Model, "json") == dict
+    assert ElasticsearchDumper._sa_type(Model, "text_variant") == str
+    assert ElasticsearchDumper._sa_type(Model, "text") == str
+    assert ElasticsearchDumper._sa_type(Model, "updated") == datetime
+    assert ElasticsearchDumper._sa_type(Model, "invalid") is None
 
 
 def test_relations_dumper(testapp, db, example_data):
     """Test relations dumper extension."""
+
     class RecordWithRelations(Record):
         relations = RelationsField(
             language=PKRelation(
-                key='language', keys=['iso', 'information.ethnicity'],
-                record_cls=Record),
+                key="language", keys=["iso", "information.ethnicity"], record_cls=Record
+            ),
             languages=PKListRelation(
-                key='languages', keys=['iso', 'information.ethnicity'],
-                record_cls=Record),
+                key="languages",
+                keys=["iso", "information.ethnicity"],
+                record_cls=Record,
+            ),
         )
 
-        dumper = ElasticsearchDumper(
-            extensions=[RelationDumperExt('relations')])
+        dumper = ElasticsearchDumper(extensions=[RelationDumperExt("relations")])
 
     # Create the record
     en_language = Record.create(
-        {'title': 'English', 'iso': 'en', 'information': {
-            'native_speakers': '400 million', 'ethnicity': 'English'}})
+        {
+            "title": "English",
+            "iso": "en",
+            "information": {"native_speakers": "400 million", "ethnicity": "English"},
+        }
+    )
     fr_language = Record.create(
-        {'title': 'French', 'iso': 'fr', 'information': {
-            'native_speakers': '76.8 million', 'ethnicity': 'French'}})
+        {
+            "title": "French",
+            "iso": "fr",
+            "information": {"native_speakers": "76.8 million", "ethnicity": "French"},
+        }
+    )
     db.session.commit()
-    record = RecordWithRelations.create({
-        'foo': 'bar',
-        'mylist': ['a', 'b'],
-    })
+    record = RecordWithRelations.create(
+        {
+            "foo": "bar",
+            "mylist": ["a", "b"],
+        }
+    )
     record.relations.language = en_language
     record.relations.languages = [en_language, fr_language]
     db.session.commit()
 
     # Dump it
     dump = record.dumps()
-    assert dump['foo'] == 'bar'
-    assert dump['mylist'] == ['a', 'b']
-    assert dump['language'] == {
-        'id': str(en_language.id),
-        'iso': 'en',
-        'information': {'ethnicity': 'English'},
-        '@v': str(en_language.id) + '::' + str(en_language.revision_id)
+    assert dump["foo"] == "bar"
+    assert dump["mylist"] == ["a", "b"]
+    assert dump["language"] == {
+        "id": str(en_language.id),
+        "iso": "en",
+        "information": {"ethnicity": "English"},
+        "@v": str(en_language.id) + "::" + str(en_language.revision_id),
     }
-    assert dump['languages'] == [
+    assert dump["languages"] == [
         {
-            'id': str(en_language.id),
-            'iso': 'en',
-            'information': {'ethnicity': 'English'},
-            '@v': str(en_language.id) + '::' + str(en_language.revision_id)
+            "id": str(en_language.id),
+            "iso": "en",
+            "information": {"ethnicity": "English"},
+            "@v": str(en_language.id) + "::" + str(en_language.revision_id),
         },
         {
-            'id': str(fr_language.id),
-            'iso': 'fr',
-            'information': {'ethnicity': 'French'},
-            '@v': str(fr_language.id) + '::' + str(fr_language.revision_id)
+            "id": str(fr_language.id),
+            "iso": "fr",
+            "information": {"ethnicity": "French"},
+            "@v": str(fr_language.id) + "::" + str(fr_language.revision_id),
         },
     ]
-    assert dump['uuid'] == str(record.id)
-    assert dump['version_id'] == record.revision_id + 1
-    assert dump['created'][:19] == record.created.isoformat()[:19]
-    assert dump['updated'][:19] == record.updated.isoformat()[:19]
+    assert dump["uuid"] == str(record.id)
+    assert dump["version_id"] == record.revision_id + 1
+    assert dump["created"][:19] == record.created.isoformat()[:19]
+    assert dump["updated"][:19] == record.updated.isoformat()[:19]
 
     # TODO: Implement loader
     # Load it
@@ -220,30 +234,31 @@ def test_relations_dumper(testapp, db, example_data):
 
 def test_indexedtime_dumper(testapp, db, example_data):
     """Test relations dumper extension."""
+
     class RecordWithIndexedTime(Record):
 
-        dumper = ElasticsearchDumper(
-            extensions=[IndexedAtDumperExt()]
-        )
+        dumper = ElasticsearchDumper(extensions=[IndexedAtDumperExt()])
 
     # create the record
-    record = RecordWithIndexedTime.create({
-        'foo': 'bar',
-        'mylist': ['a', 'b'],
-    })
+    record = RecordWithIndexedTime.create(
+        {
+            "foo": "bar",
+            "mylist": ["a", "b"],
+        }
+    )
     db.session.commit()
 
     # dump it
     dump = record.dumps()
-    assert dump['foo'] == 'bar'
-    assert dump['mylist'] == ['a', 'b']
-    assert dump['uuid'] == str(record.id)
-    assert dump['version_id'] == record.revision_id + 1
-    assert dump['created'][:19] == record.created.isoformat()[:19]
-    assert dump['updated'][:19] == record.updated.isoformat()[:19]
+    assert dump["foo"] == "bar"
+    assert dump["mylist"] == ["a", "b"]
+    assert dump["uuid"] == str(record.id)
+    assert dump["version_id"] == record.revision_id + 1
+    assert dump["created"][:19] == record.created.isoformat()[:19]
+    assert dump["updated"][:19] == record.updated.isoformat()[:19]
     # only feasible to check the date (not time)
-    assert dump['indexed_at'][:19] == record.created.isoformat()[:19]
+    assert dump["indexed_at"][:19] == record.created.isoformat()[:19]
 
     # load it
     new_record = RecordWithIndexedTime.loads(dump)
-    assert 'indexed_at' not in new_record
+    assert "indexed_at" not in new_record

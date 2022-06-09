@@ -13,9 +13,16 @@ from functools import partial
 import pytest
 
 from invenio_records.api import Record
-from invenio_records.signals import after_record_delete, after_record_insert, \
-    after_record_revert, after_record_update, before_record_delete, \
-    before_record_insert, before_record_revert, before_record_update
+from invenio_records.signals import (
+    after_record_delete,
+    after_record_insert,
+    after_record_revert,
+    after_record_update,
+    before_record_delete,
+    before_record_insert,
+    before_record_revert,
+    before_record_update,
+)
 
 
 @pytest.fixture()
@@ -28,15 +35,15 @@ def signals():
             called[signal_name] = 0
         called[signal_name] += 1
 
-    after_record_delete_listener = partial(_listener, 'after_record_delete')
-    after_record_insert_listener = partial(_listener, 'after_record_insert')
-    after_record_revert_listener = partial(_listener, 'after_record_revert')
-    after_record_update_listener = partial(_listener, 'after_record_update')
-    before_record_delete_listener = partial(_listener, 'before_record_delete')
-    before_record_insert_listener = partial(_listener, 'before_record_insert')
-    before_record_revert_listener = partial(_listener, 'before_record_revert')
-    before_record_update_listener = partial(_listener, 'before_record_update')
-    before_record_insert_listener = partial(_listener, 'before_record_insert')
+    after_record_delete_listener = partial(_listener, "after_record_delete")
+    after_record_insert_listener = partial(_listener, "after_record_insert")
+    after_record_revert_listener = partial(_listener, "after_record_revert")
+    after_record_update_listener = partial(_listener, "after_record_update")
+    before_record_delete_listener = partial(_listener, "before_record_delete")
+    before_record_insert_listener = partial(_listener, "before_record_insert")
+    before_record_revert_listener = partial(_listener, "before_record_revert")
+    before_record_update_listener = partial(_listener, "before_record_update")
+    before_record_insert_listener = partial(_listener, "before_record_insert")
 
     after_record_delete.connect(after_record_delete_listener)
     after_record_insert.connect(after_record_insert_listener)
@@ -64,29 +71,29 @@ def signals():
 def test_signals(testapp, database, signals):
     """Test signals being sent."""
     db = database
-    record = Record.create({'title': 'Test'})
+    record = Record.create({"title": "Test"})
     db.session.commit()
-    assert 'before_record_insert' in signals
-    assert 'after_record_insert' in signals
+    assert "before_record_insert" in signals
+    assert "after_record_insert" in signals
     assert len(signals.keys()) == 2
 
-    record['title'] = 'Test2'
+    record["title"] = "Test2"
     record.commit()
     db.session.commit()
-    assert 'before_record_update' in signals
-    assert 'after_record_update' in signals
+    assert "before_record_update" in signals
+    assert "after_record_update" in signals
     assert len(signals.keys()) == 4
 
     record.revert(0)
     db.session.commit()
-    assert 'before_record_revert' in signals
-    assert 'after_record_revert' in signals
+    assert "before_record_revert" in signals
+    assert "after_record_revert" in signals
     assert len(signals.keys()) == 6
 
     record.delete()
     db.session.commit()
-    assert 'before_record_delete' in signals
-    assert 'after_record_delete' in signals
+    assert "before_record_delete" in signals
+    assert "after_record_delete" in signals
     assert len(signals.keys()) == 8
 
 
@@ -99,9 +106,9 @@ def test_signals_disabled(testapp, database, signals):
         send_signals = False
 
     # Same operations as above (but none of them should send signals)
-    record = MyRecord.create({'title': 'Test'})
+    record = MyRecord.create({"title": "Test"})
     db.session.commit()
-    record['title'] = 'Test2'
+    record["title"] = "Test2"
     record.commit()
     db.session.commit()
     record.revert(0)

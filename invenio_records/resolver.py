@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
@@ -20,8 +19,7 @@ class InvenioRefResolver(RefResolver):
 
     def resolve_remote(self, uri):
         """Block remote ref resolve."""
-        raise RefResolutionError(
-            "{uri} not found in local registry.".format(uri=uri))
+        raise RefResolutionError("{uri} not found in local registry.".format(uri=uri))
 
 
 def urljoin_with_custom_scheme(*args, **kwargs):

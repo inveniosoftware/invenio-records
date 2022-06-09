@@ -17,8 +17,7 @@ from uuid import UUID
 
 import arrow
 import pytz
-from sqlalchemy.sql.sqltypes import JSON, Boolean, DateTime, Integer, String, \
-    Text
+from sqlalchemy.sql.sqltypes import JSON, Boolean, DateTime, Integer, String, Text
 from sqlalchemy.sql.type_api import Variant
 from sqlalchemy_utils.types.uuid import UUIDType
 
@@ -46,10 +45,10 @@ class ElasticsearchDumper(Dumper):
         """."""
         self._extensions = extensions or []
         self._model_fields = {
-            'id': ('uuid', UUID),
-            'version_id': ('version_id', int),
-            'created': ('created', datetime),
-            'updated': ('updated', datetime),
+            "id": ("uuid", UUID),
+            "version_id": ("version_id", int),
+            "created": ("created", datetime),
+            "updated": ("updated", datetime),
             # is_deleted is purposely not added (deleted record isnt indexed)
         }
         self._model_fields.update(model_fields or {})
@@ -62,8 +61,7 @@ class ElasticsearchDumper(Dumper):
         :param model_field_name: The name of the field on the SQLAlchemy model.
         """
         try:
-            sa_type = \
-                model_cls.__table__.columns[model_field_name].type
+            sa_type = model_cls.__table__.columns[model_field_name].type
             sa_type_class = sa_type.__class__
 
             # Deal with variant class
@@ -97,9 +95,9 @@ class ElasticsearchDumper(Dumper):
         """
         if value is None:
             return value
-        if dump_type in (datetime, ):
+        if dump_type in (datetime,):
             return pytz.utc.localize(value).isoformat()
-        elif dump_type in (UUID, ):
+        elif dump_type in (UUID,):
             return str(value)
         elif dump_type is not None:
             return dump_type(value)
@@ -115,16 +113,15 @@ class ElasticsearchDumper(Dumper):
         """
         if value is None:
             return value
-        if dump_type in (datetime, ):
+        if dump_type in (datetime,):
             return arrow.get(value).datetime.replace(tzinfo=None)
-        elif dump_type in (UUID, ):
+        elif dump_type in (UUID,):
             return dump_type(value)
         elif dump_type is not None:
             return dump_type(value)
         return value
 
-    def _dump_model_field(self, record, model_field_name, dump, dump_key,
-                          dump_type):
+    def _dump_model_field(self, record, model_field_name, dump, dump_key, dump_type):
         """Helper method to dump model fields.
 
         :param record: The record being dumped.
@@ -150,8 +147,9 @@ class ElasticsearchDumper(Dumper):
         # specified key.
         dump[dump_key] = self._serialize(val, dump_type)
 
-    def _load_model_field(self, record_cls, model_field_name, dump, dump_key,
-                          dump_type):
+    def _load_model_field(
+        self, record_cls, model_field_name, dump, dump_key, dump_type
+    ):
         """Helper method to load model fields from dump.
 
         :param record_cls: The record class being used for loading.
@@ -249,17 +247,22 @@ class ElasticsearchDumper(Dumper):
         it = self._model_fields.items()
         for model_field_name, (dump_key, dump_type) in it:
             model_data[model_field_name] = self._load_model_field(
-                record_cls, model_field_name, dump_data, dump_key, dump_type)
+                record_cls, model_field_name, dump_data, dump_key, dump_type
+            )
 
         # Load model fields defined as system fields
         for systemfield in self._iter_modelfields(record_cls):
             model_data[systemfield.model_field_name] = self._load_model_field(
-                record_cls, systemfield.model_field_name, dump_data,
-                systemfield.dump_key, systemfield.dump_type)
+                record_cls,
+                systemfield.model_field_name,
+                dump_data,
+                systemfield.dump_key,
+                systemfield.dump_type,
+            )
 
         # Initialize model if an id was provided.
-        if model_data.get('id') is not None:
-            model_data['data'] = dump_data
+        if model_data.get("id") is not None:
+            model_data["data"] = dump_data
             model = record_cls.model_cls(**model_data)
         else:
             model = None

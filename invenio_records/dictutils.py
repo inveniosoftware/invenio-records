@@ -58,11 +58,11 @@ def parse_lookup_key(lookup_key):
 
     # Parse the list of keys
     if isinstance(lookup_key, str):
-        keys = lookup_key.split('.')
+        keys = lookup_key.split(".")
     elif isinstance(lookup_key, list):
         keys = lookup_key
     else:
-        raise TypeError('lookup must be string or list')
+        raise TypeError("lookup must be string or list")
 
     return keys
 

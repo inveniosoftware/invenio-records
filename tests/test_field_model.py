@@ -22,15 +22,16 @@ from invenio_records.models import RecordMetadataBase
 from invenio_records.systemfields import ModelField, SystemFieldsMixin
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def Record1Metadata(database):
     """."""
     db = database
 
     class Record1Metadata(db.Model, RecordMetadataBase):
-        __tablename__ = 'record1_metadata'
+        __tablename__ = "record1_metadata"
 
         expires_at = db.Column(db.DateTime())
+
     Record1Metadata.__table__.create(db.engine)
     return Record1Metadata
 
@@ -44,7 +45,7 @@ def test_model_field(testapp, database, Record1Metadata):
         dumper = ElasticsearchDumper()
         # Don't do this at home (two system fields on the same model field):
         expires_at = ModelField()
-        expires = ModelField('expires_at', dump=False)
+        expires = ModelField("expires_at", dump=False)
 
     dt = datetime(2020, 9, 3, 0, 0)
     dt2 = datetime(2020, 9, 4, 0, 0)

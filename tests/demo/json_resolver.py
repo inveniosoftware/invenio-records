@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
@@ -12,9 +11,14 @@
 import jsonresolver
 
 
-@jsonresolver.route('/<item>', host='nest.ed')
+@jsonresolver.route("/<item>", host="nest.ed")
 def test_resolver(item):
     """Create a nested JSON."""
-    next_ = {'$ref': 'http://nest.ed/{}'.format(item[1:]), } if len(item[1:]) \
-        else '.'
-    return {'letter': item[0], 'next': next_}
+    next_ = (
+        {
+            "$ref": "http://nest.ed/{}".format(item[1:]),
+        }
+        if len(item[1:])
+        else "."
+    )
+    return {"letter": item[0], "next": next_}

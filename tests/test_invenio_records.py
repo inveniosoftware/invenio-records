@@ -26,39 +26,40 @@ from invenio_records.errors import MissingModelError
 def test_version():
     """Test version import."""
     from invenio_records import __version__
+
     assert __version__
 
 
 def test_init():
     """Test extension initialization."""
-    app = Flask('testapp')
+    app = Flask("testapp")
     ext = InvenioRecords(app)
-    assert 'invenio-records' in app.extensions
+    assert "invenio-records" in app.extensions
 
-    app = Flask('testapp')
+    app = Flask("testapp")
     ext = InvenioRecords()
-    assert 'invenio-records' not in app.extensions
+    assert "invenio-records" not in app.extensions
     ext.init_app(app)
-    assert 'invenio-records' in app.extensions
+    assert "invenio-records" in app.extensions
 
 
 def test_db(testapp, db):
     """Test database backend."""
     with testapp.app_context():
-        assert 'records_metadata' in db.metadata.tables
-        assert 'records_metadata_version' in db.metadata.tables
-        assert 'transaction' in db.metadata.tables
+        assert "records_metadata" in db.metadata.tables
+        assert "records_metadata_version" in db.metadata.tables
+        assert "transaction" in db.metadata.tables
 
     schema = {
-        'type': 'object',
-        'properties': {
-            'title': {'type': 'string'},
-            'field': {'type': 'boolean'},
-            'hello': {'type': 'array'},
+        "type": "object",
+        "properties": {
+            "title": {"type": "string"},
+            "field": {"type": "boolean"},
+            "hello": {"type": "array"},
         },
-        'required': ['title'],
+        "required": ["title"],
     }
-    data = {'title': 'Test', '$schema': schema}
+    data = {"title": "Test", "$schema": schema}
     from invenio_records.models import RecordMetadata as RM
 
     # Create a record
@@ -77,54 +78,48 @@ def test_db(testapp, db):
         assert record.dumps() == data
         with pytest.raises(NoResultFound):
             Record.get_record(uuid.uuid4())
-        record['field'] = True
-        record = record.patch([
-            {'op': 'add', 'path': '/hello', 'value': ['world']}
-        ])
-        assert record['hello'] == ['world']
+        record["field"] = True
+        record = record.patch([{"op": "add", "path": "/hello", "value": ["world"]}])
+        assert record["hello"] == ["world"]
         record.commit()
         db.session.commit()
 
     with testapp.app_context():
         record2 = Record.get_record(record_uuid)
         assert record2.model.version_id == 2
-        assert record2['field']
-        assert record2['hello'] == ['world']
+        assert record2["field"]
+        assert record2["hello"] == ["world"]
         db.session.commit()
 
     # Cannot commit record without model (i.e. Record.create_record)
     with testapp.app_context():
-        record3 = Record({'title': 'Not possible'})
+        record3 = Record({"title": "Not possible"})
         with pytest.raises(MissingModelError):
             record3.commit()
 
     # Check invalid schema values
     with testapp.app_context():
         data = {
-            '$schema': 'http://json-schema.org/learn/examples/'
-                       'geographical-location.schema.json',
-            'latitude': 42,
-            'longitude': 42,
+            "$schema": "http://json-schema.org/learn/examples/"
+            "geographical-location.schema.json",
+            "latitude": 42,
+            "longitude": 42,
         }
 
         record_with_schema = Record.create(data).commit()
         db.session.commit()
 
-        record_with_schema['latitude'] = 'invalid'
+        record_with_schema["latitude"] = "invalid"
         with pytest.raises(ValidationError):
             record_with_schema.commit()
 
     # Allow types overriding on schema validation
     with testapp.app_context():
-        data = {
-            'title': 'Test',
-            'hello': tuple(['foo', 'bar']),
-            '$schema': schema
-        }
-        testapp.config['RECORDS_VALIDATION_TYPES'] = {}
+        data = {"title": "Test", "hello": tuple(["foo", "bar"]), "$schema": schema}
+        testapp.config["RECORDS_VALIDATION_TYPES"] = {}
         with pytest.raises(ValidationError):
             Record.create(data).commit()
 
-        testapp.config['RECORDS_VALIDATION_TYPES'] = {'array': (list, tuple)}
+        testapp.config["RECORDS_VALIDATION_TYPES"] = {"array": (list, tuple)}
         record_uuid = Record.create(data).commit()
         db.session.commit()

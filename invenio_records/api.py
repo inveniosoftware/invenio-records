@@ -26,11 +26,18 @@ from .dictutils import clear_none, dict_lookup
 from .dumpers import Dumper
 from .errors import MissingModelError
 from .models import RecordMetadata
-from .signals import after_record_delete, after_record_insert, \
-    after_record_revert, after_record_update, before_record_delete, \
-    before_record_insert, before_record_revert, before_record_update
+from .signals import (
+    after_record_delete,
+    after_record_insert,
+    after_record_revert,
+    after_record_update,
+    before_record_delete,
+    before_record_insert,
+    before_record_revert,
+    before_record_update,
+)
 
-_records_state = LocalProxy(lambda: current_app.extensions['invenio-records'])
+_records_state = LocalProxy(lambda: current_app.extensions["invenio-records"])
 
 
 class RecordBase(dict):
@@ -82,7 +89,7 @@ class RecordBase(dict):
     @property
     def revision_id(self):
         """Get revision identifier."""
-        return self.model.version_id-1 if self.model else None
+        return self.model.version_id - 1 if self.model else None
 
     @property
     def created(self):
@@ -181,14 +188,14 @@ class RecordBase(dict):
         else:
             json = self.model_cls.encode(dict(self))
 
-        if '$schema' in self and self['$schema'] is not None:
+        if "$schema" in self and self["$schema"] is not None:
             # Validate (an error will raise an exception)
             _records_state.validate(
                 json,
-                self['$schema'],
+                self["$schema"],
                 # Use defaults of class if not specified by user.
                 format_checker=format_checker or self.format_checker,
-                cls=validator or self.validator
+                cls=validator or self.validator,
             )
 
         # Return encoded data, so we don't have to double encode.
@@ -225,18 +232,18 @@ class RecordBase(dict):
         # Run pre dump extensions
         for e in self._extensions:
             pre_dump_params = inspect.signature(e.pre_dump).parameters
-            if 'data' in pre_dump_params:
+            if "data" in pre_dump_params:
                 e.pre_dump(self, data, dumper=dumper)
             else:
                 # TODO: Remove in v1.6.0 or later
                 warnings.warn(
                     "The pre_dump hook must take a positional argument data.",
-                    DeprecationWarning
+                    DeprecationWarning,
                 )
                 e.pre_dump(self, dumper=dumper)
 
         dump_params = inspect.signature(dumper.dump).parameters
-        if 'data' in dump_params:
+        if "data" in dump_params:
             # Execute the dump - for backwards compatibility we use the default
             # dumper which returns a deepcopy.
             data = dumper.dump(self, data)
@@ -244,7 +251,7 @@ class RecordBase(dict):
             # TODO: Remove in v1.6.0 or later
             warnings.warn(
                 "The dumper.dump() must take a positional argument data.",
-                DeprecationWarning
+                DeprecationWarning,
             )
             data = dumper.dump(self)
 
@@ -275,13 +282,13 @@ class RecordBase(dict):
         # Run post load extensions
         for e in cls._extensions:
             post_load_params = inspect.signature(e.post_load).parameters
-            if 'data' in post_load_params:
+            if "data" in post_load_params:
                 e.post_load(record, data, loader=loader)
             else:
                 # TODO: Remove in v1.6.0 or later
                 warnings.warn(
                     "The post_load hook must take a positional argument data.",
-                    DeprecationWarning
+                    DeprecationWarning,
                 )
                 e.post_load(record, loader=loader)
 
@@ -326,20 +333,15 @@ class Record(RecordBase):
         """
         with db.session.begin_nested():
             # For backward compatibility we pop them here.
-            format_checker = kwargs.pop('format_checker', None)
-            validator = kwargs.pop('validator', None)
+            format_checker = kwargs.pop("format_checker", None)
+            validator = kwargs.pop("validator", None)
 
             # Create the record and the model
-            record = cls(
-                data,
-                model=cls.model_cls(id=id_, data=data),
-                **kwargs
-            )
+            record = cls(data, model=cls.model_cls(id=id_, data=data), **kwargs)
 
             if cls.send_signals:
                 before_record_insert.send(
-                    current_app._get_current_object(),
-                    record=record
+                    current_app._get_current_object(), record=record
                 )
 
             # Run pre create extensions
@@ -350,16 +352,13 @@ class Record(RecordBase):
             record._validate(
                 format_checker=format_checker,
                 validator=validator,
-                use_model=True  # use model (already encoded) and didn't change
+                use_model=True,  # use model (already encoded) and didn't change
             )
 
             db.session.add(record.model)
 
         if cls.send_signals:
-            after_record_insert.send(
-                current_app._get_current_object(),
-                record=record
-            )
+            after_record_insert.send(current_app._get_current_object(), record=record)
 
         # Run post create extensions
         for e in cls._extensions:
@@ -406,8 +405,7 @@ class Record(RecordBase):
         :returns: A new :class:`Record` instance.
         """
         warnings.warn(
-            "The patch() method is deprecated and will be removed.",
-            DeprecationWarning
+            "The patch() method is deprecated and will be removed.", DeprecationWarning
         )
         data = apply_patch(dict(self), patch)
         return self.__class__(data, model=self.model)
@@ -444,8 +442,7 @@ class Record(RecordBase):
         with db.session.begin_nested():
             if self.send_signals:
                 before_record_update.send(
-                    current_app._get_current_object(),
-                    record=self
+                    current_app._get_current_object(), record=self
                 )
 
             # Run pre commit extensions
@@ -453,21 +450,17 @@ class Record(RecordBase):
                 e.pre_commit(self, **kwargs)
 
             # Validate also encodes the data
-            json = self._validate(
-                format_checker=format_checker, validator=validator)
+            json = self._validate(format_checker=format_checker, validator=validator)
 
             # Thus, we pass the encoded JSON directly to the model to avoid
             # double encoding.
             self.model.json = json
-            flag_modified(self.model, 'json')
+            flag_modified(self.model, "json")
 
             db.session.merge(self.model)
 
         if self.send_signals:
-            after_record_update.send(
-                current_app._get_current_object(),
-                record=self
-            )
+            after_record_update.send(current_app._get_current_object(), record=self)
 
         # Run post commit extensions
         for e in self._extensions:
@@ -502,8 +495,7 @@ class Record(RecordBase):
         with db.session.begin_nested():
             if self.send_signals:
                 before_record_delete.send(
-                    current_app._get_current_object(),
-                    record=self
+                    current_app._get_current_object(), record=self
                 )
 
             # Run pre delete extensions
@@ -517,10 +509,7 @@ class Record(RecordBase):
                 db.session.merge(self.model)
 
         if self.send_signals:
-            after_record_delete.send(
-                current_app._get_current_object(),
-                record=self
-            )
+            after_record_delete.send(current_app._get_current_object(), record=self)
 
         # Run post delete extensions
         for e in self._extensions:
@@ -561,8 +550,7 @@ class Record(RecordBase):
                 # TODO: arguments to this signal does not make sense.
                 # Ought to be both record and revision.
                 before_record_revert.send(
-                    current_app._get_current_object(),
-                    record=self
+                    current_app._get_current_object(), record=self
                 )
 
             for e in self._extensions:
@@ -571,7 +559,7 @@ class Record(RecordBase):
             # Here we explicitly set the json column in order to not
             # encode/decode the json data via the ``data`` property.
             self.model.json = revision.model.json
-            flag_modified(self.model, 'json')
+            flag_modified(self.model, "json")
 
             db.session.merge(self.model)
 
@@ -579,10 +567,7 @@ class Record(RecordBase):
             # TODO: arguments to this signal does not make sense.
             # Ought to be the class being returned just below and should
             # include the revision.
-            after_record_revert.send(
-                current_app._get_current_object(),
-                record=self
-            )
+            after_record_revert.send(current_app._get_current_object(), record=self)
 
         record = self.__class__(self.model.data, model=self.model)
 
@@ -610,7 +595,7 @@ class RecordRevision(RecordBase):
             # parent model class, and thus ``model.data`` won't work (which is
             # a Python property on RecordMetadataBase).
             parent_class(model.__class__).decode(model.json),
-            model=model
+            model=model,
         )
 
 
@@ -652,9 +637,7 @@ class RevisionsIterator(object):
             return RecordRevision(self.model.versions[revision_id])
         try:
             return RecordRevision(
-                self.model.versions.filter_by(
-                    version_id=revision_id + 1
-                ).one()
+                self.model.versions.filter_by(version_id=revision_id + 1).one()
             )
         except NoResultFound:
             raise IndexError
@@ -670,4 +653,4 @@ class RevisionsIterator(object):
     def __reversed__(self):
         """Allows to use reversed operator."""
         for version_index in range(self.model.versions.count()):
-            yield RecordRevision(self.model.versions[-(version_index+1)])
+            yield RecordRevision(self.model.versions[-(version_index + 1)])

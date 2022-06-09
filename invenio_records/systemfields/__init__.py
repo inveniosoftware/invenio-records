@@ -69,8 +69,7 @@ access layer. This means that they primarily simplifies data access between
 records and related objects.
 """
 
-from .base import SystemField, SystemFieldContext, SystemFieldsMeta, \
-    SystemFieldsMixin
+from .base import SystemField, SystemFieldContext, SystemFieldsMeta, SystemFieldsMixin
 from .constant import ConstantField
 from .dict import DictField
 from .model import ModelField
@@ -78,16 +77,16 @@ from .relatedmodelfield import RelatedModelField, RelatedModelFieldContext
 from .relations import ModelRelation, PKRelation, RelationsField
 
 __all__ = (
-    'ConstantField',
-    'DictField',
-    'ModelField',
-    'ModelRelation',
-    'PKRelation',
-    'RelatedModelField',
-    'RelatedModelFieldContext',
-    'RelationsField',
-    'SystemField',
-    'SystemFieldContext',
-    'SystemFieldsMeta',
-    'SystemFieldsMixin',
+    "ConstantField",
+    "DictField",
+    "ModelField",
+    "ModelRelation",
+    "PKRelation",
+    "RelatedModelField",
+    "RelatedModelFieldContext",
+    "RelationsField",
+    "SystemField",
+    "SystemFieldContext",
+    "SystemFieldsMeta",
+    "SystemFieldsMixin",
 )

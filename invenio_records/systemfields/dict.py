@@ -42,5 +42,4 @@ class DictField(SystemField):
         """Setting a new value."""
         if self.clear_none:
             clear_none(value)
-        self.set_dictkey(
-            record, value, create_if_missing=self.create_if_missing)
+        self.set_dictkey(record, value, create_if_missing=self.create_if_missing)

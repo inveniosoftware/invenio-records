@@ -20,9 +20,7 @@ def local_ref_resolver_store_factory():
         "local://authors.json": {
             "$id": "local://authors.json",
             "type": "array",
-            "items": {
-                "type": "string"
-            }
+            "items": {"type": "string"},
         },
         "local://books.json": {
             "$id": "local://books.json",
@@ -36,29 +34,29 @@ def local_ref_resolver_store_factory():
                 "title": {"type": "string"},
                 "price": {"$ref": "#/definitions/price"},
                 "authors": {"$ref": "local://authors.json"},
-            }
-        }
+            },
+        },
     }
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def app_config(app_config):
-    app_config['RECORDS_REFRESOLVER_CLS'] = \
-        "invenio_records.resolver.InvenioRefResolver"
-    app_config['RECORDS_REFRESOLVER_STORE'] = \
-        local_ref_resolver_store_factory()
+    app_config[
+        "RECORDS_REFRESOLVER_CLS"
+    ] = "invenio_records.resolver.InvenioRefResolver"
+    app_config["RECORDS_REFRESOLVER_STORE"] = local_ref_resolver_store_factory()
     return app_config
 
 
 def test_invenio_refresolver_with_local_store(db):
     """Test InvenioRefResolver with local store and complex JSONSchema."""
     data = {
-        '$schema': 'local://books.json#',
-        'title': 'The Lord of the Rings',
-        'price': '20',
-        'authors': [
-            'J. R. R. Tolkien',
-        ]
+        "$schema": "local://books.json#",
+        "title": "The Lord of the Rings",
+        "price": "20",
+        "authors": [
+            "J. R. R. Tolkien",
+        ],
     }
     Record.create(data).commit()
     db.session.commit()
@@ -75,16 +73,15 @@ def test_invenio_refresolver_with_local_store(db):
         (
             "local://books.json",
             "local://books.json#/definitions/price",
-            "local://books.json#/definitions/price"
+            "local://books.json#/definitions/price",
         ),
         (
             "local://books.json",
             "#/definitions/price",
-            "local://books.json#/definitions/price"
+            "local://books.json#/definitions/price",
         ),
-    ]
+    ],
 )
 def test_urljoin_with_custom_scheme(resolution_scope, scope, expected_output):
     """Test urljoin supporting custom schemas."""
-    assert urljoin_with_custom_scheme(
-        resolution_scope, scope) == expected_output
+    assert urljoin_with_custom_scheme(resolution_scope, scope) == expected_output

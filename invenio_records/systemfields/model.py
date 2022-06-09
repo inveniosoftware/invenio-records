@@ -15,8 +15,9 @@ from .base import SystemField
 class ModelField(SystemField):
     """Model field for providing get and set access on a model field."""
 
-    def __init__(self, model_field_name=None, dump=True, dump_key=None,
-                 dump_type=None, **kwargs):
+    def __init__(
+        self, model_field_name=None, dump=True, dump_key=None, dump_type=None, **kwargs
+    ):
         """Initialize the field.
 
         :param model_field_name: Name of field on the database model.

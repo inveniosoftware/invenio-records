@@ -29,16 +29,16 @@ class Timestamp(object):
     created = db.Column(
         db.DateTime().with_variant(mysql.DATETIME(fsp=6), "mysql"),
         default=datetime.utcnow,
-        nullable=False
+        nullable=False,
     )
     updated = db.Column(
         db.DateTime().with_variant(mysql.DATETIME(fsp=6), "mysql"),
         default=datetime.utcnow,
-        nullable=False
+        nullable=False,
     )
 
 
-@db.event.listens_for(Timestamp, 'before_update', propagate=True)
+@db.event.listens_for(Timestamp, "before_update", propagate=True)
 def timestamp_before_update(mapper, connection, target):
     """Update `updated` property with current time on `before_update` event."""
     target.updated = datetime.utcnow()
@@ -67,18 +67,21 @@ class RecordMetadataBase(Timestamp):
     """Record identifier."""
 
     json = db.Column(
-        db.JSON().with_variant(
+        db.JSON()
+        .with_variant(
             postgresql.JSONB(none_as_null=True),
-            'postgresql',
-        ).with_variant(
+            "postgresql",
+        )
+        .with_variant(
             JSONType(),
-            'sqlite',
-        ).with_variant(
+            "sqlite",
+        )
+        .with_variant(
             JSONType(),
-            'mysql',
+            "mysql",
         ),
         default=lambda: dict(),
-        nullable=True
+        nullable=True,
     )
     """Store metadata in JSON format.
 
@@ -91,9 +94,7 @@ class RecordMetadataBase(Timestamp):
     version_id = db.Column(db.Integer, nullable=False)
     """Used by SQLAlchemy for optimistic concurrency control."""
 
-    __mapper_args__ = {
-        'version_id_col': version_id
-    }
+    __mapper_args__ = {"version_id_col": version_id}
 
     def __init__(self, data=None, **kwargs):
         """Initialize the model specifically by setting the."""
@@ -138,7 +139,7 @@ class RecordMetadataBase(Timestamp):
         This allows a subclass to override
         """
         self.json = self.encode(value)
-        flag_modified(self, 'json')
+        flag_modified(self, "json")
 
     @classmethod
     def encode(cls, value):
@@ -156,13 +157,13 @@ class RecordMetadataBase(Timestamp):
 class RecordMetadata(db.Model, RecordMetadataBase):
     """Represent a record metadata."""
 
-    __tablename__ = 'records_metadata'
+    __tablename__ = "records_metadata"
 
     # Enables SQLAlchemy-Continuum versioning
     __versioned__ = {}
 
 
 __all__ = (
-    'RecordMetadata',
-    'RecordMetadataBase',
+    "RecordMetadata",
+    "RecordMetadataBase",
 )

@@ -16,9 +16,9 @@ class RelationsMapping:
         """Initialize the relations mapping."""
         # Needed because we overwrite __setattr__
         cache = {}
-        super().__setattr__('_record', record)
-        super().__setattr__('_fields', fields)
-        super().__setattr__('_cache', cache)
+        super().__setattr__("_record", record)
+        super().__setattr__("_fields", fields)
+        super().__setattr__("_cache", cache)
         for name, field in fields.items():
             field.inject_cache(cache, name)
 
@@ -54,15 +54,15 @@ class RelationsMapping:
 
     def validate(self, fields=None):
         """Validates all relations in the record."""
-        for name in (fields or self):
+        for name in fields or self:
             getattr(self, name).validate()
 
     def dereference(self, fields=None):
         """Dereferences relation fields."""
-        for name in (fields or self):
+        for name in fields or self:
             getattr(self, name).dereference()
 
     def clean(self, fields=None):
         """Clean dereferenced relation fields."""
-        for name in (fields or self):
+        for name in fields or self:
             getattr(self, name).clean()

@@ -23,25 +23,30 @@ from .errors import InvalidCheckValue, InvalidRelationValue, RelationError
 from .field import RelationsField
 from .mapping import RelationsMapping
 from .modelrelations import ModelRelation
-from .relations import ListRelation, NestedListRelation, PKListRelation, \
-    PKNestedListRelation, PKRelation, RelationBase
-from .results import RelationListResult, RelationNestedListResult, \
-    RelationResult
+from .relations import (
+    ListRelation,
+    NestedListRelation,
+    PKListRelation,
+    PKNestedListRelation,
+    PKRelation,
+    RelationBase,
+)
+from .results import RelationListResult, RelationNestedListResult, RelationResult
 
 __all__ = (
-    'InvalidCheckValue',
-    'InvalidRelationValue',
-    'ListRelation',
-    'ModelRelation',
-    'NestedListRelation',
-    'PKListRelation',
-    'PKNestedListRelation',
-    'PKRelation',
-    'RelationBase',
-    'RelationError',
-    'RelationListResult',
-    'RelationNestedListResult',
-    'RelationResult',
-    'RelationsField',
-    'RelationsMapping',
+    "InvalidCheckValue",
+    "InvalidRelationValue",
+    "ListRelation",
+    "ModelRelation",
+    "NestedListRelation",
+    "PKListRelation",
+    "PKNestedListRelation",
+    "PKRelation",
+    "RelationBase",
+    "RelationError",
+    "RelationListResult",
+    "RelationNestedListResult",
+    "RelationResult",
+    "RelationsField",
+    "RelationsMapping",
 )

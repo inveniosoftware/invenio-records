@@ -66,13 +66,10 @@ class ModelRelationResult(RelationResult):
             if id_ is None:
                 return None
             else:
-                self.record[self.field.key] = {
-                    self.field._value_key_suffix: str(id_)
-                }
+                self.record[self.field.key] = {self.field._value_key_suffix: str(id_)}
 
         data = self.record[self.field.key]
-        return self._dereference_one(
-            data, keys or self.keys, attrs or self.attrs)
+        return self._dereference_one(data, keys or self.keys, attrs or self.attrs)
 
     def clean(self, keys=None, attrs=None):
         """Clean the record."""
@@ -85,8 +82,7 @@ class ModelRelation(RelationBase):
 
     result_cls = ModelRelationResult
 
-    def __init__(self, record_cls, model_field_name, key, keys=None,
-                 attrs=None):
+    def __init__(self, record_cls, model_field_name, key, keys=None, attrs=None):
         """Constructor."""
         self._record_cls = record_cls
         self._model_field_name = model_field_name
@@ -104,8 +100,8 @@ class ModelRelation(RelationBase):
             return value.id
         else:
             raise InvalidRelationValue(
-                f'Invalid value. Expected {self._record_cls} or '
-                f'{self._record_cls.model_cls}'
+                f"Invalid value. Expected {self._record_cls} or "
+                f"{self._record_cls.model_cls}"
             )
 
     def set_value(self, record, value):
