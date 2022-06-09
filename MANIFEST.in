@@ -24,3 +24,4 @@ recursive-include .github/workflows *.yml
 recursive-include examples *.html *.py *.sh
 recursive-include invenio_records *.html *.mo *.po *.pot *.xml *.py
 recursive-include tests *.xml *.py
+include .git-blame-ignore-revs
