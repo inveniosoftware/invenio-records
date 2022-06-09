@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of Invenio.
+# Copyright (C) 2020 CERN.
+# Copyright (C) 2022 Graz University of Technology.
+#
+# Invenio is free software; you can redistribute it and/or modify it
+# under the terms of the MIT License; see LICENSE file for more details.
+
 name: CI
 
 on:
@@ -21,52 +30,37 @@ jobs:
     strategy:
       matrix:
           python-version: [3.7, 3.8, 3.9]
-          requirements-level: [min, pypi]
+          requirements-level: [pypi]
           db-service: [postgresql10, postgresql14, mysql5, mysql8]
           exclude:
           - python-version: 3.7
-            requirements-level: pypi
-
-          - python-version: 3.8
-            requirements-level: min
-
-          - python-version: 3.9
-            requirements-level: min
-
-          - python-version: 3.7
-            requirements-level: min
             db-service: postgresql14
 
           - python-version: 3.7
-            requirements-level: min
             db-service: mysql8
 
           - python-version: 3.8
-            requirements-level: pypi
             db-service: postgresql10
 
           - python-version: 3.8
-            requirements-level: pypi
             db-service: mysql5
 
           - python-version: 3.9
-            requirements-level: pypi
             db-service: postgresql10
 
           - python-version: 3.9
-            requirements-level: pypi
             db-service: mysql5
 
           include:
           - db-service: postgresql10
             DB: postgresql
-            POSTGRESQL_VERSION: POSTGRESQL_9_LATEST
+            POSTGRESQL_VERSION: POSTGRESQL_10_LATEST
             SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://invenio:invenio@localhost:5432/invenio"
             EXTRAS: "tests,postgresql"
 
           - db-service: postgresql14
             DB: postgresql
-            POSTGRESQL_VERSION: POSTGRESQL_11_LATEST
+            POSTGRESQL_VERSION: POSTGRESQL_14_LATEST
             SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://invenio:invenio@localhost:5432/invenio"
             EXTRAS: "tests,postgresql"
 
@@ -99,7 +93,7 @@ jobs:
 
       - name: Generate dependencies
         run: |
-          python -m pip install --upgrade pip setuptools py wheel requirements-builder
+          pip install wheel requirements-builder
           requirements-builder -e ${{ matrix.EXTRAS }} --level=${{ matrix.requirements-level }} setup.py > .${{ matrix.requirements-level }}-${{ matrix.python-version }}-requirements.txt
 
       - name: Cache pip
