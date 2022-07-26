@@ -20,7 +20,7 @@ The field consists of:
 """
 
 from .errors import InvalidCheckValue, InvalidRelationValue, RelationError
-from .field import RelationsField
+from .field import MultiRelationsField, RelationsField
 from .mapping import RelationsMapping
 from .modelrelations import ModelRelation
 from .relations import (
@@ -38,6 +38,7 @@ __all__ = (
     "InvalidRelationValue",
     "ListRelation",
     "ModelRelation",
+    "MultiRelationsField",
     "NestedListRelation",
     "PKListRelation",
     "PKNestedListRelation",

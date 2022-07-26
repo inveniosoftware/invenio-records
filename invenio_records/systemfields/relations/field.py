@@ -74,3 +74,112 @@ class RelationsField(SystemField):
         """Initialise the model field."""
         self.obj(record).validate()
         self.obj(record).clean()
+
+
+class MultiRelationsField(RelationsField):
+    """Relations field for connections to external entities.
+
+    It allows to define nested relation fields. For example:
+
+    .. code-block:: python
+
+        class Record:
+
+            relations = MultiRelationsField(
+                field_one=PIDListRelation(
+                    "metadata.field_one",
+                    ...
+                ),
+                inner=RelationsField(
+                    inner_field=PIDListRelation(
+                        "metadata.inner_field",
+                    ...
+                    ),
+                )
+            )
+    """
+
+    def __init__(self, **fields):
+        """Initialize the field."""
+        assert all(
+            isinstance(f, RelationBase) or isinstance(f, RelationsField)
+            for f in fields.values()
+        )
+        self._fields = {
+            key: field
+            for (key, field) in fields.items()
+            if isinstance(field, RelationBase)
+        }
+        self._relation_fields = {
+            key: field
+            for (key, field) in fields.items()
+            if isinstance(field, RelationsField)
+        }
+
+    def __getattr__(self, name):
+        """Get a field definition."""
+        if name in self._fields:
+            return self._fields[name]
+
+        raise AttributeError
+
+    def __iter__(self):
+        """Iterate over the configured fields."""
+        return iter(getattr(self, f) for f in self._fields)
+
+    def __contains__(self, name):
+        """Return if a field exists in the configured fields."""
+        return name in self._fields
+
+    #
+    # Helpers
+    #
+    def obj(self, instance):
+        """Get the relations object.
+
+        The nested RelationFields will be flattened to the root.
+        In the example above, the relations field has a field (field_one)
+        and a nested RelationsField with a field (inner_field). However,
+        both of them will be accessed through the relations field.
+
+        .. code-block:: python
+
+            relations.field_one
+            relations.inner_field  # correct
+            relations.inner.inner_field  # incorrect
+        """
+        # Check cache
+        obj = self._get_cache(instance)
+        if obj:
+            return obj
+        for relation_field in self._relation_fields.values():
+            for (name, field) in relation_field._fields.items():
+                if name not in self._fields:
+                    self._fields[name] = field
+        obj = RelationsMapping(record=instance, fields=self._fields)
+        self._set_cache(instance, obj)
+        return obj
+
+    #
+    # Data descriptor
+    #
+    def __get__(self, record, owner=None):
+        """Accessing the attribute."""
+        # Class access
+        if record is None:
+            return self
+        return self.obj(record)
+
+    def __set__(self, instance, values):
+        """Setting the attribute."""
+        obj = self.obj(instance)
+        for k, v in values.items():
+            setattr(obj, k, v)
+
+    #
+    # Record extension
+    #
+    def pre_commit(self, record):
+        """Initialise the model field."""
+        self.obj(record).validate()
+        self.obj(record).clean()
