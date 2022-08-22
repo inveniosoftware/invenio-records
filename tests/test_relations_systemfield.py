@@ -23,50 +23,6 @@ from invenio_records.systemfields.relations import (
 from invenio_records.systemfields.relations.errors import InvalidCheckValue
 
 
-@pytest.fixture()
-def languages(db):
-    class Language(Record, SystemFieldsMixin):
-        pass
-
-    languages_data = (
-        {
-            "title": "English",
-            "iso": "en",
-            "information": {"native_speakers": "400 million", "ethnicity": "English"},
-        },
-        {
-            "title": "French",
-            "iso": "fr",
-            "information": {"native_speakers": "76.8 million", "ethnicity": "French"},
-        },
-        {
-            "title": "Spanish",
-            "iso": "es",
-            "information": {"native_speakers": "489 million", "ethnicity": "Spanish"},
-        },
-        {
-            "title": "Italian",
-            "iso": "it",
-            "information": {"native_speakers": "67 million", "ethnicity": "Italians"},
-        },
-        {
-            "title": "Old English",
-            "iso": "oe",
-            "information": {
-                "native_speakers": "400 million",
-                "ethnicity": ["English", "Old english"],
-            },
-        },
-    )
-
-    languages = {}
-    for lang in languages_data:
-        lang_rec = Language.create(lang)
-        languages[lang["iso"]] = lang_rec
-    db.session.commit()
-    return Language, languages
-
-
 def test_relations_field_pk_relation(testapp, db, languages):
     """RelationsField tests for PKRelation."""
 

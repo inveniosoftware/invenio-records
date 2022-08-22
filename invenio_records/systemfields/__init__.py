@@ -74,13 +74,14 @@ from .constant import ConstantField
 from .dict import DictField
 from .model import ModelField
 from .relatedmodelfield import RelatedModelField, RelatedModelFieldContext
-from .relations import ModelRelation, PKRelation, RelationsField
+from .relations import ModelRelation, MultiRelationsField, PKRelation, RelationsField
 
 __all__ = (
     "ConstantField",
     "DictField",
     "ModelField",
     "ModelRelation",
+    "MultiRelationsField",
     "PKRelation",
     "RelatedModelField",
     "RelatedModelFieldContext",
