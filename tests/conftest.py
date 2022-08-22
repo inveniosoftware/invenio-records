@@ -17,6 +17,8 @@ from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.schema import DropConstraint, DropSequence, DropTable
 
 from invenio_records import InvenioRecords
+from invenio_records.api import Record
+from invenio_records.systemfields import SystemFieldsMixin
 
 pytest_plugins = ("celery.contrib.pytest",)
 
@@ -61,3 +63,49 @@ def testapp(base_app, database):
     Pytest-Invenio also initialises ES with the app fixture.
     """
     yield base_app
+
+
+@pytest.fixture()
+def languages(db):
+    """Languages fixture."""
+
+    class Language(Record, SystemFieldsMixin):
+        pass
+
+    languages_data = (
+        {
+            "title": "English",
+            "iso": "en",
+            "information": {"native_speakers": "400 million", "ethnicity": "English"},
+        },
+        {
+            "title": "French",
+            "iso": "fr",
+            "information": {"native_speakers": "76.8 million", "ethnicity": "French"},
+        },
+        {
+            "title": "Spanish",
+            "iso": "es",
+            "information": {"native_speakers": "489 million", "ethnicity": "Spanish"},
+        },
+        {
+            "title": "Italian",
+            "iso": "it",
+            "information": {"native_speakers": "67 million", "ethnicity": "Italians"},
+        },
+        {
+            "title": "Old English",
+            "iso": "oe",
+            "information": {
+                "native_speakers": "400 million",
+                "ethnicity": ["English", "Old english"],
+            },
+        },
+    )
+
+    languages = {}
+    for lang in languages_data:
+        lang_rec = Language.create(lang)
+        languages[lang["iso"]] = lang_rec
+    db.session.commit()
+    return Language, languages
