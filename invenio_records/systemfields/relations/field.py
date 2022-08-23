@@ -8,6 +8,8 @@
 
 """Relations system field."""
 
+from werkzeug.local import LocalProxy
+
 from ..base import SystemField
 from .mapping import RelationsMapping
 from .relations import RelationBase
@@ -114,24 +116,32 @@ class MultiRelationsField(RelationsField):
             relations.inner_field  # correct
             relations.inner.inner_field  # incorrect
         """
+        # initialize parent class, cannot be done with the proper fields
+        # because they are lazy loaded. In some cases nesterd RelationFields
+        # are loaded from config, therefore the need for lazy initialization.
+        super().__init__()
         assert all(
             isinstance(f, RelationBase) or isinstance(f, RelationsField)
             for f in fields.values()
         )
 
-        self._fields = {}
+        self._original_fields = fields
         self._relation_fields = set()
+        self._fields = LocalProxy(lambda: self._explode_fields())
 
-        for key, field in fields.items():
+    def _explode_fields(self):
+        """Mutates self._fields to include all nested fields."""
+        fields = {}
+        self._relation_fields = set()
+        for key, field in self._original_fields.items():
             if isinstance(field, RelationBase):
-                self._fields[key] = field
+                fields[key] = field
             elif isinstance(field, RelationsField):
                 self._relation_fields.add(key)
                 for inner_name, inner_field in field._fields.items():
-                    if inner_name not in self._fields:
-                        self._fields[inner_name] = inner_field
-
-        super().__init__(**self._fields)
+                    if inner_name not in fields:
+                        fields[inner_name] = inner_field
+        return fields
 
     #
     # Data descriptor
