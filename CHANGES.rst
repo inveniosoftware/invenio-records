@@ -8,6 +8,14 @@
 Changes
 =======
 
+Version 1.7.4 (released 2022-08-23)
+
+- Adds support for nested RelationFields via MultiRelationsField
+- Migrates to declarative module (setup.cfg)
+- Migrates code to Black formatter
+- Adds german translations
+- Removes babel extensions for Jinja
+
 Version 1.7.3 (released 2022-05-04)
 
 - Adds utility to merge Python dicts
