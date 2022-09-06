@@ -8,7 +8,6 @@
 
 """Relations system field."""
 
-from werkzeug.local import LocalProxy
 from werkzeug.utils import cached_property
 
 from ..base import SystemField
@@ -26,7 +25,7 @@ class RelationsField(SystemField):
         """Initialize the field."""
         super().__init__()
         assert all(isinstance(f, RelationBase) for f in fields.values())
-        self._fields = fields
+        self._original_fields = fields
 
     def __getattr__(self, name):
         """Get a field definition."""
@@ -41,6 +40,14 @@ class RelationsField(SystemField):
     def __contains__(self, name):
         """Return if a field exists in the configured fields."""
         return name in self._fields
+
+    #
+    # Properties
+    #
+    @cached_property
+    def _fields(self):
+        """Get the fields."""
+        return self._original_fields
 
     #
     # Helpers
@@ -117,10 +124,7 @@ class MultiRelationsField(RelationsField):
             relations.inner_field  # correct
             relations.inner.inner_field  # incorrect
         """
-        # initialize parent class, cannot be done with the proper fields
-        # because they are lazy loaded. In some cases nesterd RelationFields
-        # are loaded from config, therefore the need for lazy initialization.
-        super().__init__()
+        super().__init__()  # no fields passed since validation happens in this class
         assert all(
             isinstance(f, RelationBase) or isinstance(f, RelationsField)
             for f in fields.values()
@@ -128,10 +132,9 @@ class MultiRelationsField(RelationsField):
 
         self._original_fields = fields
         self._relation_fields = set()
-        self._fields = LocalProxy(lambda: self._exploded_fields)
 
     @cached_property
-    def _exploded_fields(self):
+    def _fields(self):
         """Mutates self._fields to include all nested fields."""
         fields = {}
         self._relation_fields = set()
