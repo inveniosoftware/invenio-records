@@ -9,6 +9,7 @@
 """Relations system field."""
 
 from werkzeug.local import LocalProxy
+from werkzeug.utils import cached_property
 
 from ..base import SystemField
 from .mapping import RelationsMapping
@@ -127,9 +128,10 @@ class MultiRelationsField(RelationsField):
 
         self._original_fields = fields
         self._relation_fields = set()
-        self._fields = LocalProxy(lambda: self._explode_fields())
+        self._fields = LocalProxy(lambda: self._exploded_fields)
 
-    def _explode_fields(self):
+    @cached_property
+    def _exploded_fields(self):
         """Mutates self._fields to include all nested fields."""
         fields = {}
         self._relation_fields = set()
