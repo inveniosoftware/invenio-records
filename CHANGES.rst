@@ -8,6 +8,11 @@
 Changes
 =======
 
+Version 1.7.5 (released 2022-09-06)
+
+- Fixes a bug on MultiRelationsField where fields would be calculated multiple
+  times. Now they are calculated only once, and cached.
+
 Version 1.7.4 (released 2022-08-23)
 
 - Adds support for nested RelationFields via MultiRelationsField
