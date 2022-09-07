@@ -8,6 +8,11 @@
 Changes
 =======
 
+Version 1.7.6 (released 2022-09-07)
+
+- Moves the _fields attribute of RelationFields into a cached property.
+  This allows delayed calculation of its values.
+
 Version 1.7.5 (released 2022-09-06)
 
 - Fixes a bug on MultiRelationsField where fields would be calculated multiple
