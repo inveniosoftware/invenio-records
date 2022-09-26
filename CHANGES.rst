@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 2.0.0 (released 2022-09-07)
+
+- Renames SearchDumper classes to remove Elasticsearch naming.
+
 Version 1.7.6 (released 2022-09-07)
 
 - Moves the _fields attribute of RelationFields into a cached property.
