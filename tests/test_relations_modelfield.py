@@ -15,7 +15,7 @@ import pytest
 from sqlalchemy_utils.types import UUIDType
 
 from invenio_records.api import Record
-from invenio_records.dumpers import ElasticsearchDumper
+from invenio_records.dumpers import SearchDumper
 from invenio_records.dumpers.relations import RelationDumperExt
 from invenio_records.models import RecordMetadataBase
 from invenio_records.systemfields import (
@@ -62,11 +62,11 @@ def test_model_relation(testapp, database, Record3Metadata, Record2Metadata):
 
     class Record3(Record, SystemFieldsMixin):
         model_cls = Record3Metadata
-        dumper = ElasticsearchDumper()
+        dumper = SearchDumper()
 
     class Record2(Record, SystemFieldsMixin):
         model_cls = Record2Metadata
-        dumper = ElasticsearchDumper(
+        dumper = SearchDumper(
             extensions=[
                 RelationDumperExt("relations"),
             ]

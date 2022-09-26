@@ -6,13 +6,12 @@
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
-"""Elasticsearch source dumper.
+"""Search source dumper.
 
-Dumper used to dump/load an the body of an Elasticsearch document.
+Dumper used to dump/load an the body of an Search document.
 """
 
-from copy import deepcopy
-from datetime import date, datetime
+from datetime import datetime
 from uuid import UUID
 
 import arrow
@@ -25,8 +24,8 @@ from ..systemfields.model import ModelField
 from .base import Dumper
 
 
-class ElasticsearchDumperExt:
-    """Interface for Elasticsearch dumper extensions."""
+class SearchDumperExt:
+    """Interface for Search dumper extensions."""
 
     def dump(self, record, data):
         """Dump the data."""
@@ -38,8 +37,8 @@ class ElasticsearchDumperExt:
         """
 
 
-class ElasticsearchDumper(Dumper):
-    """Elasticsearch source dumper."""
+class SearchDumper(Dumper):
+    """Search source dumper."""
 
     def __init__(self, extensions=None, model_fields=None):
         """."""
@@ -225,7 +224,7 @@ class ElasticsearchDumper(Dumper):
         return dump_data
 
     def load(self, dump_data, record_cls):
-        """Load a record from an Elasticsearch document source.
+        """Load a record from an Search document source.
 
         The method reverses the changes made during the dump. If a model was
         associated, a model will also be initialized.

@@ -15,7 +15,7 @@ class Dumper:
     """Interface for dumpers."""
 
     def dump(self, record, data):
-        """Dump a record that can be used a source document for Elasticsearch.
+        """Dump a record that can be used a source document for the search engine.
 
         The job of this method is to create a Python dictionary from the record
         provided in the argument.
@@ -31,7 +31,7 @@ class Dumper:
         return data
 
     def load(self, data, record_cls):
-        """Load a record from the source document of an Elasticsearch hit.
+        """Load a record from the source document of a search engine hit.
 
         The job of this method, is to create a record of type ``record_cls``
         based on the input ``data``.

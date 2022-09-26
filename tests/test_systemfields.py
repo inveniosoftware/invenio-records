@@ -12,7 +12,7 @@
 import pytest
 
 from invenio_records.api import Record
-from invenio_records.dumpers import ElasticsearchDumper
+from invenio_records.dumpers import SearchDumper
 from invenio_records.systemfields import (
     ConstantField,
     DictField,
@@ -118,7 +118,7 @@ def ExtensionRecord():
             self.called.append("post_revert")
 
     class ExtensionRecord(Record, SystemFieldsMixin):
-        dumper = ElasticsearchDumper()
+        dumper = SearchDumper()
         ext = ExtensionField()
 
     return ExtensionRecord

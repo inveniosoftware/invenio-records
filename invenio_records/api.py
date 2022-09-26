@@ -219,7 +219,7 @@ class RecordBase(dict):
         """Make a dump of the record (defaults to a deep copy of the dict).
 
         This method produces a version of a record that can be persisted on
-        storage such as the database, Elasticsearch or other mediums depending
+        storage such as the database, search or other mediums depending
         on the dumper class used.
 
         :param dumper: Dumper to use when dumping the record.

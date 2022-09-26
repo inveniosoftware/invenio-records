@@ -17,7 +17,7 @@ from datetime import datetime
 import pytest
 
 from invenio_records.api import Record
-from invenio_records.dumpers import ElasticsearchDumper
+from invenio_records.dumpers import SearchDumper
 from invenio_records.models import RecordMetadataBase
 from invenio_records.systemfields import ModelField, SystemFieldsMixin
 
@@ -42,7 +42,7 @@ def test_model_field(testapp, database, Record1Metadata):
 
     class Record1(Record, SystemFieldsMixin):
         model_cls = Record1Metadata
-        dumper = ElasticsearchDumper()
+        dumper = SearchDumper()
         # Don't do this at home (two system fields on the same model field):
         expires_at = ModelField()
         expires = ModelField("expires_at", dump=False)

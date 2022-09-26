@@ -8,14 +8,14 @@
 
 """Test the dumpers API."""
 
-from datetime import date, datetime
+from datetime import datetime
 from uuid import UUID
 
 import pytest
 from sqlalchemy.dialects import mysql
 
 from invenio_records.api import Record
-from invenio_records.dumpers import ElasticsearchDumper, ElasticsearchDumperExt
+from invenio_records.dumpers import SearchDumper, SearchDumperExt
 from invenio_records.dumpers.indexedat import IndexedAtDumperExt
 from invenio_records.dumpers.relations import RelationDumperExt
 from invenio_records.models import RecordMetadataBase
@@ -71,32 +71,32 @@ def es_hit():
 
 
 def test_esdumper_without_model(testapp, db, example_data):
-    """Test the Elasticsearch dumper."""
+    """Test the Search dumper."""
     # Dump without a model.
-    dump = Record(example_data).dumps(dumper=ElasticsearchDumper())
+    dump = Record(example_data).dumps(dumper=SearchDumper())
     for k in ["uuid", "version_id", "created", "updated"]:
         assert dump[k] is None  # keys is set to none without a model
     # Load without a model defined
-    record = Record.loads(dump, loader=ElasticsearchDumper())
+    record = Record.loads(dump, loader=SearchDumper())
     assert record.model is None  # model will not be set
     assert record == example_data  # data is equivalent to initial data
 
 
 def test_esdumper_with_model(testapp, db, example_data):
-    """Test the Elasticsearch dumper."""
+    """Test the Search dumper."""
     # Create a record
     record = Record.create(example_data)
     db.session.commit()
 
     # Dump it
-    dump = record.dumps(dumper=ElasticsearchDumper())
+    dump = record.dumps(dumper=SearchDumper())
     assert dump["uuid"] == str(record.id)
     assert dump["version_id"] == record.revision_id + 1
     assert dump["created"][:19] == record.created.isoformat()[:19]
     assert dump["updated"][:19] == record.updated.isoformat()[:19]
 
     # Load it
-    new_record = Record.loads(dump, loader=ElasticsearchDumper())
+    new_record = Record.loads(dump, loader=SearchDumper())
     assert new_record == record
     assert new_record.id == record.id
     assert new_record.revision_id == record.revision_id
@@ -108,14 +108,14 @@ def test_esdumper_with_model(testapp, db, example_data):
 def test_esdumper_with_extensions(testapp, db, example_data):
     """Test extensions implementation."""
     # Create a simple extension that adds a computed field.
-    class TestExt(ElasticsearchDumperExt):
+    class TestExt(SearchDumperExt):
         def dump(self, record, data):
             data["count"] = len(data["mylist"])
 
         def load(self, data, record_cls):
             data.pop("count")
 
-    dumper = ElasticsearchDumper(extensions=[TestExt()])
+    dumper = SearchDumper(extensions=[TestExt()])
 
     # Create the record
     record = Record.create({"mylist": ["a", "b"]})
@@ -142,16 +142,16 @@ def test_esdumper_sa_datatypes(testapp, database):
         boolean = db.Column(db.Boolean(name="boolean"))
         text_variant = db.Column(db.Text().with_variant(mysql.VARCHAR(255), "mysql"))
 
-    assert ElasticsearchDumper._sa_type(Model, "biginteger") == int
-    assert ElasticsearchDumper._sa_type(Model, "boolean") == bool
-    assert ElasticsearchDumper._sa_type(Model, "created") == datetime
-    assert ElasticsearchDumper._sa_type(Model, "id") == UUID
-    assert ElasticsearchDumper._sa_type(Model, "integer") == int
-    assert ElasticsearchDumper._sa_type(Model, "json") == dict
-    assert ElasticsearchDumper._sa_type(Model, "text_variant") == str
-    assert ElasticsearchDumper._sa_type(Model, "text") == str
-    assert ElasticsearchDumper._sa_type(Model, "updated") == datetime
-    assert ElasticsearchDumper._sa_type(Model, "invalid") is None
+    assert SearchDumper._sa_type(Model, "biginteger") == int
+    assert SearchDumper._sa_type(Model, "boolean") == bool
+    assert SearchDumper._sa_type(Model, "created") == datetime
+    assert SearchDumper._sa_type(Model, "id") == UUID
+    assert SearchDumper._sa_type(Model, "integer") == int
+    assert SearchDumper._sa_type(Model, "json") == dict
+    assert SearchDumper._sa_type(Model, "text_variant") == str
+    assert SearchDumper._sa_type(Model, "text") == str
+    assert SearchDumper._sa_type(Model, "updated") == datetime
+    assert SearchDumper._sa_type(Model, "invalid") is None
 
 
 def test_relations_dumper(testapp, db, example_data):
@@ -169,7 +169,7 @@ def test_relations_dumper(testapp, db, example_data):
             ),
         )
 
-        dumper = ElasticsearchDumper(extensions=[RelationDumperExt("relations")])
+        dumper = SearchDumper(extensions=[RelationDumperExt("relations")])
 
     # Create the record
     en_language = Record.create(
@@ -237,7 +237,7 @@ def test_indexedtime_dumper(testapp, db, example_data):
 
     class RecordWithIndexedTime(Record):
 
-        dumper = ElasticsearchDumper(extensions=[IndexedAtDumperExt()])
+        dumper = SearchDumper(extensions=[IndexedAtDumperExt()])
 
     # create the record
     record = RecordWithIndexedTime.create(

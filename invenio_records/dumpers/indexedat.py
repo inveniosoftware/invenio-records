@@ -8,16 +8,15 @@
 
 """Indexed timestamp dumper.
 
-Dumper used to dump/load the indexed time of a record to/from an
-ElasticSearch body.
+Dumper used to dump/load the indexed time of a record to/from a search engine body.
 """
 
 import arrow
 
-from .elasticsearch import ElasticsearchDumperExt
+from .search import SearchDumperExt
 
 
-class IndexedAtDumperExt(ElasticsearchDumperExt):
+class IndexedAtDumperExt(SearchDumperExt):
     """Dumper for the indexed_at field."""
 
     def __init__(self, key="indexed_at"):
