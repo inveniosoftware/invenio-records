@@ -8,14 +8,14 @@
 
 """Relations dumper.
 
-Dumper used to dump/load relations to/from an ElasticSearch body.
+Dumper used to dump/load relations to/from a search engine body.
 """
 
 from ..dictutils import dict_lookup, dict_set
-from .elasticsearch import ElasticsearchDumperExt
+from .search import SearchDumperExt
 
 
-class RelationDumperExt(ElasticsearchDumperExt):
+class RelationDumperExt(SearchDumperExt):
     """Dumper for a relations field."""
 
     def __init__(self, key, fields=None):

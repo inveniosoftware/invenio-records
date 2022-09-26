@@ -11,21 +11,21 @@
 **A simple example**
 
 You can for instance use a dumper to produce the body of the document to be
-indexed for Elasticsearch:
+indexed for the search engine:
 
 .. code-block:: python
 
-    dump = Record({...}).dumps(dumper=ElasticsearchDumper())
+    dump = Record({...}).dumps(dumper=SearchDumper())
 
 A dump can be loaded by the dumper as well:
 
 .. code-block:: python
 
-    record = Record.loads(dump, loader=ElasticsearchDumper())
+    record = Record.loads(dump, loader=SearchDumper())
 
 **Data harmonization**
 
-Invenio can read records from the database, Elasticsearch and data files. The
+Invenio can read records from the database, search engine and data files. The
 master copy is always the database, however for performance reasons, it's not
 efficient to always use the master version of a record. For instance, during
 searches it would come with a big performance impact if we had to read each
@@ -33,7 +33,7 @@ record in a search result from the database.
 
 The problem is however that a secondary copy of a record (e.g. in the
 search index) is not identical to the master copy. For instance, usage
-statistics may have been cached in the Elasticsearch version whereas we don't
+statistics may have been cached in the search engine version whereas we don't
 persist it in the database. This is again for performance reasons and allows
 e.g. also having a "sort by most viewed" while not overloading the database
 with usage statistics updates.
@@ -49,10 +49,10 @@ standardized version of a record independently of where it was loaded from.
 """
 
 from .base import Dumper
-from .elasticsearch import ElasticsearchDumper, ElasticsearchDumperExt
+from .search import SearchDumper, SearchDumperExt
 
 __all__ = (
     "Dumper",
-    "ElasticsearchDumper",
-    "ElasticsearchDumperExt",
+    "SearchDumper",
+    "SearchDumperExt",
 )
