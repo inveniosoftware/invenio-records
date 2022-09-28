@@ -47,7 +47,6 @@ def es_hit():
     """Example record used for tests."""
     return {
         "_index": "testindex",
-        "_type": "_doc",
         "_id": "4beb3b3e-a935-442e-a47b-6d386947ea20",
         "_version": 5,
         "_seq_no": 0,
