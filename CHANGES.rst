@@ -8,6 +8,11 @@
 Changes
 =======
 
+Version 2.0.1 (released 2022-11-18)
+
+- Adds translations
+- Upgrades pytest-invenio
+
 Version 2.0.0 (released 2022-09-07)
 
 - Renames SearchDumper classes to remove Elasticsearch naming.
