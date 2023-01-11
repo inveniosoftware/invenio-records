@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2015-2018 CERN.
+# Copyright (C) 2023 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -12,9 +13,9 @@ import json
 
 from flask import flash
 from flask_admin.contrib.sqla import ModelView
-from flask_babelex import gettext as _
 from invenio_admin.filters import FilterConverter
 from invenio_db import db
+from invenio_i18n import gettext as _
 from markupsafe import Markup
 from sqlalchemy.exc import SQLAlchemyError
 
