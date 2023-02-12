@@ -24,7 +24,7 @@ function cleanup {
 trap cleanup EXIT
 
 python -m check_manifest
-python -m setup extract_messages --dry-run
+python -m setup extract_messages --output-file /dev/null
 python -m sphinx.cmd.build -qnN docs docs/_build/html
 eval "$(docker-services-cli up --db ${DB:-postgresql} --env)"
 python -m pytest
