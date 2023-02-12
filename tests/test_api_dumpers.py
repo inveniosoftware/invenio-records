@@ -106,6 +106,7 @@ def test_esdumper_with_model(testapp, db, example_data):
 
 def test_esdumper_with_extensions(testapp, db, example_data):
     """Test extensions implementation."""
+
     # Create a simple extension that adds a computed field.
     class TestExt(SearchDumperExt):
         def dump(self, record, data):
@@ -235,7 +236,6 @@ def test_indexedtime_dumper(testapp, db, example_data):
     """Test relations dumper extension."""
 
     class RecordWithIndexedTime(Record):
-
         dumper = SearchDumper(extensions=[IndexedAtDumperExt()])
 
     # create the record

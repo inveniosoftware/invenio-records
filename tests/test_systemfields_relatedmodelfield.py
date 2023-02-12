@@ -42,6 +42,7 @@ def patch_inspect(monkeypatch):
 @pytest.fixture()
 def patch_db(monkeypatch):
     """Monkey patch session_merge"""
+
     # Used to avoid having to create DB tables
     class MockSession:
         @staticmethod
@@ -128,6 +129,7 @@ def test_change_key(testapp, db, MyModel):
 
 def test_custom_dump_load(testapp, db, MyModel):
     """Change custom dump/load function."""
+
     # A custom dumper function
     def my_dump(field, record, obj):
         field.set_dictkey(record, {"custom": obj._val})
