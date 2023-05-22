@@ -377,11 +377,30 @@ class Record(RecordBase):
         :returns: The :class:`Record` instance.
         """
         with db.session.no_autoflush:
-            query = cls.model_cls.query.filter_by(id=id_)
-            if not with_deleted:
-                query = query.filter(cls.model_cls.is_deleted != True)  # noqa
-            obj = query.one()
-            return cls(obj.data, model=obj)
+            try:
+                query = cls.model_cls.query.filter_by(id=id_)
+                if not with_deleted:
+                    query = query.filter(cls.model_cls.is_deleted != True)  # noqa
+                obj = query.one()
+                return cls(obj.data, model=obj)
+
+            except Exception as e:
+                # During record creation, one celery task throws an error (trying to access the record before it exists)
+                #  which we need to re-throw (I have tried not throwing it, it doesn't work)
+
+                # If the pid didn't correspond to a valid record
+                # try to get the newest record with parent_id = id_
+                # if this returns None, then we have successfully 'caught' the above failed celery task
+                # and so need to throw an error
+                # else return the found record
+                query = cls.model_cls.query.filter_by(parent_id=id_)
+                if not with_deleted:
+                    query = query.filter(cls.model_cls.is_deleted != True)  # noqa
+                query = query.order_by(cls.model_cls.index.desc())
+                obj = query.first()
+                if obj:
+                    return cls(obj.data, model=obj)
+                raise e  # Failed celery task
 
     @classmethod
     def get_records(cls, ids, with_deleted=False):
