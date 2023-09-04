@@ -69,3 +69,4 @@ examples/instance/
 test.db
 tests/test.db
 .vscode
+**.DS_Store

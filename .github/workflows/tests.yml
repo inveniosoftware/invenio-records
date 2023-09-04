@@ -16,23 +16,23 @@ on:
     branches: master
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron:  '0 3 * * 6'
+    - cron: "0 3 * * 6"
   workflow_dispatch:
     inputs:
       reason:
-        description: 'Reason'
+        description: "Reason"
         required: false
-        default: 'Manual trigger'
+        default: "Manual trigger"
 
 jobs:
   Tests:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-          python-version: [3.7, 3.8, 3.9]
-          requirements-level: [pypi]
-          db-service: [postgresql10, postgresql14, mysql5, mysql8]
-          exclude:
+        python-version: [3.7, 3.8, 3.9]
+        requirements-level: [pypi]
+        db-service: [postgresql11, postgresql14, mysql5, mysql8]
+        exclude:
           - python-version: 3.7
             db-service: postgresql14
 
@@ -40,21 +40,21 @@ jobs:
             db-service: mysql8
 
           - python-version: 3.8
-            db-service: postgresql10
+            db-service: postgresql11
 
           - python-version: 3.8
             db-service: mysql5
 
           - python-version: 3.9
-            db-service: postgresql10
+            db-service: postgresql11
 
           - python-version: 3.9
             db-service: mysql5
 
-          include:
-          - db-service: postgresql10
+        include:
+          - db-service: postgresql11
             DB: postgresql
-            POSTGRESQL_VERSION: POSTGRESQL_10_LATEST
+            POSTGRESQL_VERSION: POSTGRESQL_11_LATEST
             SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://invenio:invenio@localhost:5432/invenio"
             EXTRAS: "tests,postgresql"
 
