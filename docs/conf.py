@@ -324,9 +324,18 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    "https://docs.python.org/": None,
+    "python": ("https://docs.python.org/", None),
     "jsonschema": ("https://python-jsonschema.readthedocs.io/en/latest", None),
 }
 
 # Autodoc configuraton.
 autoclass_content = "both"
+
+# To address <unknown>:1:py:class reference target not found
+# (better ideas welcomed)
+nitpick_ignore = [
+    (
+        "py:class",
+        "invenio_records.systemfields.relations.modelrelations.ModelRelationResult",
+    ),  # noqa
+]
