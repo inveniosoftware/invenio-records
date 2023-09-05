@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 2.2.0 (released 2023-09-05)
+
+- dumper: merge record to working data instead of replacing
+
 Version 2.1.0 (released 2023-03-02)
 
 - remove deprecated flask-babelex dependency and imports
