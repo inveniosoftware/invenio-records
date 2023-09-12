@@ -10,8 +10,6 @@
 
 from copy import deepcopy
 
-from ..dictutils import dict_merge
-
 
 class Dumper:
     """Interface for dumpers."""
@@ -29,10 +27,13 @@ class Dumper:
         :param record: The record to dump.
         :param data: The initial dump data passed in by ``record.dumps()``.
         """
-        copied_record = deepcopy(dict(record))
-        # we merge the cloned record to dumped data so we keep any prior modification that
-        # e.g systemfields have done in the `pre_dump()` step
-        dict_merge(data, copied_record)
+        # We on purpose do not dict merge the record into the data. "data"
+        # holds whatever pre_dump() extensions decided to include, pre_dump
+        # methods should always write to top-level keys that are not
+        # conflicting with any of the record's keys. pre_dump methods can be
+        # used to preprocess the record before dumping (e.g. caching/fetching
+        # things.
+        data.update(deepcopy(dict(record)))
         return data
 
     def load(self, data, record_cls):
