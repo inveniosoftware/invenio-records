@@ -16,6 +16,7 @@ from uuid import UUID
 
 import arrow
 import pytz
+from invenio_db import db
 from sqlalchemy.sql.sqltypes import JSON, Boolean, DateTime, Integer, String, Text
 from sqlalchemy.sql.type_api import Variant
 from sqlalchemy_utils.types.uuid import UUIDType
@@ -134,9 +135,9 @@ class SearchDumper(Dumper):
         if record.model is None:
             dump[dump_key] = None
             return
-
-        # Retrieve value of the field on the model.
-        val = getattr(record.model, model_field_name)
+        with db.session.no_autoflush:
+            # Retrieve value of the field on the model.
+            val = getattr(record.model, model_field_name)
 
         # Determine data type if not set.
         if dump_type is None:
