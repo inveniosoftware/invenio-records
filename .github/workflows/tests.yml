@@ -31,38 +31,13 @@ jobs:
       matrix:
         python-version: [3.8, 3.9]
         requirements-level: [pypi]
-        db-service: [postgresql11, postgresql14, mysql5, mysql8]
-        exclude:
-          - python-version: 3.8
-            db-service: postgresql11
-
-          - python-version: 3.8
-            db-service: mysql5
-
-          - python-version: 3.9
-            db-service: postgresql11
-
-          - python-version: 3.9
-            db-service: mysql5
-
+        db-service: [postgresql14, mysql8]
         include:
-          - db-service: postgresql11
-            DB: postgresql
-            POSTGRESQL_VERSION: POSTGRESQL_11_LATEST
-            SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://invenio:invenio@localhost:5432/invenio"
-            EXTRAS: "tests,postgresql"
-
           - db-service: postgresql14
             DB: postgresql
             POSTGRESQL_VERSION: POSTGRESQL_14_LATEST
             SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://invenio:invenio@localhost:5432/invenio"
             EXTRAS: "tests,postgresql"
-
-          - db-service: mysql5
-            DB: mysql
-            MYSQL_VERSION: MYSQL_5_LATEST
-            SQLALCHEMY_DATABASE_URI: "mysql+pymysql://invenio:invenio@localhost:3306/invenio"
-            EXTRAS: "tests,mysql"
 
           - db-service: mysql8
             DB: mysql
