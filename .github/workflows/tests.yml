@@ -29,16 +29,10 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.8, 3.9]
         requirements-level: [pypi]
         db-service: [postgresql11, postgresql14, mysql5, mysql8]
         exclude:
-          - python-version: 3.7
-            db-service: postgresql14
-
-          - python-version: 3.7
-            db-service: mysql8
-
           - python-version: 3.8
             db-service: postgresql11
 
