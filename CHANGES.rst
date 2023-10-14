@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 2.2.2 (released 2023-09-12)
+
+- search: prevent flush on search queries
+
 Version 2.2.1 (released 2023-09-12)
 
 - revert dumper: merge record to working data instead of replacing
