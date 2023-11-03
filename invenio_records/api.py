@@ -439,25 +439,26 @@ class Record(RecordBase):
         if self.model is None or self.model.is_deleted:
             raise MissingModelError()
 
-        with db.session.begin_nested():
-            if self.send_signals:
-                before_record_update.send(
-                    current_app._get_current_object(), record=self
-                )
+        if self.send_signals:
+            before_record_update.send(
+                current_app._get_current_object(), record=self
+            )
 
-            # Run pre commit extensions
-            for e in self._extensions:
-                e.pre_commit(self, **kwargs)
+        # Run pre commit extensions
+        for e in self._extensions:
+            e.pre_commit(self, **kwargs)
 
-            # Validate also encodes the data
-            json = self._validate(format_checker=format_checker, validator=validator)
+        # Validate also encodes the data
+        json = self._validate(format_checker=format_checker, validator=validator)
 
-            # Thus, we pass the encoded JSON directly to the model to avoid
-            # double encoding.
-            self.model.json = json
-            flag_modified(self.model, "json")
+        # Thus, we pass the encoded JSON directly to the model to avoid
+        # double encoding.
+        self.model.json = json
+        flag_modified(self.model, "json")
 
-            db.session.merge(self.model)
+        # Check this
+        db.session.merge(self.model)
+        db.session.commit()
 
         if self.send_signals:
             after_record_update.send(current_app._get_current_object(), record=self)
