@@ -1,12 +1,17 @@
 ..
     This file is part of Invenio.
-    Copyright (C) 2015-2022 CERN.
+    Copyright (C) 2015-2024 CERN.
 
     Invenio is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
 
 Changes
 =======
+
+Version 2.3.0 (released 2024-02-19)
+
+- tests: add tests for filter_dict_keys
+- dictutils: add filter_dict_keys
 
 Version 2.2.2 (released 2023-09-12)
 
