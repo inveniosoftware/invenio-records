@@ -12,7 +12,12 @@ from copy import deepcopy
 
 import pytest
 
-from invenio_records.dictutils import clear_none, dict_lookup, dict_merge
+from invenio_records.dictutils import (
+    clear_none,
+    dict_lookup,
+    dict_merge,
+    filter_dict_keys,
+)
 
 
 def test_clear_none():
@@ -78,3 +83,17 @@ def test_dict_merge():
         "foo2": "bar2",
         "metadata": {"field1": 3, "field2": "test"},
     }
+
+
+def test_filter_dict_keys():
+    """Test filter dict keys."""
+    source = {
+        "foo1": {"bar1": 1, "bar2": 2},
+        "foo2": 1,
+        "foo3": {"bar1": {"foo4": 0}, "bar2": 1, "bar3": 2},
+        "foo4": {},
+    }
+
+    assert filter_dict_keys(
+        source, ["foo1.bar1", "foo2", "foo3.bar1.foo4", "foo3.bar3"]
+    ) == {"foo1": {"bar1": 1}, "foo2": 1, "foo3": {"bar1": {"foo4": 0}, "bar3": 2}}

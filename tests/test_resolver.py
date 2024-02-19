@@ -41,9 +41,9 @@ def local_ref_resolver_store_factory():
 
 @pytest.fixture(scope="module")
 def app_config(app_config):
-    app_config[
-        "RECORDS_REFRESOLVER_CLS"
-    ] = "invenio_records.resolver.InvenioRefResolver"
+    app_config["RECORDS_REFRESOLVER_CLS"] = (
+        "invenio_records.resolver.InvenioRefResolver"
+    )
     app_config["RECORDS_REFRESOLVER_STORE"] = local_ref_resolver_store_factory()
     return app_config
 
