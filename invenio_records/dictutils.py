@@ -8,8 +8,6 @@
 
 """Dictionary utilities."""
 
-from copy import deepcopy
-
 
 def clear_none(d):
     """Clear None values and empty dicts from a dict."""
@@ -147,3 +145,37 @@ def dict_merge(dest, source):
                 dict_merge(dest[key], source[key])
         else:
             dest[key] = source[key]
+
+
+def filter_dict_keys(src, keys):
+    """Filter a dictionary based on a list of key paths."""
+    # Split the keys into top-level and nested keys
+    top_level_keys = [key for key in keys if "." not in key]
+    nested_keys = [key for key in keys if "." in key]
+
+    # Filter the top-level keys
+    result = {key: src[key] for key in top_level_keys if key in src}
+
+    # Handle nested keys
+    for key in nested_keys:
+        parts = key.split(".")
+        current_dict = src
+        for part in parts[:-1]:
+            if part in current_dict:
+                current_dict = current_dict[part]
+            else:
+                break  # Skip this key if the path does not exist
+        # Update the filtered dictionary with the nested key if it exists
+        if parts[-2] in result and parts[-1] in current_dict:
+            if parts[-2] not in result:
+                result[parts[-2]] = {}
+            result[parts[-2]][parts[-1]] = current_dict[parts[-1]]
+
+    # Handle specific case for top-level keys that are dictionaries but not explicitly mentioned
+    for key in src:
+        if key not in result and isinstance(src[key], dict):
+            subkeys = [k.split(".", 1)[1] for k in keys if k.startswith(f"{key}.")]
+            if subkeys:
+                result[key] = filter_dict_keys(src[key], subkeys)
+
+    return result
