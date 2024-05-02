@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2024 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -15,9 +16,8 @@ from datetime import datetime
 from uuid import UUID
 
 import arrow
-import pytz
 from invenio_db import db
-from sqlalchemy.sql.sqltypes import JSON, Boolean, DateTime, Integer, String, Text
+from sqlalchemy.sql.sqltypes import JSON, Boolean, DateTime, Integer, String
 from sqlalchemy.sql.type_api import Variant
 from sqlalchemy_utils.types.uuid import UUIDType
 
@@ -96,7 +96,7 @@ class SearchDumper(Dumper):
         if value is None:
             return value
         if dump_type in (datetime,):
-            return pytz.utc.localize(value).isoformat()
+            return value.isoformat()
         elif dump_type in (UUID,):
             return str(value)
         elif dump_type is not None:

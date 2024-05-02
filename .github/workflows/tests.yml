@@ -47,7 +47,7 @@ jobs:
       POSTGRESQL_VERSION: ${{matrix.POSTGRESQL_VERSION}}
       MYSQL_VERSION: ${{matrix.MYSQL_VERSION}}
       DB: ${{ matrix.DB }}
-      EXTRAS: tests,${{ matrix.DB }}
+      EXTRAS: tests,admin,${{ matrix.DB }}
 
     steps:
       - name: Checkout

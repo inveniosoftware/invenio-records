@@ -3,6 +3,7 @@
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
 # Copyright (C) 2021 RERO.
+# Copyright (C) 2024 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -247,14 +248,16 @@ def test_extension_post_create(testapp, db, ExtensionRecord):
 
 def test_extension_pre_dump(testapp, db, ExtensionRecord):
     """Test pre dump hook."""
-    rec = ExtensionRecord({}).dumps()
+    with pytest.deprecated_call():
+        rec = ExtensionRecord({}).dumps()
     assert ExtensionRecord.ext.called == ["pre_init", "post_init", "pre_dump"]
 
 
 def test_extension_post_load(testapp, db, ExtensionRecord):
     """Test post load hook."""
-    dump = ExtensionRecord({}).dumps()
-    rec = ExtensionRecord.loads(dump)
+    with pytest.deprecated_call():
+        dump = ExtensionRecord({}).dumps()
+        rec = ExtensionRecord.loads(dump)
     assert ExtensionRecord.ext.called == [
         "pre_init",
         "post_init",

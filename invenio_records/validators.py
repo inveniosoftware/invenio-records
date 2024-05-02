@@ -3,6 +3,7 @@
 # This file is part of Invenio.
 # Copyright (C) 2015-2018 CERN.
 # Copyright (C) 2021      TU Wien.
+# Copyright (C) 2024 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -11,7 +12,7 @@
 
 from jsonschema.validators import Draft4Validator, extend, validator_for
 
-PartialDraft4Validator = extend(Draft4Validator, {"required": None})
+PartialDraft4Validator = extend(Draft4Validator, {"required": lambda *_: None})
 """Partial JSON Schema (draft 4) validator.
 
 Special validator that contains the same validation rules of Draft4Validator,
