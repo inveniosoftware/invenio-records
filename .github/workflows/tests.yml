@@ -41,7 +41,7 @@ jobs:
 
     env:
       DB: ${{ matrix.DB }}
-      EXTRAS: tests,${{ matrix.DB }}
+      EXTRAS: tests,admin,${{ matrix.DB }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
