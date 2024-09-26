@@ -1356,3 +1356,54 @@ def test_relations_field_pk_nested_list_of_obj_w_related_field_w_value_check(
     assert res == oe_lang
     with pytest.raises(StopIteration):  # finished first iterator
         next(res_inner_iter)
+
+
+def test_nested_field_dereferencing(testapp, db, languages):
+    """Test dereferencing with relation_field containing nested relation."""
+    Language, languages = languages
+    en_lang = languages["en"]
+    fr_lang = languages["fr"]
+
+    class Record1(Record, SystemFieldsMixin):
+        # Example for testing a nested field dereferencing
+        relations = RelationsField(
+            nested_array_of_objects=PKNestedListRelation(
+                key="metadata",
+                keys=["iso", "information", "native_speakers"],
+                record_cls=Language,
+                relation_field="desc.languages",
+            ),
+        )
+
+    # Define the record with nested fields
+    record_data = {
+        "metadata": [
+            {
+                "desc": {
+                    "id": "1",
+                    "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                    "languages": [{"id": str(en_lang.id)}, {"id": str(fr_lang.id)}],
+                }
+            },
+        ]
+    }
+
+    # Create the record instance
+    record = Record1(record_data)
+
+    # Test that dereferencing works for the languages
+    record.relations.nested_array_of_objects.dereference()
+
+    # Check that the languages have been dereferenced correctly
+    assert record["metadata"][0]["desc"]["languages"][0] == {
+        "id": str(en_lang.id),
+        "iso": en_lang["iso"],
+        "information": en_lang["information"],
+        "@v": str(en_lang.id) + "::" + str(en_lang.revision_id),
+    }
+    assert record["metadata"][0]["desc"]["languages"][1] == {
+        "id": str(fr_lang.id),
+        "iso": fr_lang["iso"],
+        "information": fr_lang["information"],
+        "@v": str(fr_lang.id) + "::" + str(fr_lang.revision_id),
+    }
