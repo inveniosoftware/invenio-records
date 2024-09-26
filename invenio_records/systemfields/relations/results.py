@@ -8,6 +8,8 @@
 
 """Relations system field."""
 
+from itertools import chain
+
 from ...dictutils import dict_lookup, dict_set
 from .errors import InvalidCheckValue, InvalidRelationValue
 
@@ -154,10 +156,15 @@ class RelationListResult(RelationResult):
     def _lookup_data(self):
         data = dict_lookup(self.record, self.key)
         if self.relation_field:
-            filtered_data = [
-                e.get(self.relation_field) for e in data if self.relation_field in e
-            ]
-            return filtered_data
+            fields = self.relation_field.split(".")
+            for field in fields:
+                if isinstance(data, list):
+                    data = [d.get(field) for d in data if d.get(field)]
+                else:
+                    data = data.get(field)
+                if not data:
+                    return []
+
         return data
 
     def validate(self):
