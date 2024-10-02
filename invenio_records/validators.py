@@ -11,7 +11,7 @@
 
 from jsonschema.validators import Draft4Validator, extend, validator_for
 
-PartialDraft4Validator = extend(Draft4Validator, {"required": None})
+PartialDraft4Validator = extend(Draft4Validator, {"required": lambda *args: None})
 """Partial JSON Schema (draft 4) validator.
 
 Special validator that contains the same validation rules of Draft4Validator,
