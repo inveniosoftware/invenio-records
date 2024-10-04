@@ -3,6 +3,7 @@
 # This file is part of Invenio.
 # Copyright (C) 2015-2020 CERN.
 # Copyright (C) 2021 RERO.
+# Copyright (C) 2024 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -377,7 +378,7 @@ class Record(RecordBase):
         :returns: The :class:`Record` instance.
         """
         with db.session.no_autoflush:
-            query = cls.model_cls.query.filter_by(id=id_)
+            query = db.session.query(cls.model_cls).filter_by(id=id_)
             if not with_deleted:
                 query = query.filter(cls.model_cls.is_deleted != True)  # noqa
             obj = query.one()
@@ -392,7 +393,7 @@ class Record(RecordBase):
         :returns: A list of :class:`Record` instances.
         """
         with db.session.no_autoflush:
-            query = cls.model_cls.query.filter(cls.model_cls.id.in_(ids))
+            query = db.session.query(cls.model_cls).filter(cls.model_cls.id.in_(ids))
             if not with_deleted:
                 query = query.filter(cls.model_cls.is_deleted != True)  # noqa
 
