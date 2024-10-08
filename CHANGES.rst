@@ -8,6 +8,11 @@
 Changes
 =======
 
+Version v2.4.0 (released 2024-10-08)
+
+- relation: modified lookup_data for nested fields
+- Adds translations
+
 Version 2.3.0 (released 2024-02-19)
 
 - tests: add tests for filter_dict_keys
