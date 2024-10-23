@@ -15,7 +15,7 @@ from flask import flash
 from flask_admin.contrib.sqla import ModelView
 from invenio_admin.filters import FilterConverter
 from invenio_db import db
-from invenio_i18n import gettext as _
+from invenio_i18n import lazy_gettext as _
 from markupsafe import Markup
 from sqlalchemy.exc import SQLAlchemyError
 
