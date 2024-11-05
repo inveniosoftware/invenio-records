@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version v2.4.1 (released 2024-11-05)
+
+- model: make forward compatible to sqlalchemy >= 2
+
 Version v2.4.0 (released 2024-10-08)
 
 - relation: modified lookup_data for nested fields
