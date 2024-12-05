@@ -2,7 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2015-2018 CERN.
-# Copyright (C) 2022 Graz University of Technology.
+# Copyright (C) 2022-2024 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -337,5 +337,8 @@ nitpick_ignore = [
     (
         "py:class",
         "invenio_records.systemfields.relations.modelrelations.ModelRelationResult",
-    ),  # noqa
+    ),
+    ("py:class", "t.ClassVar"),
+    ("py:class", "Query"),
+    ("py:attr", "query_class"),  # noqa
 ]
