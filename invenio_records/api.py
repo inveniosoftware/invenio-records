@@ -544,7 +544,7 @@ class Record(RecordBase):
         if self.model is None:
             raise MissingModelError()
 
-        revision = self.revisions[revision_id]
+        revision = list(self.revisions)[revision_id]
 
         with db.session.begin_nested():
             if self.send_signals:
@@ -635,7 +635,7 @@ class RevisionsIterator(object):
         instances having to be updated.)
         """
         if revision_id < 0:
-            return RecordRevision(self.model.versions[revision_id])
+            return RecordRevision(list(self.model.versions)[revision_id])
         try:
             return RecordRevision(
                 self.model.versions.filter_by(version_id=revision_id + 1).one()
@@ -654,4 +654,9 @@ class RevisionsIterator(object):
     def __reversed__(self):
         """Allows to use reversed operator."""
         for version_index in range(self.model.versions.count()):
-            yield RecordRevision(self.model.versions[-(version_index + 1)])
+            versions = (
+                list(self.model.versions)
+                if -(version_index + 1) < 0
+                else self.model.versions
+            )
+            yield RecordRevision(versions[-(version_index + 1)])
