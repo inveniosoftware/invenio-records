@@ -9,6 +9,10 @@
 Changes
 =======
 
+Version 3.0.1 (released 2024-12-10)
+
+- fix: alembic recipe column not altered
+
 Version 3.0.0 (released 2024-12-05)
 
 - fix: IndexError: negative indexes not allowed
