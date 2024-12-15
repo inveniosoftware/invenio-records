@@ -9,6 +9,10 @@
 Changes
 =======
 
+Version 3.0.2 (released 2024-12-15)
+
+- fix: the correct handling is done in the iterator
+
 Version 3.0.1 (released 2024-12-10)
 
 - fix: alembic recipe column not altered
