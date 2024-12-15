@@ -544,7 +544,7 @@ class Record(RecordBase):
         if self.model is None:
             raise MissingModelError()
 
-        revision = list(self.revisions)[revision_id]
+        revision = self.revisions[revision_id]
 
         with db.session.begin_nested():
             if self.send_signals:
