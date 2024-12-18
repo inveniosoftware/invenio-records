@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -11,11 +12,10 @@
 Dumper used to dump/load an the body of an Search document.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID
 
 import arrow
-import pytz
 from invenio_db import db
 from sqlalchemy.sql.sqltypes import JSON, Boolean, DateTime, Integer, String, Text
 from sqlalchemy.sql.type_api import Variant
@@ -69,7 +69,9 @@ class SearchDumper(Dumper):
                 sa_type = sa_type.impl
                 sa_type_class = sa_type.__class__
 
-            if issubclass(sa_type_class, DateTime):
+            if issubclass(sa_type_class, db.UTCDateTime):
+                return datetime
+            elif issubclass(sa_type_class, DateTime):
                 return datetime
             elif issubclass(sa_type_class, Boolean):
                 return bool
@@ -96,7 +98,7 @@ class SearchDumper(Dumper):
         if value is None:
             return value
         if dump_type in (datetime,):
-            return pytz.utc.localize(value).isoformat()
+            return value.isoformat()
         elif dump_type in (UUID,):
             return str(value)
         elif dump_type is not None:
@@ -114,7 +116,7 @@ class SearchDumper(Dumper):
         if value is None:
             return value
         if dump_type in (datetime,):
-            return arrow.get(value).datetime.replace(tzinfo=None)
+            return arrow.get(value, tzinfo=timezone.utc).datetime
         elif dump_type in (UUID,):
             return dump_type(value)
         elif dump_type is not None:

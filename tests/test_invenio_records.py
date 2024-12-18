@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2015-2018 CERN.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -78,7 +79,8 @@ def test_db(testapp, db):
         with pytest.raises(NoResultFound):
             Record.get_record(uuid.uuid4())
         record["field"] = True
-        record = record.patch([{"op": "add", "path": "/hello", "value": ["world"]}])
+        with pytest.warns(DeprecationWarning):
+            record = record.patch([{"op": "add", "path": "/hello", "value": ["world"]}])
         assert record["hello"] == ["world"]
         record.commit()
         db.session.commit()

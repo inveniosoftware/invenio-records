@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2015-2020 CERN.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -10,41 +11,15 @@
 
 import uuid
 from copy import deepcopy
-from datetime import datetime
 
 from invenio_db import db
-from sqlalchemy.dialects import mysql, postgresql
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy_utils.types import JSONType, UUIDType
 
 
-class Timestamp(object):
-    """Timestamp model mix-in with fractional seconds support.
-
-    SQLAlchemy-Utils timestamp model does not have support for fractional
-    seconds.
-    """
-
-    created = db.Column(
-        db.DateTime().with_variant(mysql.DATETIME(fsp=6), "mysql"),
-        default=datetime.utcnow,
-        nullable=False,
-    )
-    updated = db.Column(
-        db.DateTime().with_variant(mysql.DATETIME(fsp=6), "mysql"),
-        default=datetime.utcnow,
-        nullable=False,
-    )
-
-
-@db.event.listens_for(Timestamp, "before_update", propagate=True)
-def timestamp_before_update(mapper, connection, target):
-    """Update `updated` property with current time on `before_update` event."""
-    target.updated = datetime.utcnow()
-
-
-class RecordMetadataBase(Timestamp):
+class RecordMetadataBase(db.Timestamp):
     """Represent a base class for record metadata.
 
     The RecordMetadata object contains a ``created`` and  a ``updated``

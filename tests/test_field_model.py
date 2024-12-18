@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -12,7 +13,7 @@ This tests needs to live in it's own file to have a clean database session.
 """
 
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 
@@ -29,8 +30,7 @@ def Record1Metadata(database):
 
     class Record1Metadata(db.Model, RecordMetadataBase):
         __tablename__ = "record1_metadata"
-
-        expires_at = db.Column(db.DateTime())
+        expires_at = db.Column(db.UTCDateTime())
 
     Record1Metadata.__table__.create(db.engine)
     return Record1Metadata
@@ -47,8 +47,8 @@ def test_model_field(testapp, database, Record1Metadata):
         expires_at = ModelField()
         expires = ModelField("expires_at", dump=False)
 
-    dt = datetime(2020, 9, 3, 0, 0)
-    dt2 = datetime(2020, 9, 4, 0, 0)
+    dt = datetime(2020, 9, 3, 0, 0, tzinfo=timezone.utc)
+    dt2 = datetime(2020, 9, 4, 0, 0, tzinfo=timezone.utc)
 
     # Field itself
     assert isinstance(Record1.expires_at, ModelField)
@@ -71,7 +71,6 @@ def test_model_field(testapp, database, Record1Metadata):
     assert record.model.expires_at == dt
 
     # Test assignment
-    dt2 = datetime(2020, 9, 4, 0, 0)
     record.expires_at = dt2
     db.session.commit()
     assert record.expires_at == dt2

@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2015-2018 CERN.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -11,7 +12,7 @@
 
 import copy
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from jsonresolver import JSONResolver
@@ -22,7 +23,6 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from invenio_records import Record
 from invenio_records.errors import MissingModelError
-from invenio_records.models import RecordMetadata
 from invenio_records.validators import PartialDraft4Validator
 
 
@@ -70,10 +70,10 @@ def test_revision_id_created_updated_properties(testapp, db):
     assert strip_ms(record.created) == strip_ms(dt_c)
     assert strip_ms(record.updated) >= strip_ms(dt_u)
 
-    assert dt_u.tzinfo is None
-    utcnow = datetime.utcnow()
-    assert dt_u > utcnow - timedelta(seconds=10)
-    assert dt_u < utcnow + timedelta(seconds=10)
+    assert dt_u.tzinfo is timezone.utc
+    utc_now = datetime.now(timezone.utc)
+    assert dt_u > utc_now - timedelta(seconds=10)
+    assert dt_u < utc_now + timedelta(seconds=10)
 
 
 def test_delete(testapp, database):
