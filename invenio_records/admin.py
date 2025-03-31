@@ -67,7 +67,7 @@ class RecordMetadataModelView(ModelView):
         except SQLAlchemyError as e:
             if not self.handle_view_exception(e):
                 flash(
-                    _("Failed to delete record. {error}").format(error=str(e)),
+                    _("Failed to delete record. %(error)s", error=str(e)),
                     category="error",
                 )
             db.session.rollback()
