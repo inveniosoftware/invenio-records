@@ -1,12 +1,17 @@
 ..
     This file is part of Invenio.
     Copyright (C) 2015-2024 CERN.
-
+    Copyright (C) 2025 KTH Royal Institute of Technology.
     Invenio is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
 
 Changes
 =======
+
+Version v2.4.2 (released 2025-03-20)
+
+- i18n: fix untranslated strings in facets
+- ci: update workflow to include maintenance branches
 
 Version v2.4.1 (released 2024-11-05)
 
