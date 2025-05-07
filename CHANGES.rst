@@ -8,6 +8,12 @@
 Changes
 =======
 
+Version v2.5.0 (released 2025-05-07)
+
+- i18n:push translations
+- i18n:pulled translations
+- fix: setuptools require underscores instead of dashes
+
 Version v2.4.2 (released 2025-03-20)
 
 - i18n: fix untranslated strings in facets
