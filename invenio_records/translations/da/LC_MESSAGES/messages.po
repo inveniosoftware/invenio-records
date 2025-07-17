@@ -1,8 +1,8 @@
 # Translations template for invenio-records.
-# Copyright (C) 2022 CERN
+# Copyright (C) 2025 CERN
 # This file is distributed under the same license as the invenio-records
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
 # 
 # Translators:
 # Jiří Kunčar <jiri.kuncar@gmail.com>, 2016
@@ -10,36 +10,36 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: invenio-records 2.0.0\n"
+"Project-Id-Version: invenio-records 3.0.2\n"
 "Report-Msgid-Bugs-To: info@inveniosoftware.org\n"
-"POT-Creation-Date: 2022-10-12 09:39+0000\n"
+"POT-Creation-Date: 2025-07-08 19:49+0000\n"
 "PO-Revision-Date: 2016-08-19 12:42+0000\n"
 "Last-Translator: Jiří Kunčar <jiri.kuncar@gmail.com>, 2016\n"
 "Language-Team: Danish (https://app.transifex.com/inveniosoftware/teams/23537/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.10.3\n"
+"Generated-By: Babel 2.17.0\n"
 "Language: da\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: invenio_records/admin.py:41
+#: invenio_records/admin.py:42
 msgid "UUID"
 msgstr ""
 
-#: invenio_records/admin.py:42
+#: invenio_records/admin.py:43
 msgid "Revision"
 msgstr ""
 
-#: invenio_records/admin.py:43
+#: invenio_records/admin.py:44
 msgid "JSON"
 msgstr ""
 
-#: invenio_records/admin.py:69
+#: invenio_records/admin.py:70
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr ""
 
-#: invenio_records/admin.py:78
+#: invenio_records/admin.py:79
 msgid "Records"
 msgstr "Rekord"
