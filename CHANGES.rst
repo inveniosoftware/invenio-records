@@ -9,6 +9,15 @@
 Changes
 =======
 
+Version v3.1.0 (released 2025-07-17)
+
+- i18n: pulled translations
+- i18n: push translations
+- fix: setuptools require underscores instead of dashes
+- i18n: removed deprecated messages
+- fix: fixing lazy_gettext with format variables
+- fix: translation only applied on app start
+
 Version 3.0.2 (released 2024-12-15)
 
 - fix: the correct handling is done in the iterator
