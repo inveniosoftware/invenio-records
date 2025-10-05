@@ -4,6 +4,7 @@
 # Copyright (C) 2021 CERN.
 # Copyright (C) 2021 TU Wien.
 # Copyright (C) 2025 Northwestern University.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -12,15 +13,16 @@
 
 import urllib.parse
 
-from jsonschema import RefResolutionError, RefResolver
+from jsonresolver.contrib.jsonschema import RefResolverBase
+from referencing.exceptions import Unresolvable
 
 
-class InvenioRefResolver(RefResolver):
+class InvenioRefResolver(RefResolverBase):
     """Local Invenio JSONSchemas ref resolver class."""
 
     def resolve_remote(self, uri):
         """Block remote ref resolve."""
-        raise RefResolutionError("{uri} not found in local registry.".format(uri=uri))
+        raise Unresolvable(f"{uri} not found in local registry.")
 
 
 def urljoin_with_custom_scheme(*args, **kwargs):
