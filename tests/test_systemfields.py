@@ -3,6 +3,7 @@
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
 # Copyright (C) 2021 RERO.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -87,10 +88,10 @@ def ExtensionRecord():
         def post_init(self, record, data, model=None, field_data=None):
             self.called.append("post_init")
 
-        def pre_dump(self, record, dumper=None):
+        def pre_dump(self, record, data, dumper=None):
             self.called.append("pre_dump")
 
-        def post_load(self, record, loader=None):
+        def post_load(self, record, data, loader=None):
             self.called.append("post_load")
 
         def pre_create(self, record):
