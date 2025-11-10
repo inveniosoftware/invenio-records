@@ -84,4 +84,4 @@ def test_invenio_refresolver_with_local_store(db):
 )
 def test_urljoin_with_custom_scheme(resolution_scope, scope, expected_output):
     """Test urljoin supporting custom schemas."""
-    assert urljoin_with_custom_scheme(resolution_scope, scope) == expected_output
+    assert expected_output == urljoin_with_custom_scheme(resolution_scope, scope)
