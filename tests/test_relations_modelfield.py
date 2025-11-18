@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -12,53 +13,24 @@ This tests needs to live in it's own file to have a clean database session.
 """
 
 import pytest
-from sqlalchemy_utils.types import UUIDType
+from models import Record2Metadata, Record3Metadata
 
 from invenio_records.api import Record
 from invenio_records.dumpers import SearchDumper
 from invenio_records.dumpers.relations import RelationDumperExt
-from invenio_records.models import RecordMetadataBase
 from invenio_records.systemfields import (
     ModelField,
     ModelRelation,
     RelationsField,
     SystemFieldsMixin,
 )
-from invenio_records.systemfields.relations.modelrelations import (
+from invenio_records.systemfields.relations import (
     InvalidRelationValue,
-    ModelRelation,
 )
 
 
-@pytest.fixture(scope="module")
-def Record3Metadata(database):
-    """."""
-    db = database
-
-    class Record3Metadata(db.Model, RecordMetadataBase):
-        __tablename__ = "record3_metadata"
-
-    Record3Metadata.__table__.create(db.engine)
-    return Record3Metadata
-
-
-@pytest.fixture(scope="module")
-def Record2Metadata(Record3Metadata, database):
-    """."""
-    db = database
-
-    class Record2Metadata(db.Model, RecordMetadataBase):
-        __tablename__ = "record2_metadata"
-
-        record3_id = db.Column(UUIDType, db.ForeignKey(Record3Metadata.id))
-
-    Record2Metadata.__table__.create(db.engine)
-    return Record2Metadata
-
-
-def test_model_relation(testapp, database, Record3Metadata, Record2Metadata):
+def test_model_relation(testapp, database):
     """Test model field with clearing none/empty values."""
-    db = database
 
     class Record3(Record, SystemFieldsMixin):
         model_cls = Record3Metadata

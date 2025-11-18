@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2015-2018 CERN.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -10,14 +11,10 @@
 """Pytest configuration."""
 
 import pytest
-from flask import Flask
-from invenio_celery import InvenioCelery
-from invenio_db import InvenioDB
-from invenio_i18n import InvenioI18N
+from invenio_app.factory import create_app as _create_app
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.schema import DropConstraint, DropSequence, DropTable
 
-from invenio_records import InvenioRecords
 from invenio_records.api import Record
 from invenio_records.systemfields import SystemFieldsMixin
 
@@ -40,21 +37,25 @@ def _compile_drop_sequence(element, compiler, **kwargs):
 
 
 @pytest.fixture(scope="module")
-def create_app(instance_path):
+def app_config(app_config):
+    """Override pytest-invenio app_config fixture."""
+    app_config["THEME_FRONTPAGE"] = False
+    return app_config
+
+
+@pytest.fixture(scope="module")
+def extra_entry_points():
+    """Extra entrypoints."""
+    return {
+        "invenio_db.models": [
+            "mock_models = models",
+        ],
+    }
+
+
+@pytest.fixture(scope="module")
+def create_app(instance_path, entry_points):
     """Application factory fixture for use with pytest-invenio."""
-
-    def _create_app(**config):
-        app_ = Flask(
-            __name__,
-            instance_path=instance_path,
-        )
-        app_.config.update(config)
-        InvenioCelery(app_)
-        InvenioDB(app_)
-        InvenioRecords(app_)
-        InvenioI18N(app_)
-        return app_
-
     return _create_app
 
 

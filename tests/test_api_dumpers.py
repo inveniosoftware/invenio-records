@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -12,13 +13,12 @@ from datetime import datetime
 from uuid import UUID
 
 import pytest
-from sqlalchemy.dialects import mysql
+from models import TypeModel
 
 from invenio_records.api import Record
 from invenio_records.dumpers import SearchDumper, SearchDumperExt
 from invenio_records.dumpers.indexedat import IndexedAtDumperExt
 from invenio_records.dumpers.relations import RelationDumperExt
-from invenio_records.models import RecordMetadataBase
 from invenio_records.systemfields.relations import (
     PKListRelation,
     PKRelation,
@@ -132,26 +132,16 @@ def test_esdumper_with_extensions(testapp, db, example_data):
 
 def test_esdumper_sa_datatypes(testapp, database):
     """Test to determine the data type of an SQLAlchemy field."""
-    db = database
-
-    class Model(db.Model, RecordMetadataBase):
-        string = db.Column(db.String(255))
-        text = db.Column(db.Text)
-        biginteger = db.Column(db.BigInteger)
-        integer = db.Column(db.Integer)
-        boolean = db.Column(db.Boolean(name="boolean"))
-        text_variant = db.Column(db.Text().with_variant(mysql.VARCHAR(255), "mysql"))
-
-    assert SearchDumper._sa_type(Model, "biginteger") == int
-    assert SearchDumper._sa_type(Model, "boolean") == bool
-    assert SearchDumper._sa_type(Model, "created") == datetime
-    assert SearchDumper._sa_type(Model, "id") == UUID
-    assert SearchDumper._sa_type(Model, "integer") == int
-    assert SearchDumper._sa_type(Model, "json") == dict
-    assert SearchDumper._sa_type(Model, "text_variant") == str
-    assert SearchDumper._sa_type(Model, "text") == str
-    assert SearchDumper._sa_type(Model, "updated") == datetime
-    assert SearchDumper._sa_type(Model, "invalid") is None
+    assert SearchDumper._sa_type(TypeModel, "biginteger") == int
+    assert SearchDumper._sa_type(TypeModel, "boolean") == bool
+    assert SearchDumper._sa_type(TypeModel, "created") == datetime
+    assert SearchDumper._sa_type(TypeModel, "id") == UUID
+    assert SearchDumper._sa_type(TypeModel, "integer") == int
+    assert SearchDumper._sa_type(TypeModel, "json") == dict
+    assert SearchDumper._sa_type(TypeModel, "text_variant") == str
+    assert SearchDumper._sa_type(TypeModel, "text") == str
+    assert SearchDumper._sa_type(TypeModel, "updated") == datetime
+    assert SearchDumper._sa_type(TypeModel, "invalid") is None
 
 
 def test_relations_dumper(testapp, db, example_data):

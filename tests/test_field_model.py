@@ -16,27 +16,14 @@ This tests needs to live in it's own file to have a clean database session.
 from datetime import datetime, timezone
 
 import pytest
+from models import Record1Metadata
 
 from invenio_records.api import Record
 from invenio_records.dumpers import SearchDumper
-from invenio_records.models import RecordMetadataBase
 from invenio_records.systemfields import ModelField, SystemFieldsMixin
 
 
-@pytest.fixture(scope="module")
-def Record1Metadata(database):
-    """."""
-    db = database
-
-    class Record1Metadata(db.Model, RecordMetadataBase):
-        __tablename__ = "record1_metadata"
-        expires_at = db.Column(db.UTCDateTime())
-
-    Record1Metadata.__table__.create(db.engine)
-    return Record1Metadata
-
-
-def test_model_field(testapp, database, Record1Metadata):
+def test_model_field(testapp, database):
     """Test model field with clearing none/empty values."""
     db = database
 

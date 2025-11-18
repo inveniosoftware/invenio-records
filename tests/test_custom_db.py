@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2015-2020 CERN.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -12,28 +13,13 @@
 import uuid
 
 import pytest
-from invenio_db import InvenioDB
-from invenio_db import db as db_
+from models import CustomMetadata
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy_utils.functions import create_database, database_exists
 
 from invenio_records import Record
-from invenio_records.models import RecordMetadataBase
 
 
-@pytest.fixture(scope="module")
-def CustomMetadata(database):
-    """."""
-    db = database
-
-    class CustomMetadata(db.Model, RecordMetadataBase):
-        __tablename__ = "custom_metadata"
-
-    CustomMetadata.__table__.create(db.engine)
-    return CustomMetadata
-
-
-def test_class_model(testapp, database, CustomMetadata):
+def test_class_model(testapp, database):
     """Test custom class model."""
     db = database
 
