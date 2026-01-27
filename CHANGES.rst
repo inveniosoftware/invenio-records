@@ -1,7 +1,7 @@
 ..
     This file is part of Invenio.
     Copyright (C) 2015-2024 CERN.
-    Copyright (C) 2024 Graz University of Technology.
+    Copyright (C) 2024-2026 Graz University of Technology.
     Copyright (C) 2025 KTH Royal Institute of Technology.
 
     Invenio is free software; you can redistribute it and/or modify it
@@ -9,6 +9,14 @@
 
 Changes
 =======
+
+Version v4.0.0 (released 2026-01-27)
+
+- chore(black): update formatting to >= 26.0
+- chore(tests): get rid of SAWarning
+- fix: refresolver deprecationwarning
+- fix(chore): DeprecationWarning stdlib
+- fix: extend support to Python 3.14
 
 Version v3.1.1 (released 2025-10-21)
 
