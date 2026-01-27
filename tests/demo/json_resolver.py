@@ -7,7 +7,6 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 """Test JSON resolver."""
 
-
 import jsonresolver
 
 

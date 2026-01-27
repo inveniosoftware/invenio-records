@@ -12,7 +12,6 @@
 This tests needs to live in it's own file to have a clean database session.
 """
 
-
 from datetime import datetime, timezone
 
 import pytest

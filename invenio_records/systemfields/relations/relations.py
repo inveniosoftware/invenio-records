@@ -7,6 +7,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """Relations system field."""
+
 from copy import deepcopy
 
 from invenio_db import db

@@ -9,7 +9,6 @@
 
 """Invenio module for metadata storage."""
 
-
 from functools import lru_cache
 
 from invenio_base.utils import obj_or_import_string

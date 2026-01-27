@@ -9,7 +9,6 @@
 
 """Test Invenio Records API."""
 
-
 import copy
 import uuid
 from datetime import datetime, timedelta, timezone

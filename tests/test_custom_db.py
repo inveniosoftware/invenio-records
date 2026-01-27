@@ -9,7 +9,6 @@
 
 """Test Invenio Records."""
 
-
 import uuid
 
 import pytest

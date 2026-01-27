@@ -329,7 +329,6 @@ record has been correctly modified:
 See :doc:`api` for extensive API documentation.
 """
 
-
 from .api import Record
 from .ext import InvenioRecords
 
