@@ -2,7 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2015-2018 CERN.
-# Copyright (C) 2022-2024 Graz University of Technology.
+# Copyright (C) 2022-2026 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -341,4 +341,12 @@ nitpick_ignore = [
     ("py:class", "t.ClassVar"),
     ("py:class", "Query"),
     ("py:attr", "query_class"),  # noqa
+    ("py:class", "jsonschema.FormatChecker"),
+    ("py:class", "jsonschema.protocols.Validator"),
+    ("py:class", "jsonschema.FormatChecker"),
+    ("py:class", "jsonschema.protocols.Validator"),
+    ("py:class", "jsonschema.FormatChecker"),
+    ("py:class", "jsonschema.exceptions.ValidationError"),
+    ("py:class", "jsonschema.validate"),
+    ("py:class", "jsonschema.exceptions.ValidationError"),
 ]
