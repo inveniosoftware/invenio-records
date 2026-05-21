@@ -4,6 +4,7 @@
 # Copyright (C) 2020 CERN.
 # Copyright (C) 2021 RERO.
 # Copyright (C) 2025 Graz University of Technology.
+# Copyright (C) 2026 CESNET i.a.l.e.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -112,6 +113,12 @@ def ExtensionRecord():
         def post_delete(self, record, force=False):
             self.called.append("post_delete")
 
+        def pre_undelete(self, record):
+            self.called.append("pre_undelete")
+
+        def post_undelete(self, record):
+            self.called.append("post_undelete")
+
         def pre_revert(self, record, revision):
             self.called.append("pre_revert")
 
@@ -158,6 +165,22 @@ def test_constant_field_deletion(testapp, db, record, MyRecord, testschema):
 
     record = MyRecord.get_record(record.id, with_deleted=True)
     assert record.schema is None
+
+
+def test_constant_field_undelete(testapp, db, record, MyRecord, testschema):
+    """Test that constant field value is restored after undeleting a record."""
+    db.session.commit()
+    record.delete()
+    db.session.commit()
+
+    record = MyRecord.get_record(record.id, with_deleted=True)
+    # ConstantField.pre_init skips data=None records, so the value is missing.
+    assert record.schema is None
+
+    # Undeleting must repopulate the constant field via post_undelete.
+    record.undelete()
+    assert record["$schema"] == testschema
+    assert record.schema == testschema
 
 
 def test_field_overwriting(testapp, record, sysrecord):
@@ -292,6 +315,28 @@ def test_extension_delete(testapp, db, ExtensionRecord):
         "post_create",
         "pre_delete",
         "post_delete",
+    ]
+
+
+def test_extension_undelete(testapp, db, ExtensionRecord):
+    """Test pre/post undelete hook."""
+    rec = ExtensionRecord.create({})
+    db.session.commit()
+    rec.delete()
+    db.session.commit()
+    rec = ExtensionRecord.get_record(rec.id, with_deleted=True)
+    rec.undelete()
+    assert ExtensionRecord.ext.called == [
+        "pre_init",
+        "post_init",
+        "pre_create",
+        "post_create",
+        "pre_delete",
+        "post_delete",
+        "pre_init",
+        "post_init",
+        "pre_undelete",
+        "post_undelete",
     ]
 
 
