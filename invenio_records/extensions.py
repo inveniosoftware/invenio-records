@@ -3,6 +3,7 @@
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
 # Copyright (C) 2021 RERO.
+# Copyright (C) 2026 CESNET i.a.l.e.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -59,6 +60,12 @@ class ExtensionMixin:
 
     def post_delete(self, record, force=False):
         """Called after a record is deleted."""
+
+    def pre_undelete(self, record):
+        """Called before a soft-deleted record is undeleted."""
+
+    def post_undelete(self, record):
+        """Called after a soft-deleted record is undeleted."""
 
     def pre_revert(self, record, revision):
         """Called before a record is reverted."""

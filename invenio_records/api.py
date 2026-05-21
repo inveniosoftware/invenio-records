@@ -4,6 +4,7 @@
 # Copyright (C) 2015-2020 CERN.
 # Copyright (C) 2021 RERO.
 # Copyright (C) 2024-2025 Graz University of Technology.
+# Copyright (C) 2026 CESNET i.a.l.e.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -522,7 +523,13 @@ class Record(RecordBase):
         if self.model is None:
             raise MissingModelError()
 
+        for e in self._extensions:
+            e.pre_undelete(self)
+
         self.model.is_deleted = False
+
+        for e in self._extensions:
+            e.post_undelete(self)
 
         return self
 

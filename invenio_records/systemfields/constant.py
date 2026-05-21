@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2026 CESNET i.a.l.e.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -35,6 +36,17 @@ class ConstantField(SystemField):
         except KeyError:
             # Key is not present, so add it.
             data[self.key] = self.value
+
+    def post_undelete(self, record):
+        """Restore the constant value after a soft-deleted record is undeleted.
+
+        Soft-deleted records are loaded with ``data=None``, so ``pre_init``
+        skips them and the constant key is missing. Repopulate it here.
+        """
+        try:
+            dict_lookup(record, self.key)
+        except KeyError:
+            record[self.key] = self.value
 
     def __get__(self, record, owner=None):
         """Accessing the attribute."""
