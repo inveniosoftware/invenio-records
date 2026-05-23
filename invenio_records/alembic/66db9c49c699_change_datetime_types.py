@@ -1,10 +1,5 @@
-# -*- coding: utf-8 -*-
-#
-# This file is part of Invenio.
-# Copyright (C) 2024-2026 Graz University of Technology.
-#
-# Invenio is free software; you can redistribute it and/or modify it
-# under the terms of the MIT License; see LICENSE file for more details.
+# SPDX-FileCopyrightText: 2024-2026 Graz University of Technology.
+# SPDX-License-Identifier: MIT
 
 """Alter datetime columns to utc aware datetime columns."""
 
