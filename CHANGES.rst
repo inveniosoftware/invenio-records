@@ -10,6 +10,11 @@
 Changes
 =======
 
+Version v5.0.0 (released 2026-05-28)
+
+- fix(tests): enabled alembic tests
+- feat: add pre-undelete-post-undelete hooks
+
 Version v4.0.0 (released 2026-01-27)
 
 - chore(black): update formatting to >= 26.0
