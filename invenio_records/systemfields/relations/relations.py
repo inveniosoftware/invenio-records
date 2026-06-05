@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2020-2021 CERN.
+# Copyright (C) 2026 CESNET z.s.p.o.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -113,7 +114,9 @@ class RelationBase:
 
             parent[keys[-1]] = store_value
         else:
-            raise InvalidRelationValue("Invalid field value.")
+            raise InvalidRelationValue(
+                f"Invalid relation value {value!r} for field {self.key!r}."
+            )
 
     def clear_value(self, record):
         """Clear the relation value."""
@@ -160,7 +163,9 @@ class ListRelation(RelationBase):
                 ]
             return [super(ListRelation, self).parse_value(v) for v in value]
         else:
-            raise InvalidRelationValue("Invalid value. Expected list.")
+            raise InvalidRelationValue(
+                f"Invalid relation value {value!r} for field {self.key!r}. Expected list."
+            )
 
     def _get_parent(self, record, keys):
         """Get parent dict."""
@@ -200,7 +205,12 @@ class ListRelation(RelationBase):
 
             parent[store_key] = values_list
         else:
-            raise InvalidRelationValue("Invalid values.")
+            non_existing_values = ",".join(
+                [repr(i) for i in store_values if not self.exists(i)]
+            )
+            raise InvalidRelationValue(
+                f"Invalid relation value(s) {non_existing_values} for field {self.value_key!r}."
+            )
 
     def clear_value(self, record):
         """Clear the relation value."""
@@ -296,7 +306,9 @@ class NestedListRelation(ListRelation):
                     )
             return outter_list
         else:
-            raise InvalidRelationValue("Invalid value. Expected list.")
+            raise InvalidRelationValue(
+                f"Invalid relation value {value!r} for field {self.key!r}. Expected list."
+            )
 
     def set_value(self, record, value):
         """Set the relation value."""

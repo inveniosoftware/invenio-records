@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2020-2024 CERN.
+# Copyright (C) 2026 CESNET z.s.p.o.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -9,6 +10,9 @@
 """Relations system field."""
 
 from itertools import chain
+
+from arrow import get
+from IPython.testing.decorators import f
 
 from ...dictutils import dict_lookup, dict_set
 from .errors import InvalidCheckValue, InvalidRelationValue
@@ -45,26 +49,46 @@ class RelationResult:
         """Checks if the value is present in the object."""
         for key, value in value_to_check.items():
             if key not in object:
-                raise InvalidCheckValue(f"Invalid key {key}.")
+                # this part is invoked both for list relations and non-list relations
+                relation_field = getattr(self.field, "relation_field", None)
+                if relation_field:
+                    full_key = f"{self.field.key}.{self.field.relation_field}"
+                else:
+                    full_key = self.field.key
+                raise InvalidCheckValue(
+                    f"Invalid relation value: key {key!r} not present in object {object!r} for field {full_key!r}."
+                )
             if isinstance(value, dict):
                 self._value_check(value, object[key])
             else:
                 if not isinstance(value, list):
+                    # this part is invoked both for list relations and non-list relations
+                    relation_field = getattr(self.field, "relation_field", None)
+                    if relation_field:
+                        full_key = f"{self.field.key}.{relation_field}"
+                    else:
+                        full_key = self.field.key
                     raise InvalidCheckValue(
-                        f"Invalid value_check value: {value}; it must be " "a list"
+                        f"Invalid relation value_check value {value!r} for field {full_key!r}, expected list."
                     )
                 elif isinstance(object[key], list):
                     value_exist = set(object[key]).intersection(set(value))
                     if not value_exist:
                         raise InvalidCheckValue(
-                            f"Failed cross checking value_check value "
-                            f"{value} with record value {object[key]}."
+                            f"Failed cross checking value "
+                            f"{value!r} with record value {object[key]!r} for key {self.field.key!r}."
                         )
                 else:
                     if object[key] not in value:
+                        # this part is invoked both for list relations and non-list relations
+                        relation_field = getattr(self.field, "relation_field", None)
+                        if relation_field:
+                            full_key = f"{self.field.key}.{self.field.relation_field}"
+                        else:
+                            full_key = self.field.key
                         raise InvalidCheckValue(
-                            f"Failed cross checking value_check value "
-                            f"{value} with record value {object[key]}."
+                            f"Failed cross checking value "
+                            f"{value!r} with record value {object[key]!r} for key {full_key!r}."
                         )
 
     def validate(self):
@@ -72,7 +96,9 @@ class RelationResult:
         try:
             val = self._lookup_id()
             if not self.exists(val):
-                raise InvalidRelationValue(f"Invalid value {val}.")
+                raise InvalidRelationValue(
+                    f"Invalid relation value {val!r} for field {self.field.value_key!r}."
+                )
             if self.value_check:
                 data = self._lookup_data()
                 obj = self.resolve(data[self.field._value_key_suffix])
@@ -172,12 +198,20 @@ class RelationListResult(RelationResult):
         try:
             values = self._lookup_data()
             if values and not isinstance(values, list):
-                raise InvalidRelationValue(f"Invalid value {values}, should be list.")
+                raise InvalidRelationValue(
+                    f"Invalid relation value {values!r} for field {self.field.key!r}, expected list."
+                )
 
             for v in values:
                 relation_id = self._lookup_id(v)
                 if not self.exists(relation_id):
-                    raise InvalidRelationValue(f"Invalid value {relation_id}.")
+                    if self.field.relation_field:
+                        full_key = f"{self.field.key}.{self.field.relation_field}.{self.field._value_key_suffix}"
+                    else:
+                        full_key = f"{self.field.key}.{self.field._value_key_suffix}"
+                    raise InvalidRelationValue(
+                        f"Invalid relation value {relation_id!r} for field {full_key!r}."
+                    )
                 if self.value_check:
                     obj = self.resolve(v[self.field._value_key_suffix])
                     self._value_check(self.value_check, obj)
@@ -258,17 +292,31 @@ class RelationNestedListResult(RelationListResult):
         try:
             values = self._lookup_data()
             if values and not isinstance(values, list):
-                raise InvalidRelationValue(f"Invalid value {values}, should be list.")
+                raise InvalidRelationValue(
+                    f"Invalid relation value {values!r} for field {self.field.value_key!r}, expected list."
+                )
 
             for outter_v in values:
                 if outter_v and not isinstance(outter_v, list):
+                    if self.field.relation_field:
+                        full_key = f"{self.field.key}.{self.relation_field}"
+                    else:
+                        full_key = self.field.key
                     raise InvalidRelationValue(
-                        f"Invalid inner value {outter_v}, should be list."
+                        f"Invalid relation inner value {outter_v!r} for field {full_key!r}, expected list."
                     )
                 for v in outter_v:
                     relation_id = self._lookup_id(v)
                     if not self.exists(relation_id):
-                        raise InvalidRelationValue(f"Invalid value {relation_id}.")
+                        if self.relation_field:
+                            full_key = f"{self.field.key}.{self.relation_field}.{self.field._value_key_suffix}"
+                        else:
+                            full_key = (
+                                f"{self.field.key}.{self.field._value_key_suffix}"
+                            )
+                        raise InvalidRelationValue(
+                            f"Invalid relation value {relation_id!r} for field {full_key!r}."
+                        )
                     if self.value_check:
                         obj = self.resolve(v[self.field._value_key_suffix])
                         self._value_check(self.value_check, obj)

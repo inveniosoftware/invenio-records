@@ -2,12 +2,14 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2022 CERN.
+# Copyright (C) 2026 CESNET z.s.p.o.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """Test Relations fields."""
 
+import re
 from collections.abc import Iterable
 
 import pytest
@@ -115,11 +117,17 @@ def test_multirelations_field(testapp, db, languages):
     _assert_iter_and_lang_from_record(record)
 
     record["languages"] = {"id": "invalid"}
-    with pytest.raises(InvalidRelationValue):
+    with pytest.raises(
+        InvalidRelationValue,
+        match="Invalid relation value {'id': 'invalid'} for field 'languages', expected list.",
+    ):
         record.commit()  # fails validation
     record["languages"] = [{"id": str(en_lang.id)}]
     record["inner"]["inner_languages"] = {"id": "invalid"}
-    with pytest.raises(InvalidRelationValue):
+    with pytest.raises(
+        InvalidRelationValue,
+        match="Invalid relation value {'id': 'invalid'} for field 'inner.inner_languages', expected list.",
+    ):
         record.commit()  # fails validation
 
     # Set via attribute
@@ -155,11 +163,27 @@ def test_multirelations_field(testapp, db, languages):
     record.relations.languages = [str(en_lang.id)]
     record.relations.inner_languages = [str(fr_lang.id)]
 
-    for v in ("invalid", ["invalid"]):
-        with pytest.raises(InvalidRelationValue):
+    for v, error_message, inner_error_message in zip(
+        ("invalid", ["invalid"]),
+        (
+            "Invalid relation value 'invalid' for field 'languages'. Expected list.",
+            "Invalid relation value(s) 'invalid' for field 'languages.id'.",
+        ),
+        (
+            "Invalid relation value 'invalid' for field 'inner.inner_languages'. Expected list.",
+            "Invalid relation value(s) 'invalid' for field 'inner.inner_languages.id'.",
+        ),
+    ):
+        with pytest.raises(
+            InvalidRelationValue,
+            match=re.escape(error_message),
+        ):
             record.relations.languages = v
 
-        with pytest.raises(InvalidRelationValue):
+        with pytest.raises(
+            InvalidRelationValue,
+            match=re.escape(inner_error_message),
+        ):
             record.relations.inner_languages = v
         # Check that old value is still there
         assert record["languages"][0]["id"] == str(en_lang.id)

@@ -2,12 +2,14 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2020-2024 CERN.
+# Copyright (C) 2026 CESNET z.s.p.o.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """Tests for relations system field."""
 
+import re
 from collections.abc import Iterable
 
 import pytest
@@ -71,7 +73,10 @@ def test_relations_field_pk_relation(testapp, db, languages):
     assert res == en_lang
 
     record["language"] = {"id": "invalid"}
-    with pytest.raises(InvalidRelationValue):
+    with pytest.raises(
+        InvalidRelationValue,
+        match="Invalid relation value 'invalid' for field 'language.id'",
+    ):
         record.commit()  # fails validation
 
     # Set via attribute
@@ -90,7 +95,10 @@ def test_relations_field_pk_relation(testapp, db, languages):
     assert res == fr_lang
 
     # Set invalid value
-    with pytest.raises(InvalidRelationValue):
+    with pytest.raises(
+        InvalidRelationValue,
+        match="Invalid relation value 'invalid' for field 'language'",
+    ):
         record.relations.language = "invalid"
     # Check that old value is still there
     assert record["language"]["id"] == str(fr_lang.id)
@@ -181,7 +189,10 @@ def test_relations_field_pk_list_relation(testapp, db, languages):
     res = next(res_iter)
     assert res == en_lang
     record["languages"] = {"id": "invalid"}
-    with pytest.raises(InvalidRelationValue):
+    with pytest.raises(
+        InvalidRelationValue,
+        match=f"Invalid relation value {record['languages']!r} for field 'languages', expected list.",
+    ):
         record.commit()  # fails validation
 
     # Set via attribute
@@ -202,8 +213,14 @@ def test_relations_field_pk_list_relation(testapp, db, languages):
     assert res == fr_lang
 
     # Set invalid value
-    for v in ("invalid", ["invalid"]):
-        with pytest.raises(InvalidRelationValue):
+    for v, expected_error in zip(
+        ("invalid", ["invalid"]),
+        (
+            "Invalid relation value 'invalid' for field 'languages'. Expected list.",
+            "Invalid relation value(s) 'invalid' for field 'languages.id'.",
+        ),
+    ):
+        with pytest.raises(InvalidRelationValue, match=re.escape(expected_error)):
             record.relations.languages = v
         # Check that old value is still there
         assert record["languages"][0]["id"] == str(fr_lang.id)
@@ -363,7 +380,10 @@ def test_relations_field_pk_list_relation_of_objects(testapp, db, languages):
         },
         {"field1": "testString"},
     ]
-    with pytest.raises(InvalidRelationValue):
+    with pytest.raises(
+        InvalidRelationValue,
+        match="Invalid relation value 'invalid' for field 'array_of_objects.language.id'.",
+    ):
         record.commit()  # fails validation
 
     # Set via attribute
@@ -411,7 +431,10 @@ def test_relations_field_pk_list_relation_of_objects(testapp, db, languages):
     assert res == es_lang
 
     # Set invalid value
-    with pytest.raises(InvalidRelationValue):
+    with pytest.raises(
+        InvalidRelationValue,
+        match="Invalid relation value 'invalid' for field 'array_of_objects'. Expected list.",
+    ):
         record.relations.array_of_objects = "invalid"
     # Check that old value is still there
     assert record["array_of_objects"][0]["language"]["id"] == str(en_lang.id)
@@ -676,7 +699,10 @@ def test_relations_field_pk_nested_list_of_objects_w_related_field(
         },
         {"field1": "testString"},
     ]
-    with pytest.raises(InvalidRelationValue):
+    with pytest.raises(
+        InvalidRelationValue,
+        match=f"Invalid relation inner value {record['nested_array_of_objects'][0]['languages']!r} for field 'nested_array_of_objects.languages', expected list.",
+    ):
         record.commit()  # fails validation
 
     # fails with invalid values
@@ -689,7 +715,10 @@ def test_relations_field_pk_nested_list_of_objects_w_related_field(
         },
         {"field1": "testString"},
     ]
-    with pytest.raises(InvalidRelationValue):
+    with pytest.raises(
+        InvalidRelationValue,
+        match="Invalid relation value 'invalid' for field 'nested_array_of_objects.languages.id'.",
+    ):
         record.commit()  # fails validation
 
     # Set via attribute
@@ -729,7 +758,10 @@ def test_relations_field_pk_nested_list_of_objects_w_related_field(
         res = next(res_inner_iter)
 
     # Set invalid value
-    with pytest.raises(InvalidRelationValue):
+    with pytest.raises(
+        InvalidRelationValue,
+        match="Invalid relation value 'invalid' for field 'nested_array_of_objects'. Expected list.",
+    ):
         record.relations.nested_array_of_objects = "invalid"
     # Check that old value is still there
     assert record["nested_array_of_objects"][0]["languages"][0]["id"] == (
@@ -912,12 +944,18 @@ def test_relations_field_pk_nested_list_of_objects_wo_related_field(
 
     # fails with non-list types
     record["nested_languages"] = [{"id": str(es_lang.id)}]
-    with pytest.raises(InvalidRelationValue):
+    with pytest.raises(
+        InvalidRelationValue,
+        match=f"Invalid relation inner value {record['nested_languages'][0]!r} for field 'nested_languages', expected list.",
+    ):
         record.commit()  # fails validation
 
     # fails with invalid values
     record["nested_languages"] = [[{"id": "invalid"}]]
-    with pytest.raises(InvalidRelationValue):
+    with pytest.raises(
+        InvalidRelationValue,
+        match="Invalid relation value 'invalid' for field 'nested_languages.id'.",
+    ):
         record.commit()  # fails validation
 
     # Set via attribute
@@ -948,7 +986,10 @@ def test_relations_field_pk_nested_list_of_objects_wo_related_field(
         res = next(res_inner_iter)
 
     # Set invalid value
-    with pytest.raises(InvalidRelationValue):
+    with pytest.raises(
+        InvalidRelationValue,
+        match="Invalid relation value 'invalid' for field 'nested_languages'. Expected list.",
+    ):
         record.relations.nested_languages = "invalid"
     # Check that old value is still there
     assert record["nested_languages"][0][0]["id"] == (str(fr_lang.id))
@@ -1068,13 +1109,21 @@ def test_relations_field_pk_relation_with_value_check(testapp, db, languages):
     record = Record1.create({})
     record["language"] = {"id": str(en_lang.id)}
     # Fails because value_check must be a list
-    with pytest.raises(InvalidCheckValue):
+    with pytest.raises(
+        InvalidCheckValue,
+        match="Invalid relation value_check value 'English' for field 'language', expected list.",
+    ):
         record.commit()  # validates
 
     record = Record2.create({})
     record["language"] = {"id": str(es_lang.id)}
     # Fails because only ethnicity accepted is English and French
-    with pytest.raises(InvalidCheckValue):
+    with pytest.raises(
+        InvalidCheckValue,
+        match=re.escape(
+            "Failed cross checking value ['English', 'French'] with record value 'Spanish' for key 'language'."
+        ),
+    ):
         record.commit()  # validates
 
     record["language"] = {"id": str(fr_lang.id)}
@@ -1086,14 +1135,24 @@ def test_relations_field_pk_relation_with_value_check(testapp, db, languages):
     record = Record3.create({})
     record["language"] = {"id": str(en_lang.id)}
     # Fails because wrong_value is not a field of the language vocabulary
-    with pytest.raises(InvalidCheckValue):
+    with pytest.raises(
+        InvalidCheckValue,
+        match="Invalid relation value: key 'wrong_value' not present in object "
+        "{'iso': 'en', 'title': 'English', 'information': {'ethnicity': 'English', "
+        "'native_speakers': '400 million'}} for field 'language'.",
+    ):
         record.commit()  # validates
 
     record = Record4.create({})
     record["language"] = {"id": str(en_lang.id)}
     # Fails because only records with English ethnicity and 'oe' as iso are
     # accepted
-    with pytest.raises(InvalidCheckValue):
+    with pytest.raises(
+        InvalidCheckValue,
+        match=re.escape(
+            "Failed cross checking value ['oe'] with record value 'en' for key 'language'."
+        ),
+    ):
         record.commit()  # validates
 
     record["language"] = {"id": str(oe_lang.id)}
@@ -1160,13 +1219,21 @@ def test_relations_field_pk_list_relation_with_value_check(testapp, db, language
     record = Record1.create({})
     record["languages"] = [{"id": str(fr_lang.id)}]
     # Fails because value_check must be a list
-    with pytest.raises(InvalidCheckValue):
+    with pytest.raises(
+        InvalidCheckValue,
+        match="Invalid relation value_check value 'English' for field 'languages', expected list.",
+    ):
         record.commit()  # validates
 
     record = Record2.create({})
     record["languages"] = [{"id": str(es_lang.id)}, {"id": str(en_lang.id)}]
     # Fails because only ethnicity accepted is English and French
-    with pytest.raises(InvalidCheckValue):
+    with pytest.raises(
+        InvalidCheckValue,
+        match=re.escape(
+            "Failed cross checking value ['English', 'French'] with record value 'Spanish' for key 'languages'."
+        ),
+    ):
         record.commit()  # validates
 
     record["languages"] = [{"id": str(fr_lang.id)}, {"id": str(en_lang.id)}]
@@ -1179,14 +1246,24 @@ def test_relations_field_pk_list_relation_with_value_check(testapp, db, language
     record = Record3.create({})
     record["languages"] = [{"id": str(en_lang.id)}]
     # Fails because wrong_value is not a field of the language vocabulary
-    with pytest.raises(InvalidCheckValue):
+    with pytest.raises(
+        InvalidCheckValue,
+        match="Invalid relation value: key 'wrong_value' not present in object "
+        "{'iso': 'en', 'title': 'English', 'information': {'ethnicity': 'English', "
+        "'native_speakers': '400 million'}} for field 'languages'.",
+    ):
         record.commit()  # validates
 
     record = Record4.create({})
     record["languages"] = [{"id": str(en_lang.id)}]
     # Fails because only records with English ethnicity and 'oe' as iso are
     # accepted
-    with pytest.raises(InvalidCheckValue):
+    with pytest.raises(
+        InvalidCheckValue,
+        match=re.escape(
+            "Failed cross checking value ['oe'] with record value 'en' for key 'languages'."
+        ),
+    ):
         record.commit()  # validates
 
     record["languages"] = [{"id": str(oe_lang.id)}]
@@ -1270,7 +1347,10 @@ def test_relations_field_pk_nested_list_of_obj_w_related_field_w_value_check(
         },
     ]
     # Fails because value_check must be a list
-    with pytest.raises(InvalidCheckValue):
+    with pytest.raises(
+        InvalidCheckValue,
+        match="Invalid relation value_check value 'English' for field 'nested_array_of_objects.languages', expected list.",
+    ):
         record.commit()  # validates
 
     record = Record2.create({})
@@ -1285,7 +1365,12 @@ def test_relations_field_pk_nested_list_of_obj_w_related_field_w_value_check(
         },
     ]
     # Fails because only ethnicity accepted is English and French
-    with pytest.raises(InvalidCheckValue):
+    with pytest.raises(
+        InvalidCheckValue,
+        match=re.escape(
+            "Failed cross checking value ['English', 'French'] with record value 'Spanish' for key 'nested_array_of_objects.languages'."
+        ),
+    ):
         record.commit()  # validates
 
     record["nested_array_of_objects"] = [
@@ -1333,7 +1418,10 @@ def test_relations_field_pk_nested_list_of_obj_w_related_field_w_value_check(
         },
     ]
     # Fails because wrong_value is not a field of the language vocabulary
-    with pytest.raises(InvalidCheckValue):
+    with pytest.raises(
+        InvalidCheckValue,
+        match="Invalid relation value: key 'wrong_value' not present in object {'iso': 'en', 'title': 'English', 'information': {'ethnicity': 'English', 'native_speakers': '400 million'}} for field 'nested_array_of_objects.languages'.",
+    ):
         record.commit()  # validates
 
     record = Record4.create({})
@@ -1341,7 +1429,12 @@ def test_relations_field_pk_nested_list_of_obj_w_related_field_w_value_check(
         {"languages": [{"id": str(en_lang.id)}], "field1": "string"}
     ]
     # Fails because only ethnicity accepted is English
-    with pytest.raises(InvalidCheckValue):
+    with pytest.raises(
+        InvalidCheckValue,
+        match=re.escape(
+            "Failed cross checking value ['oe'] with record value 'en' for key 'nested_array_of_objects.languages'."
+        ),
+    ):
         record.commit()  # validates
 
     record["nested_array_of_objects"] = [
