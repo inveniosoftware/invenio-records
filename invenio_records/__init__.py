@@ -327,7 +327,7 @@ See :doc:`api` for extensive API documentation.
 from .api import Record
 from .ext import InvenioRecords
 
-__version__ = "5.0.0"
+__version__ = "6.0.0"
 
 __all__ = (
     "InvenioRecords",
