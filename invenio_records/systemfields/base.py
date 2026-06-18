@@ -261,58 +261,22 @@ class SystemFieldsExt(RecordExtension):
     def pre_dump(self, record, data, dumper=None):
         """Called before a record is dumped."""
         for field in self.declared_fields.values():
-            pre_dump_params = inspect.signature(field.pre_dump).parameters
-            if "data" in pre_dump_params:
-                field.pre_dump(record, data, dumper=dumper)
-            else:
-                # TODO: Remove in v1.6.0 or later
-                warnings.warn(
-                    "The pre_dump hook must take a positional argument data.",
-                    DeprecationWarning,
-                )
-                field.pre_dump(record, dumper=dumper)
+            field.pre_dump(record, data, dumper=dumper)
 
     def post_dump(self, record, data, dumper=None):
         """Called after a record is dumped."""
         for field in self.declared_fields.values():
-            post_dump_params = inspect.signature(field.post_dump).parameters
-            if "data" in post_dump_params:
-                field.post_dump(record, data, dumper=dumper)
-            else:
-                # TODO: Remove in v1.6.0 or later
-                warnings.warn(
-                    "The post_dump hook must take a positional argument data.",
-                    DeprecationWarning,
-                )
-                field.post_dump(record, dumper=dumper)
+            field.post_dump(record, data, dumper=dumper)
 
     def pre_load(self, data, loader=None):
         """Called before a record is loaded."""
         for field in self.declared_fields.values():
-            pre_load_params = inspect.signature(field.pre_load).parameters
-            if "data" in pre_load_params:
-                field.pre_load(data, loader=loader)
-            else:
-                # TODO: Remove in v1.6.0 or later
-                warnings.warn(
-                    "The pre_load hook must take a positional argument data.",
-                    DeprecationWarning,
-                )
-                field.pre_load(loader=loader)
+            field.pre_load(data, loader=loader)
 
     def post_load(self, record, data, loader=None):
         """Called after a record is loaded."""
         for field in self.declared_fields.values():
-            post_load_params = inspect.signature(field.post_load).parameters
-            if "data" in post_load_params:
-                field.post_load(record, data, loader=loader)
-            else:
-                # TODO: Remove in v1.6.0 or later
-                warnings.warn(
-                    "The post_load hook must take a positional argument data.",
-                    DeprecationWarning,
-                )
-                field.post_load(record, loader=loader)
+            field.post_load(record, data, loader=loader)
 
     def pre_create(self, *args, **kwargs):
         """Called after a record is created."""
