@@ -6,7 +6,6 @@
 
 """Record API."""
 
-import inspect
 import warnings
 from copy import deepcopy
 
@@ -227,29 +226,11 @@ class RecordBase(dict):
 
         # Run pre dump extensions
         for e in self._extensions:
-            pre_dump_params = inspect.signature(e.pre_dump).parameters
-            if "data" in pre_dump_params:
-                e.pre_dump(self, data, dumper=dumper)
-            else:
-                # TODO: Remove in v1.6.0 or later
-                warnings.warn(
-                    "The pre_dump hook must take a positional argument data.",
-                    DeprecationWarning,
-                )
-                e.pre_dump(self, dumper=dumper)
+            e.pre_dump(self, data, dumper=dumper)
 
-        dump_params = inspect.signature(dumper.dump).parameters
-        if "data" in dump_params:
-            # Execute the dump - for backwards compatibility we use the default
-            # dumper which returns a deepcopy.
-            data = dumper.dump(self, data)
-        else:
-            # TODO: Remove in v1.6.0 or later
-            warnings.warn(
-                "The dumper.dump() must take a positional argument data.",
-                DeprecationWarning,
-            )
-            data = dumper.dump(self)
+        # Execute the dump - for backwards compatibility we use the default
+        # dumper which returns a deepcopy.
+        data = dumper.dump(self, data)
 
         for e in self._extensions:
             e.post_dump(self, data, dumper=dumper)
@@ -277,16 +258,7 @@ class RecordBase(dict):
 
         # Run post load extensions
         for e in cls._extensions:
-            post_load_params = inspect.signature(e.post_load).parameters
-            if "data" in post_load_params:
-                e.post_load(record, data, loader=loader)
-            else:
-                # TODO: Remove in v1.6.0 or later
-                warnings.warn(
-                    "The post_load hook must take a positional argument data.",
-                    DeprecationWarning,
-                )
-                e.post_load(record, loader=loader)
+            e.post_load(record, data, loader=loader)
 
         return record
 
