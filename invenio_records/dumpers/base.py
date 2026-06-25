@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2020 CERN.
+# SPDX-FileCopyrightText: 2026 TU Wien.
 # SPDX-License-Identifier: MIT
 
 """Base class for dumpers."""
@@ -28,7 +29,7 @@ class Dumper:
         # conflicting with any of the record's keys. pre_dump methods can be
         # used to preprocess the record before dumping (e.g. caching/fetching
         # things.
-        data.update(deepcopy(dict(record)))
+        data.update(self._copy_record(record))
         return data
 
     def load(self, data, record_cls):
@@ -42,3 +43,34 @@ class Dumper:
         :returns: A instance of ``record_cls``.
         """
         raise NotImplementedError()
+
+    def _copy_record(self, record):
+        """Copy the given record's data sufficiently deeply.
+
+        This method takes care of creating a sufficiently deep copy of the given
+        record, to avoid side effects of the dumping to affect the original
+        record's data.
+
+        This method can be overridden in implementations to provide simpler copy
+        strategies that are still appropriate for the use cases, since ``deepcopy()``
+        can be a very costly operation.
+
+        :param record: The record to copy.
+        :returns: An appropriately deep copy of the record.
+        """
+        return deepcopy(dict(record))
+
+    def _copy_data(self, data):
+        """Copy the data sufficiently deeply before loading to side effects.
+
+        This method takes care of creating a sufficiently deep copy of the given
+        record, to avoid side effects of the loading to affect the original data.
+
+        This method can be overridden in implementations to provide simpler copy
+        strategies that are still appropriate for the use cases, since ``deepcopy()``
+        can be a very costly operation.
+
+        :param data: The data to copy.
+        :returns: An appropriately deep copy of the data.
+        """
+        return deepcopy(data)
