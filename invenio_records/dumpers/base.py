@@ -59,3 +59,18 @@ class Dumper:
         :returns: An appropriately deep copy of the record.
         """
         return deepcopy(dict(record))
+
+    def _copy_data(self, data):
+        """Copy the data sufficiently deeply before loading to side effects.
+
+        This method takes care of creating a sufficiently deep copy of the given
+        record, to avoid side effects of the loading to affect the original data.
+
+        This method can be overridden in implementations to provide simpler copy
+        strategies that are still appropriate for the use cases, since ``deepcopy()``
+        can be a very costly operation.
+
+        :param data: The data to copy.
+        :returns: An appropriately deep copy of the data.
+        """
+        return deepcopy(data)
