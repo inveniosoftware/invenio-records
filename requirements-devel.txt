@@ -1,4 +1,0 @@
-# SPDX-FileCopyrightText: 2015-2018 CERN.
-# SPDX-License-Identifier: MIT
-
--e git+git://github.com/inveniosoftware/invenio-db.git#egg=invenio-db
