@@ -1,8 +1,8 @@
 # Translations template for invenio-records.
-# Copyright (C) 2025 CERN
+# Copyright (C) 2026 CERN
 # This file is distributed under the same license as the invenio-records
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 # 
 # Translators:
 # Alizee Pace <alizee.pace@gmail.com>, 2016
@@ -14,36 +14,36 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: invenio-records 3.0.2\n"
+"Project-Id-Version: invenio-records 5.0.0\n"
 "Report-Msgid-Bugs-To: info@inveniosoftware.org\n"
-"POT-Creation-Date: 2025-07-08 19:49+0000\n"
+"POT-Creation-Date: 2026-06-22 20:31+0000\n"
 "PO-Revision-Date: 2016-08-19 12:42+0000\n"
 "Last-Translator: c960a0736ea0fb7507bb1c3555e7d33f_88b575f <3cef15c38ce2563e884ec389656c9161_1006830>, 2025\n"
 "Language-Team: German (https://app.transifex.com/inveniosoftware/teams/23537/de/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.17.0\n"
+"Generated-By: Babel 2.18.0\n"
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: invenio_records/admin.py:42
+#: invenio_records/admin.py:37
 msgid "UUID"
 msgstr "UUID"
 
-#: invenio_records/admin.py:43
+#: invenio_records/admin.py:38
 msgid "Revision"
 msgstr "Überarbeitung"
 
-#: invenio_records/admin.py:44
+#: invenio_records/admin.py:39
 msgid "JSON"
 msgstr "JSON"
 
-#: invenio_records/admin.py:70
+#: invenio_records/admin.py:65
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr "Löschen des Eintrags fehlgeschlagen. %(error)s"
 
-#: invenio_records/admin.py:79
+#: invenio_records/admin.py:74
 msgid "Records"
 msgstr "Einträge"
