@@ -7,6 +7,12 @@
 Changes
 =======
 
+Version v5.1.0 (released 2026-07-28)
+
+- fix(ci): run tests on maint-*
+- fix(build): include mo files
+- i18n: pulled translations
+
 Version v5.0.1 (released 2026-07-21)
 
 - chore(setup): migrate from setuptools to hatchling
