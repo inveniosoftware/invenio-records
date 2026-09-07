@@ -7,7 +7,6 @@
 """Record API."""
 
 import warnings
-from copy import deepcopy
 
 from flask import current_app
 from invenio_db import db
@@ -249,7 +248,8 @@ class RecordBase(dict):
         # instead.
         loader = loader or cls.dumper
 
-        data = deepcopy(data)  # avoid mutating the original object
+        data = loader._copy_data(data)  # avoid mutating the original object
+
         # Run pre load extensions
         for e in cls._extensions:
             e.pre_load(data, loader=loader)
