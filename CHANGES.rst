@@ -8,6 +8,24 @@
 Changes
 =======
 
+Version v6.1.0 (released 2026-09-21)
+
+- feat(dumper): let dumper decide on the copy mechanism before load
+    * change the responsibility about deciding on an appropriate copy
+      mechanism before data loading from being baked into the record class
+      to the dumper class
+    * this makes it easier to change the copy mechanism depending on the
+      circumstances towards which the dumper should be geared
+
+- feat(dumper): allow subclasses to override record copy behavior
+    * because deepcopy can be a very costly operation and overkill in some
+      cases, we allow subclasses of ``Dumper`` to provide their own record
+      copy strategy
+
+- chore(deprecation)!: remove deprecated code paths requiring inspect
+- fix(build): include mo files
+- fix(ci): run tests on maint-*
+
 Version v6.0.1 (released 2026-07-16)
 
 - chore(setup): migrate from setuptools to hatchling
