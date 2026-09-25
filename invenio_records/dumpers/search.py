@@ -10,7 +10,7 @@ Dumper used to dump/load an the body of an Search document.
 from datetime import datetime, timezone
 from uuid import UUID
 
-import arrow
+import pendulum
 from invenio_db import db
 from sqlalchemy.sql.sqltypes import JSON, Boolean, DateTime, Integer, String, Text
 from sqlalchemy.sql.type_api import Variant
@@ -111,7 +111,7 @@ class SearchDumper(Dumper):
         if value is None:
             return value
         if dump_type in (datetime,):
-            return arrow.get(value, tzinfo=timezone.utc).datetime
+            return pendulum.parse(value, tzinfo=timezone.utc)
         elif dump_type in (UUID,):
             return dump_type(value)
         elif dump_type is not None:
