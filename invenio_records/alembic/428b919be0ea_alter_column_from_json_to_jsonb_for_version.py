@@ -13,9 +13,17 @@ branch_labels = ()
 depends_on = None
 
 
+def _versioning_table_exists():
+    """Check if the versioning table exists (it does not with ``DB_VERSIONING = False``)."""
+    return sa.inspect(op.get_bind()).has_table("records_metadata_version")
+
+
 def upgrade():
     """Upgrade database."""
-    if op._proxy.migration_context.dialect.name == "postgresql":
+    if (
+        op._proxy.migration_context.dialect.name == "postgresql"
+        and _versioning_table_exists()
+    ):
         op.alter_column(
             "records_metadata_version",
             "json",
@@ -26,7 +34,10 @@ def upgrade():
 
 def downgrade():
     """Downgrade database."""
-    if op._proxy.migration_context.dialect.name == "postgresql":
+    if (
+        op._proxy.migration_context.dialect.name == "postgresql"
+        and _versioning_table_exists()
+    ):
         op.alter_column(
             "records_metadata_version",
             "json",
