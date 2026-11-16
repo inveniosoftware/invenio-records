@@ -178,6 +178,10 @@ def test_relations_field_pk_list_relation(testapp, db, languages):
     record["languages"] = {"id": "invalid"}
     with pytest.raises(InvalidRelationValue):
         record.commit()  # fails validation
+    # an invalid value after an entry without an id still fails validation
+    record["languages"] = [{"title": "not a relation"}, {"id": "invalid"}]
+    with pytest.raises(InvalidRelationValue):
+        record.commit()  # fails validation
 
     # Set via attribute
     record = Record1.create({})
@@ -912,6 +916,11 @@ def test_relations_field_pk_nested_list_of_objects_wo_related_field(
 
     # fails with invalid values
     record["nested_languages"] = [[{"id": "invalid"}]]
+    with pytest.raises(InvalidRelationValue):
+        record.commit()  # fails validation
+
+    # an invalid value after an entry without an id still fails validation
+    record["nested_languages"] = [[{"title": "not a relation"}, {"id": "invalid"}]]
     with pytest.raises(InvalidRelationValue):
         record.commit()  # fails validation
 
