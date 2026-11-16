@@ -34,3 +34,4 @@ jobs:
     with:
       extras: "tests,postgresql,mysql"
       search-service: '[""]'
+      python-version: '["3.11", "3.14"]'
