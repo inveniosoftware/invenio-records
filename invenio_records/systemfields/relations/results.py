@@ -170,6 +170,9 @@ class RelationListResult(RelationResult):
                 raise InvalidRelationValue(f"Invalid value {values}, should be list.")
 
             for v in values:
+                # entries without an id are not relations
+                if self.field._value_key_suffix not in v:
+                    continue
                 relation_id = self._lookup_id(v)
                 if not self.exists(relation_id):
                     raise InvalidRelationValue(f"Invalid value {relation_id}.")
@@ -261,6 +264,9 @@ class RelationNestedListResult(RelationListResult):
                         f"Invalid inner value {outter_v}, should be list."
                     )
                 for v in outter_v:
+                    # entries without an id are not relations
+                    if self.field._value_key_suffix not in v:
+                        continue
                     relation_id = self._lookup_id(v)
                     if not self.exists(relation_id):
                         raise InvalidRelationValue(f"Invalid value {relation_id}.")

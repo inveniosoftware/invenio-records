@@ -7,7 +7,7 @@
 name = "invenio-records"
 description = "Invenio-Records is a metadata storage module."
 readme = "README.rst"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 license = "MIT"
 authors = [
   { name = "CERN", email = "info@inveniosoftware.org" },
