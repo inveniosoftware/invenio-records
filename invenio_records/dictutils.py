@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2015-2024 CERN.
+# SPDX-FileCopyrightText: 2015-2026 CERN.
 # SPDX-License-Identifier: MIT
 
 """Dictionary utilities."""
@@ -60,7 +60,14 @@ def parse_lookup_key(lookup_key):
     return keys
 
 
-def dict_lookup(source, lookup_key, parent=False):
+# Sentinel to detect when no `default` parameter is provided.
+try:
+    MISSING = sentinel("MISSING")
+except NameError:
+    MISSING = object()
+
+
+def dict_lookup(source, lookup_key, parent=False, *, default=MISSING):
     """Make a lookup into a dict based on a dot notation.
 
     Examples of the supported dot notation:
@@ -79,6 +86,8 @@ def dict_lookup(source, lookup_key, parent=False):
     :param parent: If parent argument is True, returns the parent node of
                    matched object.
     :param lookup_key: A string using dot notation, or a list of keys.
+    :param default: The value to return if the lookup key does not exist. If
+                    not provided, a `KeyError` is raised instead.
     """
     # Copied from dictdiffer (CERN contributed part) and slightly modified.
     keys = parse_lookup_key(lookup_key)
@@ -93,7 +102,9 @@ def dict_lookup(source, lookup_key, parent=False):
             if isinstance(value, list):
                 key = int(key)
             value = value[key]
-        except (TypeError, IndexError, ValueError) as exc:
+        except (KeyError, TypeError, IndexError, ValueError) as exc:
+            if default is not MISSING:
+                return default
             raise KeyError(lookup_key) from exc
     return value
 
