@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2024 CERN.
+# SPDX-FileCopyrightText: 2020-2026 CERN.
 # SPDX-License-Identifier: MIT
 
 """Test of dictionary utilities."""
@@ -59,6 +59,15 @@ def test_dict_lookup():
     assert pytest.raises(KeyError, dict_lookup, d, "b.x")
     assert pytest.raises(KeyError, dict_lookup, d, "b.c.0")
     assert pytest.raises(KeyError, dict_lookup, d, "d.3")
+
+    assert dict_lookup(d, "x", default=None) is None
+    assert dict_lookup(d, "a.x", default="NA") == "NA"
+    assert dict_lookup(d, "b.x", default=42) == 42
+    assert dict_lookup(d, "b.c.0", default=[]) == []
+    assert dict_lookup(d, "d.3", default={}) == {}
+
+    # The `default` parameter is not used when a key exists and has the `None` value.
+    assert dict_lookup(d, "b.c", default="unused") is None
 
 
 def test_dict_merge():
