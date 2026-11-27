@@ -8,6 +8,12 @@
 Changes
 =======
 
+Version v6.2.0 (released 2026-11-27)
+
+- feat(dictutils): add default parameter to dict_lookup
+  Add a `default` parameter to `dict_lookup` which is returned
+  when the lookup key does not exist.
+
 Version v6.1.0 (released 2026-09-21)
 
 - feat(dumper): let dumper decide on the copy mechanism before load
